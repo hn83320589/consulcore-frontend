@@ -1,0 +1,21 @@
+:root {
+  /* AdminLayout 預設 — 專業藍灰色系 */
+  --color-primary: #2C5F8A;
+  --color-primary-hover: #1E4A6E;
+  --color-bg: #F5F7FA;
+  --color-text: #1F2937;
+  --border-radius: 6px;
+  --spacing-unit: 0.75rem;
+  --font-size-base: 14px;
+}
+
+/* ClientLayout — 溫暖風格 */
+.client-theme {
+  --color-primary: #E8A87C;
+  --color-primary-hover: #D4956A;
+  --color-bg: #FFF8F0;
+  --color-text: #4A3728;
+  --border-radius: 12px;
+  --spacing-unit: 1.25rem;
+  --font-size-base: 16px;
+}

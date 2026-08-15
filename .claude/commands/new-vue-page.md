@@ -1,0 +1,115 @@
+# 建立新 Vue 頁面
+
+## 步驟
+
+### 1. 建立 View 檔案
+
+位置依角色決定：
+- 機構後台：`frontend/src/views/admin/XxxView.vue`
+- 個案端：`frontend/src/views/client/XxxView.vue`
+
+```vue
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useXxxStore } from '@/stores/xxxStore'
+
+const store = useXxxStore()
+
+onMounted(async () => {
+  await store.fetchItems()
+})
+</script>
+
+<template>
+  <div class="page-container">
+    <h1 class="page-title">頁面標題</h1>
+    <!-- 內容 -->
+  </div>
+</template>
+```
+
+### 2. 註冊路由（`frontend/src/router/index.ts`）
+
+```typescript
+// 機構後台路由（在 AdminLayout children 下）
+{
+  path: 'xxx',
+  name: 'admin-xxx',
+  component: () => import('@/views/admin/XxxView.vue'),
+  meta: {
+    requiresAuth: true,
+    requiredPermission: 'xxx.view',  // 對應 Permission.code
+    title: '頁面標題'
+  }
+}
+
+// 個案端路由（在 ClientLayout children 下）
+{
+  path: 'xxx',
+  name: 'client-xxx',
+  component: () => import('@/views/client/XxxView.vue'),
+  meta: {
+    requiresAuth: true,
+    requiredRole: 'client',
+    title: '頁面標題'
+  }
+}
+```
+
+### 3. 加入側欄選單（如需要）
+
+在 `AdminSidebar.vue` 的選單配置中加入對應項目，用 `permissions` 控制顯示：
+
+```typescript
+{
+  label: '選單名稱',
+  icon: 'icon-name',
+  to: '/admin/xxx',
+  permission: 'xxx.view'
+}
+```
+
+## 頁面模式
+
+### 列表頁（常見模式）
+```
+┌─ 頁面標題 ──────────────────── [新增按鈕] ─┐
+├─ 篩選列：搜尋框 + 狀態下拉 + 日期區間      │
+├─ AppTable                                   │
+│  欄位 | 欄位 | 欄位 | 操作                  │
+├─ 分頁                                       │
+└──────────────────────────────────────────────┘
+```
+
+### 詳情頁（Tab 切換）
+```
+┌─ 返回按鈕 ── 標題 ── 狀態標籤 ─────────────┐
+├─ AppTabs: [Tab1] [Tab2] [Tab3]              │
+├─ Tab 內容區域                                │
+└──────────────────────────────────────────────┘
+```
+
+### 編輯頁
+```
+┌─ 頁面標題 ──────────────────────────────────┐
+├─ 表單欄位                                    │
+├─ ─────────────────────────────────────────── │
+├─ [取消] [暫存] [送出]                        │
+└──────────────────────────────────────────────┘
+```
+
+## 風格注意
+
+- 機構後台（AdminLayout）：專業藍灰、緊湊佈局、高資訊密度
+- 個案端（ClientLayout）：暖色系、寬鬆間距、大字體、溫暖語氣
+- 共用元件（AppButton, AppTable 等）透過 CSS 變數自動適應
+- 不要在元件內寫死顏色，用 `var(--color-primary)` 等變數
+
+## 檢查清單
+
+- [ ] View 放在正確的資料夾（admin/ 或 client/）
+- [ ] 路由已註冊，meta 含權限資訊
+- [ ] 側欄選單已加入（機構後台頁面）
+- [ ] 使用對應的 Pinia Store，不直接呼叫 API
+- [ ] TypeScript 型別完整定義
+- [ ] 使用 CSS 變數而非寫死顏色

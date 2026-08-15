@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment files（含實際連線設定，不進版控；請另提供 .env.example）
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# 測試 / 工具產生的暫存檔
+.playwright-mcp/
+playwright-report/
+test-results/
+coverage/
