@@ -61,6 +61,28 @@ describe('httpService', () => {
     expect(onSessionExpired).toHaveBeenCalledOnce()
   })
 
+  // F3：登入失敗的 401 原本會整頁跳轉，LoginView 的「帳號或密碼錯誤」來不及顯示
+  it('未帶 token 的請求（登入）收到 401：不視為登入過期，交由呼叫端顯示錯誤', async () => {
+    const { http, onSessionExpired } = setUp(
+      () => ({ status: 401, data: { success: false, message: '帳號或密碼錯誤' } }),
+      { token: null, activeRole: null },
+    )
+
+    await expect(http.post('/auth/login', {})).rejects.toBeInstanceOf(AxiosError)
+    expect(onSessionExpired).not.toHaveBeenCalled()
+  })
+
+  // F3：後端以 401 表達「非紀錄建立者」等業務拒絕（帶 ApiResponse 內容），不應把人登出
+  it('已登入的請求收到帶 ApiResponse 內容的 401：顯示訊息，不登出', async () => {
+    const { http, onToast, onSessionExpired } = setUp(
+      () => ({ status: 401, data: { success: false, message: '只有紀錄建立者可以編輯' } }),
+    )
+
+    await expect(http.put('/session-notes/3', {})).rejects.toBeInstanceOf(AxiosError)
+    expect(onSessionExpired).not.toHaveBeenCalled()
+    expect(onToast).toHaveBeenCalledWith('只有紀錄建立者可以編輯', 'warning')
+  })
+
   it('403 顯示後端訊息，不登出', async () => {
     const { http, onToast, onSessionExpired } = setUp(() => ({ status: 403, data: { success: false, message: '權限不足' } }))
 

@@ -1,4 +1,4 @@
-import axios, { type AxiosAdapter, type AxiosRequestConfig, type AxiosResponse } from 'axios'
+import axios, { AxiosHeaders, type AxiosAdapter, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import type { ApiResponse } from '@/types'
 
 type ToastType = 'error' | 'warning'
@@ -71,7 +71,15 @@ export function createHttpService(deps: HttpServiceDeps): HttpService {
         const status = error.response.status as number
         const data = error.response.data as { message?: string } | undefined
         if (status === 401) {
-          deps.onSessionExpired()
+          // 只有「帶 token 卻被 JWT 驗證拒絕」（後端回空內容）才是登入過期。
+          // 未帶 token（登入失敗）交給呼叫端顯示；帶 ApiResponse 內容的 401 是業務拒絕，不登出。
+          const sentToken = !!AxiosHeaders.from(error.config?.headers).get('Authorization')
+          const isApiResponse = !!data && typeof data === 'object' && 'success' in data
+          if (sentToken && !isApiResponse) {
+            deps.onSessionExpired()
+          } else if (sentToken) {
+            deps.onToast(data?.message || '無法執行此操作', 'warning')
+          }
           return Promise.reject(error)
         }
         if (status === 403) {
