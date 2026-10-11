@@ -71,8 +71,8 @@ function goPage(page: number) {
 
           <!-- Rows -->
           <tr
-            v-else
             v-for="(row, index) in pagedData"
+            v-else
             :key="index"
             class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
           >

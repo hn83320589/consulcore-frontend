@@ -30,7 +30,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 </script>
 
 <template>
-  <div ref="dropdownRef" class="relative" v-if="authStore.hasMultipleRoles">
+  <div v-if="authStore.hasMultipleRoles" ref="dropdownRef" class="relative">
     <button
       class="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-app border border-gray-200 hover:bg-gray-50"
       @click="open = !open"

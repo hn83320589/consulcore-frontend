@@ -56,8 +56,8 @@ function isActive(path: string): boolean {
   >
     <!-- Logo -->
     <div class="h-14 flex items-center px-4 border-b border-gray-200">
-      <span class="font-bold text-primary text-lg" v-if="!collapsed">ConsulCore</span>
-      <span class="font-bold text-primary text-lg" v-else>CC</span>
+      <span v-if="!collapsed" class="font-bold text-primary text-lg">ConsulCore</span>
+      <span v-else class="font-bold text-primary text-lg">CC</span>
     </div>
 
     <!-- Menu -->

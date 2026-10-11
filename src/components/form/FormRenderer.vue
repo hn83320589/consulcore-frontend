@@ -116,7 +116,7 @@ function handleSubmit() {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-6">
+  <form class="space-y-6" @submit.prevent="handleSubmit">
     <div v-for="section in sections" :key="section.id">
       <h3 class="font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-100">
         {{ section.title }}
