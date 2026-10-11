@@ -4,6 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { useSessionNoteStore } from '@/stores/sessionNoteStore'
 import { useAuthStore } from '@/stores/authStore'
 import { useUiStore } from '@/stores/uiStore'
+import { useClientStore } from '@/stores/clientStore'
+import { useLeaveGuard } from '@/composables/useLeaveGuard'
+import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import SoapEditor from '@/components/session/SoapEditor.vue'
 import FreeTextEditor from '@/components/session/FreeTextEditor.vue'
@@ -16,6 +19,7 @@ const router = useRouter()
 const store = useSessionNoteStore()
 const authStore = useAuthStore()
 const uiStore = useUiStore()
+const clientStore = useClientStore()
 
 const noteId = computed(() => {
   const raw = route.params.id as string | undefined
@@ -25,7 +29,8 @@ const isEdit = computed(() => noteId.value != null)
 
 // ── Form State ──────────────────────────────
 const clientProfileId = ref(route.query.clientId != null ? Number(route.query.clientId) : 0)
-const clientName = ref((route.query.clientName as string) ?? '')
+// 個案姓名不放網址（會留在瀏覽器歷史與 Referer），由 store 或後端取得
+const clientName = ref('')
 const noteType = ref<SessionNoteType>('session')
 const format = ref<SessionNoteFormat>('soap')
 const soapS = ref('')
@@ -36,6 +41,14 @@ const freeTextContent = ref('')
 const saving = ref(false)
 
 const isLocked = computed(() => store.currentNote?.isLocked ?? false)
+
+// ── 未存檔離開保護 ──────────────────────────
+function formSnapshot() {
+  return JSON.stringify([noteType.value, format.value, soapS.value, soapO.value, soapA.value, soapP.value, freeTextContent.value])
+}
+const savedSnapshot = ref(formSnapshot())
+const isDirty = () => !isLocked.value && formSnapshot() !== savedSnapshot.value
+const { leavePending, confirmLeave, cancelLeave } = useLeaveGuard(isDirty)
 
 // ── Editor Refs ─────────────────────────────
 const soapEditorRef = ref<InstanceType<typeof SoapEditor> | null>(null)
@@ -71,6 +84,7 @@ async function handleSave(lock = false) {
         freeTextContent: format.value === 'free_text' ? freeTextContent.value : undefined,
       })
       if (lock) await store.lockNote(noteId.value)
+      savedSnapshot.value = formSnapshot()
       uiStore.showToast(lock ? '已完成並鎖定' : '已暫存', 'success')
     } else {
       const created = await store.createNote({
@@ -84,6 +98,8 @@ async function handleSave(lock = false) {
         freeTextContent: format.value === 'free_text' ? freeTextContent.value : undefined,
       })
       if (lock) await store.lockNote(created.id)
+      // 先更新快照再換頁，否則轉到編輯頁會被當成「未存檔離開」
+      savedSnapshot.value = formSnapshot()
       uiStore.showToast(lock ? '已建立並鎖定' : '已建立', 'success')
       await router.replace(`/admin/sessions/${created.id}/edit`)
     }
@@ -111,6 +127,13 @@ function handleCancel() {
 // ── Init ────────────────────────────────────
 onMounted(async () => {
   await store.fetchPhrases()
+  if (noteId.value == null && clientProfileId.value) {
+    if (clientStore.currentClient?.id !== clientProfileId.value) {
+      // 失敗時 httpService 已顯示錯誤訊息；標題只是少了姓名，不影響撰寫紀錄
+      await clientStore.fetchClient(clientProfileId.value).catch(() => undefined)
+    }
+    clientName.value = clientStore.currentClient?.id === clientProfileId.value ? clientStore.currentClient.name : ''
+  }
   if (noteId.value != null) {
     // 先用 store 既有資料，沒有則以單筆 GET 取（支援直接以 URL 進入編輯頁）
     let note =
@@ -135,6 +158,7 @@ onMounted(async () => {
       soapA.value = note.soapA ?? ''
       soapP.value = note.soapP ?? ''
       freeTextContent.value = note.freeTextContent ?? ''
+      savedSnapshot.value = formSnapshot()
     }
   }
 })
@@ -261,5 +285,15 @@ onMounted(async () => {
         />
       </div>
     </div>
+
+    <ConfirmModal
+      :open="leavePending"
+      title="尚未儲存"
+      message="晤談紀錄有尚未儲存的內容，離開後會遺失。確定要離開嗎？"
+      confirm-text="放棄並離開"
+      cancel-text="繼續編輯"
+      @confirm="confirmLeave"
+      @cancel="cancelLeave"
+    />
   </div>
 </template>

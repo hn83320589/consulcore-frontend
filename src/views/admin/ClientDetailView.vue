@@ -383,7 +383,7 @@ onMounted(async () => {
           <h3 class="font-semibold text-gray-800">晤談紀錄</h3>
           <AppButton
             size="sm"
-            @click="$router.push({ path: '/admin/sessions/new', query: { clientId: clientId, clientName: clientStore.currentClient?.name } })"
+            @click="$router.push({ path: '/admin/sessions/new', query: { clientId: clientId } })"
           >
             新增紀錄
           </AppButton>
