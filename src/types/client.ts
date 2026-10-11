@@ -27,6 +27,8 @@ export interface ClientProfile {
   status: ClientStatus
   userId: number | null
   mustChangePassword: boolean
+  // 僅在建立附帳號的個案時回傳一次（明文不保存）；其他 API 不會有
+  initialCredentials?: InitialCredentials | null
   therapists: TherapistInfo[]
   createdAt: string
   updatedAt: string
@@ -84,4 +86,9 @@ export interface AssignTherapistRequest {
 export interface TransferTherapistRequest {
   newTherapistUserId: number
   reason?: string | null
+}
+
+export interface InitialCredentials {
+  username: string
+  password: string
 }

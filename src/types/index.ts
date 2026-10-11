@@ -32,6 +32,7 @@ export type {
   ChangeStatusRequest,
   AssignTherapistRequest,
   TransferTherapistRequest,
+  InitialCredentials,
 } from './client'
 export type {
   ConsentTriggerEvent,
