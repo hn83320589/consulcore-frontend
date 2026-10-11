@@ -1,16 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import authService from '@/services/authService'
 import { registerAuthProvider } from '@/services/httpService'
 import { resetUserData } from './resetUserData'
+import { dashboardPathFor } from '@/router/navigation'
 import type { User, RoleCode, LoginRequest } from '@/types'
 
 export const useAuthStore = defineStore(
   'auth',
   () => {
-    const router = useRouter()
-
     // ── State ──────────────────────────────────
     const token = ref<string | null>(null)
     const user = ref<User | null>(null)
@@ -30,7 +28,8 @@ export const useAuthStore = defineStore(
     const activeOrganizationId = computed(() => user.value?.organizationId ?? null)
 
     // ── Actions ────────────────────────────────
-    async function login(payload: LoginRequest) {
+    // 只管登入狀態，不負責導航：回傳下一步該去的路徑，由呼叫端（useAuthActions / 路由守衛）跳轉
+    async function login(payload: LoginRequest): Promise<string> {
       const res = await authService.login(payload)
       token.value = res.token
       // LoginResponse 為扁平結構，由欄位組出 user
@@ -49,19 +48,13 @@ export const useAuthStore = defineStore(
       // 登入回應「不含」permissions，清空以待 fetchMe
       permissions.value = []
 
-      if (res.mustChangePassword) {
-        await router.push('/change-password')
-        return
-      }
-      if (activeRole.value) {
-        await fetchMe()
-        await router.push(getDashboardPath(activeRole.value))
-      } else {
-        await router.push('/select-role')
-      }
+      if (res.mustChangePassword) return '/change-password'
+      if (!activeRole.value) return '/select-role'
+      return (await fetchMe()) ? getDashboardPath(activeRole.value) : '/login'
     }
 
-    async function fetchMe() {
+    /** 取得目前使用者與權限；失敗時清除登入狀態並回傳 false */
+    async function fetchMe(): Promise<boolean> {
       try {
         const res = await authService.getMe()
         user.value = {
@@ -76,8 +69,10 @@ export const useAuthStore = defineStore(
         roles.value = res.roles
         permissions.value = res.permissions // /me 是 permissions 唯一來源
         clientProfileId.value = res.clientProfileId ?? null
+        return true
       } catch {
         logout()
+        return false
       }
     }
 
@@ -91,16 +86,14 @@ export const useAuthStore = defineStore(
       mustChangePassword.value = false
       clientProfileId.value = null
       resetUserData()
-      router.push('/login')
     }
 
-    async function switchRole(role: RoleCode) {
+    async function switchRole(role: RoleCode): Promise<string> {
       activeRole.value = role
       // 另一個身份不應看到前一個身份載入的資料（例如治療師的個案清單）
       resetUserData()
       // 切換角色後重新取得該角色的權限
-      await fetchMe()
-      await router.push(getDashboardPath(role))
+      return (await fetchMe()) ? getDashboardPath(role) : '/login'
     }
 
     async function changePassword(currentPassword: string, newPassword: string) {
@@ -114,7 +107,7 @@ export const useAuthStore = defineStore(
     }
 
     function getDashboardPath(role: RoleCode): string {
-      return role === 'client' ? '/client/dashboard' : '/admin/dashboard'
+      return dashboardPathFor(role)
     }
 
     return {

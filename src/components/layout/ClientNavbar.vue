@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 
 const router = useRouter()
 const route = useRoute()
-const authStore = useAuthStore()
+const authActions = useAuthActions()
 
 interface NavItem {
   label: string
@@ -48,7 +48,7 @@ function isActive(path: string): boolean {
       <!-- User -->
       <button
         class="text-sm text-app-text/60 hover:text-app-text"
-        @click="authStore.logout()"
+        @click="authActions.logout()"
       >
         登出
       </button>

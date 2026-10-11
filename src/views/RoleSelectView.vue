@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useAuthStore } from '@/stores/authStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 import type { RoleCode } from '@/types'
 
 const authStore = useAuthStore()
+const authActions = useAuthActions()
 
 const roleInfo: Record<RoleCode, { label: string; description: string; icon: string }> = {
   owner: { label: '機構負責人', description: '管理整個機構的營運', icon: '🏢' },
@@ -23,7 +25,7 @@ const roleInfo: Record<RoleCode, { label: string; description: string; icon: str
           v-for="role in authStore.roles"
           :key="role"
           class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left hover:border-primary hover:shadow-md transition-all"
-          @click="authStore.switchRole(role as RoleCode)"
+          @click="authActions.switchRole(role as RoleCode)"
         >
           <span class="text-3xl block mb-3">{{ roleInfo[role as RoleCode]?.icon }}</span>
           <h3 class="font-semibold text-gray-800">{{ roleInfo[role as RoleCode]?.label }}</h3>

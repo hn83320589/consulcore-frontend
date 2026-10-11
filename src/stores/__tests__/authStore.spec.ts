@@ -2,9 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { setUpTestPinia } from '@/stores/__tests__/testPinia'
 import type { CurrentUser, LoginResponse } from '@/types'
 
-// 記錄現行行為（characterization）：Phase 3 把導航移出 store 時以此為安全網
-const push = vi.fn()
-vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }))
+// R12：store 只管狀態，不再自己跳頁；login / switchRole 回傳下一步路徑，由呼叫端導航
 
 vi.mock('@/services/authService', () => ({
   default: { login: vi.fn(), getMe: vi.fn(), changePassword: vi.fn() },
@@ -53,24 +51,24 @@ describe('authStore', () => {
     vi.mocked(authService.getMe).mockResolvedValue(me())
     const store = useAuthStore()
 
-    await store.login({ username: 'ther_a', password: 'x' })
+    const next = await store.login({ username: 'ther_a', password: 'x' })
 
     expect(store.token).toBe('jwt-token')
     expect(store.activeRole).toBe('therapist')
     expect(store.permissions).toEqual(['client.view', 'session.view'])
-    expect(push).toHaveBeenLastCalledWith('/admin/dashboard')
+    expect(next).toBe('/admin/dashboard')
   })
 
   it('多角色登入：不自動選角色，導向選角色頁，也不先抓 /me', async () => {
     vi.mocked(authService.login).mockResolvedValue(loginResponse({ roles: ['therapist', 'client'] }))
     const store = useAuthStore()
 
-    await store.login({ username: 'ther_a', password: 'x' })
+    const next = await store.login({ username: 'ther_a', password: 'x' })
 
     expect(store.activeRole).toBeNull()
     expect(store.hasMultipleRoles).toBe(true)
     expect(authService.getMe).not.toHaveBeenCalled()
-    expect(push).toHaveBeenLastCalledWith('/select-role')
+    expect(next).toBe('/select-role')
   })
 
   it('預設密碼登入：導向改密碼頁，不抓 /me', async () => {
@@ -79,11 +77,11 @@ describe('authStore', () => {
     )
     const store = useAuthStore()
 
-    await store.login({ username: 'client_1', password: 'x' })
+    const next = await store.login({ username: 'client_1', password: 'x' })
 
     expect(store.mustChangePassword).toBe(true)
     expect(authService.getMe).not.toHaveBeenCalled()
-    expect(push).toHaveBeenLastCalledWith('/change-password')
+    expect(next).toBe('/change-password')
   })
 
   it('個案角色進入個案端 dashboard', async () => {
@@ -91,23 +89,23 @@ describe('authStore', () => {
     vi.mocked(authService.getMe).mockResolvedValue(me({ roles: ['client'], clientProfileId: 42 }))
     const store = useAuthStore()
 
-    await store.login({ username: 'client_1', password: 'x' })
+    const next = await store.login({ username: 'client_1', password: 'x' })
 
     expect(store.clientProfileId).toBe(42)
-    expect(push).toHaveBeenLastCalledWith('/client/dashboard')
+    expect(next).toBe('/client/dashboard')
   })
 
-  it('/me 失敗時登出（現行行為：任何錯誤都登出）', async () => {
+  it('/me 失敗時清除登入狀態並回報失敗，由呼叫端決定去向', async () => {
     vi.mocked(authService.getMe).mockRejectedValue(new Error('network'))
     const store = useAuthStore()
     store.token = 'jwt-token'
     store.activeRole = 'therapist'
 
-    await store.fetchMe()
+    const ok = await store.fetchMe()
 
+    expect(ok).toBe(false)
     expect(store.token).toBeNull()
     expect(store.activeRole).toBeNull()
-    expect(push).toHaveBeenLastCalledWith('/login')
   })
 
   it('切換角色：更新作用中角色、重新取權限並進入新角色的 dashboard', async () => {
@@ -115,11 +113,11 @@ describe('authStore', () => {
     const store = useAuthStore()
     store.token = 'jwt-token'
 
-    await store.switchRole('client')
+    const next = await store.switchRole('client')
 
     expect(store.activeRole).toBe('client')
     expect(authService.getMe).toHaveBeenCalledOnce()
-    expect(push).toHaveBeenLastCalledWith('/client/dashboard')
+    expect(next).toBe('/client/dashboard')
   })
 
   it('改密碼成功後登出，要求重新登入換發 token', async () => {
@@ -134,7 +132,6 @@ describe('authStore', () => {
       newPassword: 'new-pass-123',
     })
     expect(store.token).toBeNull()
-    expect(push).toHaveBeenLastCalledWith('/login')
   })
 
   it('hasPermission 只認 /me 回傳的權限碼', () => {

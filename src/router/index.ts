@@ -2,40 +2,16 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useUiStore } from '@/stores/uiStore'
 import type { RoleCode } from '@/types'
+import { needsPermissionLoad, resolveNavigation } from './navigation'
 
 // ── Views ──────────────────────────────────────
 import LoginView from '@/views/LoginView.vue'
-import RoleSelectView from '@/views/RoleSelectView.vue'
-import ChangePasswordView from '@/views/ChangePasswordView.vue'
 
 // Layouts
-import AdminLayout from '@/components/layout/AdminLayout.vue'
-import ClientLayout from '@/components/layout/ClientLayout.vue'
 
 // Admin Views
-import DashboardView from '@/views/admin/DashboardView.vue'
-import StaffManageView from '@/views/admin/StaffManageView.vue'
-import ClientListView from '@/views/admin/ClientListView.vue'
-import ClientDetailView from '@/views/admin/ClientDetailView.vue'
-import ConsentManageView from '@/views/admin/ConsentManageView.vue'
-import RoomSettingView from '@/views/admin/RoomSettingView.vue'
-import ScheduleManageView from '@/views/admin/ScheduleManageView.vue'
-import AppointmentManageView from '@/views/admin/AppointmentManageView.vue'
-import SessionNoteEditorView from '@/views/admin/SessionNoteEditorView.vue'
-import FeeSettingView from '@/views/admin/FeeSettingView.vue'
-import BillingManageView from '@/views/admin/BillingManageView.vue'
-import NotificationTemplateView from '@/views/admin/NotificationTemplateView.vue'
-import PerformanceView from '@/views/admin/PerformanceView.vue'
-import AuditLogView from '@/views/admin/AuditLogView.vue'
-import OrgSettingView from '@/views/admin/OrgSettingView.vue'
 
 // Client Views
-import ClientDashboardView from '@/views/client/ClientDashboardView.vue'
-import ClientConsentView from '@/views/client/ClientConsentView.vue'
-import ClientAppointmentView from '@/views/client/ClientAppointmentView.vue'
-import ClientNewAppointmentView from '@/views/client/ClientNewAppointmentView.vue'
-import ClientNotificationView from '@/views/client/ClientNotificationView.vue'
-import ClientSettingsView from '@/views/client/ClientSettingsView.vue'
 
 // ── Route Meta 型別擴展 ─────────────────────────
 declare module 'vue-router' {
@@ -49,6 +25,7 @@ declare module 'vue-router' {
 }
 
 // ── Routes ─────────────────────────────────────
+// 除登入頁外一律延遲載入：各頁面（與 FullCalendar、Chart.js 等大型套件）拆成獨立 chunk，進入時才下載
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -59,53 +36,53 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/select-role',
     name: 'RoleSelect',
-    component: RoleSelectView,
+    component: () => import('@/views/RoleSelectView.vue'),
     meta: { requiresAuth: true, title: '選擇身份' },
   },
   {
     path: '/change-password',
     name: 'ChangePassword',
-    component: ChangePasswordView,
+    component: () => import('@/views/ChangePasswordView.vue'),
     meta: { requiresAuth: true, title: '變更密碼' },
   },
 
   // ── Admin Routes ───────────────────��─────────
   {
     path: '/admin',
-    component: AdminLayout,
+    component: () => import('@/components/layout/AdminLayout.vue'),
     meta: { requiresAuth: true, roles: ['owner', 'therapist', 'admin'] },
     children: [
-      { path: 'dashboard', name: 'AdminDashboard', component: DashboardView, meta: { title: '儀表板' } },
-      { path: 'staff', name: 'StaffManage', component: StaffManageView, meta: { title: '人員管理', permission: 'staff.manage' } },
-      { path: 'clients', name: 'ClientList', component: ClientListView, meta: { title: '個案管理', permission: 'client.view' } },
-      { path: 'clients/:id', name: 'ClientDetail', component: ClientDetailView, meta: { title: '個案詳情', permission: 'client.view' } },
-      { path: 'consents', name: 'ConsentManage', component: ConsentManageView, meta: { title: '同意書管理', permission: 'consent.view' } },
-      { path: 'rooms', name: 'RoomSetting', component: RoomSettingView, meta: { title: '診間設定', permission: 'room.manage' } },
-      { path: 'schedule', name: 'ScheduleManage', component: ScheduleManageView, meta: { title: '排班管理', permission: 'schedule.view' } },
-      { path: 'appointments', name: 'AppointmentManage', component: AppointmentManageView, meta: { title: '預約管理', permission: 'appointment.view' } },
-      { path: 'sessions/new', name: 'SessionNoteNew', component: SessionNoteEditorView, meta: { title: '新增晤談紀錄', permission: 'session.view' } },
-      { path: 'sessions/:id/edit', name: 'SessionNoteEdit', component: SessionNoteEditorView, meta: { title: '編輯晤談紀錄', permission: 'session.view' } },
-      { path: 'fee-settings', name: 'FeeSetting', component: FeeSettingView, meta: { title: '費率設定', permission: 'billing.view' } },
-      { path: 'billing', name: 'BillingManage', component: BillingManageView, meta: { title: '收費管理', permission: 'billing.view' } },
-      { path: 'notifications', name: 'NotificationTemplate', component: NotificationTemplateView, meta: { title: '通知範本', permission: 'notification.manage' } },
-      { path: 'performance', name: 'Performance', component: PerformanceView, meta: { title: '考核管理', permission: 'performance.view' } },
-      { path: 'audit-log', name: 'AuditLog', component: AuditLogView, meta: { title: '稽核紀錄', permission: 'audit.view' } },
-      { path: 'settings', name: 'OrgSetting', component: OrgSettingView, meta: { title: '機構設定', permission: 'org.settings' } },
+      { path: 'dashboard', name: 'AdminDashboard', component: () => import('@/views/admin/DashboardView.vue'), meta: { title: '儀表板' } },
+      { path: 'staff', name: 'StaffManage', component: () => import('@/views/admin/StaffManageView.vue'), meta: { title: '人員管理', permission: 'staff.manage' } },
+      { path: 'clients', name: 'ClientList', component: () => import('@/views/admin/ClientListView.vue'), meta: { title: '個案管理', permission: 'client.view' } },
+      { path: 'clients/:id', name: 'ClientDetail', component: () => import('@/views/admin/ClientDetailView.vue'), meta: { title: '個案詳情', permission: 'client.view' } },
+      { path: 'consents', name: 'ConsentManage', component: () => import('@/views/admin/ConsentManageView.vue'), meta: { title: '同意書管理', permission: 'consent.view' } },
+      { path: 'rooms', name: 'RoomSetting', component: () => import('@/views/admin/RoomSettingView.vue'), meta: { title: '診間設定', permission: 'room.manage' } },
+      { path: 'schedule', name: 'ScheduleManage', component: () => import('@/views/admin/ScheduleManageView.vue'), meta: { title: '排班管理', permission: 'schedule.view' } },
+      { path: 'appointments', name: 'AppointmentManage', component: () => import('@/views/admin/AppointmentManageView.vue'), meta: { title: '預約管理', permission: 'appointment.view' } },
+      { path: 'sessions/new', name: 'SessionNoteNew', component: () => import('@/views/admin/SessionNoteEditorView.vue'), meta: { title: '新增晤談紀錄', permission: 'session.view' } },
+      { path: 'sessions/:id/edit', name: 'SessionNoteEdit', component: () => import('@/views/admin/SessionNoteEditorView.vue'), meta: { title: '編輯晤談紀錄', permission: 'session.view' } },
+      { path: 'fee-settings', name: 'FeeSetting', component: () => import('@/views/admin/FeeSettingView.vue'), meta: { title: '費率設定', permission: 'billing.view' } },
+      { path: 'billing', name: 'BillingManage', component: () => import('@/views/admin/BillingManageView.vue'), meta: { title: '收費管理', permission: 'billing.view' } },
+      { path: 'notifications', name: 'NotificationTemplate', component: () => import('@/views/admin/NotificationTemplateView.vue'), meta: { title: '通知範本', permission: 'notification.manage' } },
+      { path: 'performance', name: 'Performance', component: () => import('@/views/admin/PerformanceView.vue'), meta: { title: '考核管理', permission: 'performance.view' } },
+      { path: 'audit-log', name: 'AuditLog', component: () => import('@/views/admin/AuditLogView.vue'), meta: { title: '稽核紀錄', permission: 'audit.view' } },
+      { path: 'settings', name: 'OrgSetting', component: () => import('@/views/admin/OrgSettingView.vue'), meta: { title: '機構設定', permission: 'org.settings' } },
     ],
   },
 
   // ── Client Routes ────────────────────────────
   {
     path: '/client',
-    component: ClientLayout,
+    component: () => import('@/components/layout/ClientLayout.vue'),
     meta: { requiresAuth: true, roles: ['client'] },
     children: [
-      { path: 'dashboard', name: 'ClientDashboard', component: ClientDashboardView, meta: { title: '首頁' } },
-      { path: 'consents', name: 'ClientConsent', component: ClientConsentView, meta: { title: '同意書' } },
-      { path: 'appointments', name: 'ClientAppointments', component: ClientAppointmentView, meta: { title: '我的預約' } },
-      { path: 'appointments/new', name: 'ClientNewAppointment', component: ClientNewAppointmentView, meta: { title: '預約諮商' } },
-      { path: 'notifications', name: 'ClientNotifications', component: ClientNotificationView, meta: { title: '通知' } },
-      { path: 'settings', name: 'ClientSettings', component: ClientSettingsView, meta: { title: '設定' } },
+      { path: 'dashboard', name: 'ClientDashboard', component: () => import('@/views/client/ClientDashboardView.vue'), meta: { title: '首頁' } },
+      { path: 'consents', name: 'ClientConsent', component: () => import('@/views/client/ClientConsentView.vue'), meta: { title: '同意書' } },
+      { path: 'appointments', name: 'ClientAppointments', component: () => import('@/views/client/ClientAppointmentView.vue'), meta: { title: '我的預約' } },
+      { path: 'appointments/new', name: 'ClientNewAppointment', component: () => import('@/views/client/ClientNewAppointmentView.vue'), meta: { title: '預約諮商' } },
+      { path: 'notifications', name: 'ClientNotifications', component: () => import('@/views/client/ClientNotificationView.vue'), meta: { title: '通知' } },
+      { path: 'settings', name: 'ClientSettings', component: () => import('@/views/client/ClientSettingsView.vue'), meta: { title: '設定' } },
     ],
   },
 
@@ -122,52 +99,19 @@ const router = createRouter({
 })
 
 // ── Navigation Guard ───────────────────────────
+// 判斷規則在 navigation.ts（純函式、有表格測試）；這裡只負責補抓權限與提示
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
-  // 不需要認證的頁面（如 login）
-  if (to.meta.requiresAuth === false) {
-    // 已登入就直接跳 dashboard
-    if (authStore.isAuthenticated && authStore.activeRole) {
-      return authStore.getDashboardPath(authStore.activeRole)
-    }
-    return true
+  if (needsPermissionLoad(to, authStore, authStore.permissions.length > 0)) {
+    // 失敗時 store 已清除登入狀態，必須明確回登入頁，不能繼續往下判斷
+    if (!(await authStore.fetchMe())) return '/login'
   }
 
-  // 需要認證但未登入
-  if (!authStore.isAuthenticated) {
-    return '/login'
-  }
-
-  // 首次登入強制改密碼（契約 4.4）：鎖定只能停在改密碼頁
-  if (authStore.mustChangePassword && to.name !== 'ChangePassword') {
-    return '/change-password'
-  }
-
-  // 已登入但有多角色且未選擇角色（且不是正在前往選角色頁）
-  if (!authStore.activeRole && to.name !== 'RoleSelect') {
-    return '/select-role'
-  }
-
-  // 重整後 permissions 不持久化，首次進入受保護頁時補抓（唯一來源 /me）
-  if (authStore.activeRole && authStore.permissions.length === 0) {
-    await authStore.fetchMe()
-  }
-
-  // 檢查角色權限
-  const requiredRoles = to.meta.roles
-  if (requiredRoles && authStore.activeRole && !requiredRoles.includes(authStore.activeRole)) {
-    return authStore.getDashboardPath(authStore.activeRole)
-  }
-
-  // 檢查頁面權限碼：側欄隱藏不等於擋下，直接輸入網址也要擋
-  const requiredPermission = to.meta.permission
-  if (requiredPermission && authStore.activeRole && !authStore.hasPermission(requiredPermission)) {
-    useUiStore().showToast('權限不足，無法進入此頁面', 'warning')
-    return authStore.getDashboardPath(authStore.activeRole)
-  }
-
-  return true
+  const result = resolveNavigation(to, authStore)
+  if (result === true) return true
+  if (result.notice) useUiStore().showToast(result.notice, 'warning')
+  return result.redirect
 })
 
 // ── Dynamic Title ──────────────────────────────
