@@ -2,6 +2,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { useStaffStore } from '@/stores/staffStore'
 import { useUiStore } from '@/stores/uiStore'
+import { useAuthStore } from '@/stores/authStore'
+import { assignableRoles, canManageUser } from '@/utils/staffAccess'
 import AppTable from '@/components/ui/AppTable.vue'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -16,9 +18,11 @@ import type {
   RoleResponse,
 } from '@/types'
 import { PERMISSION_GROUPS } from '@/types'
+import { notifyError } from '@/utils/notifyError'
 
 const staffStore = useStaffStore()
 const uiStore = useUiStore()
+const authStore = useAuthStore()
 
 // ── Tab ─────────────────────────────────────
 const activeTab = ref<'users' | 'permissions'>('users')
@@ -57,9 +61,12 @@ const userForm = ref<{
 const saving = ref(false)
 
 // 角色多選來源（契約 7.1：roles: string[]）
-const roleChoices = computed(() =>
-  staffStore.roles.map((r) => ({ name: r.name, description: r.description })),
-)
+const roleChoices = computed(() => {
+  const allowed = assignableRoles(staffStore.roles.map((r) => r.name), authStore.activeRole)
+  return staffStore.roles
+    .filter((r) => allowed.includes(r.name))
+    .map((r) => ({ name: r.name, description: r.description }))
+})
 
 function toggleFormRole(name: string) {
   const idx = userForm.value.roles.indexOf(name)
@@ -128,8 +135,8 @@ async function handleSaveUser() {
       uiStore.showToast('人員已新增', 'success')
     }
     showUserModal.value = false
-  } catch {
-    uiStore.showToast('操作失敗，請稍後再試', 'error')
+  } catch (e) {
+    notifyError(e, '操作失敗，請稍後再試')
   } finally {
     saving.value = false
   }
@@ -141,8 +148,8 @@ async function handleToggleActive(user: UserResponse) {
   try {
     await staffStore.toggleUserActive(user.id)
     uiStore.showToast(`已${action} ${user.displayName}`, 'success')
-  } catch {
-    uiStore.showToast(`${action}失敗`, 'error')
+  } catch (e) {
+    notifyError(e, `${action}失敗`)
   }
 }
 
@@ -167,8 +174,8 @@ async function handleResetPassword() {
     })
     uiStore.showToast(`已重設 ${resetTarget.value.displayName} 的密碼`, 'success')
     showResetModal.value = false
-  } catch {
-    uiStore.showToast('重設密碼失敗', 'error')
+  } catch (e) {
+    notifyError(e, '重設密碼失敗')
   } finally {
     resetting.value = false
   }
@@ -205,8 +212,8 @@ async function togglePermission(code: string) {
   try {
     await staffStore.updateRolePermissions(selectedRole.value.id, current)
     uiStore.showToast('權限已更新', 'success')
-  } catch {
-    uiStore.showToast('更新權限失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新權限失敗')
   }
 }
 
@@ -265,7 +272,7 @@ onMounted(async () => {
         </template>
 
         <template #cell-actions="{ row }">
-          <div class="flex gap-1">
+          <div v-if="canManageUser(row as unknown as UserResponse, authStore.activeRole)" class="flex gap-1">
             <AppButton size="sm" variant="ghost" @click="openEditModal(row as unknown as UserResponse)">
               編輯
             </AppButton>

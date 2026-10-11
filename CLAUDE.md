@@ -247,7 +247,7 @@ AdminLayout, ClientLayout, AdminSidebar, ClientNavbar, RoleSwitcher, Notificatio
 - Store 只做資料管理，不含 UI 邏輯（顯示/隱藏/導航不放 Store）
 - 元件 Props 必須定義 TypeScript interface
 - 路由守衛統一在 `router/index.ts` 管理
-- 錯誤處理統一走 httpService 攔截器
+- 錯誤處理統一走 httpService 攔截器：API 錯誤由攔截器顯示後端訊息；頁面 catch 只處理 UI 狀態，需要提示時用 `notifyError(e, '通用訊息')`（攔截器已顯示過的錯誤會自動略過，避免重複 toast）
 - 使用 CSS 變數（`var(--color-primary)`），不寫死顏色
 - 命名：camelCase（變數/函式）、PascalCase（元件/型別）
 - 測試放在被測檔案旁的 `__tests__/*.spec.ts`（Vitest + happy-dom）；新功能與 bug 修正先寫測試
@@ -277,3 +277,4 @@ npm test                     # Vitest 單元測試（npm run test:watch 監看�
 | 2026-08-02 | 全面對齊後端契約（`frontend-integration.md`）：認證地基扁平化 + `mustChangePassword` 流程、13 域型別/enum/URL/verb 對齊、httpService 移除 X-Organization-Id、ID 一律 number、狀態變更改 POST/PATCH。詳見 `prompts/fix-plan.md` |
 | 2026-08-02 | Phase 5 收尾：OrgSettingView（表單建構器）、DashboardView 三角色元件、ClientDetail Tab 權限收斂、診間心理師指派、eslint 導入（flat config）。後端待補端點見 `consulcore-backend/docs/frontend-requested-endpoints.md` |
 | 2026-10-11 | 導入 Vitest（authStore、路由守衛 characterization 測試）、GitHub Actions CI（type-check / lint / test / build）、ESLint 改 flat/recommended（排版規則關閉） |
+| 2026-10-11 | 重構 Phase 2：同意書 XSS、時區、401 判斷、路由權限、初始帳密顯示、人員管理配合擁有者保護、409 訊息、個案詳情依權限載入（allSettled）、登出清除資料 store、晤談紀錄未存檔保護、排班重疊判斷、notifyError 消除重複 toast |

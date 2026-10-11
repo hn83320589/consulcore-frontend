@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { AxiosError, AxiosHeaders, type AxiosAdapter, type InternalAxiosRequestConfig } from 'axios'
 import { createHttpService, type AuthSnapshot } from '@/services/httpService'
+import { isNotified } from '@/utils/notifyError'
 
 interface FakeResponse {
   status: number
@@ -96,6 +97,39 @@ describe('httpService', () => {
 
     await expect(http.get('/clients/9')).rejects.toBeInstanceOf(AxiosError)
     expect(onToast).toHaveBeenCalledWith('找不到個案', 'warning')
+  })
+
+  // B7：後端對同時預約同一時段等併發衝突回 409
+  it('409 顯示後端訊息（例如時段剛被別人預約）', async () => {
+    const { http, onToast } = setUp(() => ({ status: 409, data: { success: false, message: '資料剛被其他人更新' } }))
+
+    await expect(http.post('/appointments', {})).rejects.toBeInstanceOf(AxiosError)
+    expect(onToast).toHaveBeenCalledWith('資料剛被其他人更新', 'warning')
+  })
+
+  // F10：攔截器顯示過訊息的錯誤要做標記，頁面才不會再顯示一次
+  it('已顯示訊息的錯誤會標記為已通知', async () => {
+    const { http } = setUp(() => ({ status: 400, data: { success: false, message: '資料有誤' } }))
+
+    const error = await http.post('/clients', {}).catch((e: unknown) => e)
+
+    expect(isNotified(error)).toBe(true)
+  })
+
+  it('success:false 的錯誤同樣標記', async () => {
+    const { http } = setUp(() => ({ status: 200, data: { success: false, message: '資料有誤' } }))
+
+    const error = await http.post('/clients', {}).catch((e: unknown) => e)
+
+    expect(isNotified(error)).toBe(true)
+  })
+
+  it('登入失敗的 401 沒有顯示訊息，不標記（交給登入頁顯示）', async () => {
+    const { http } = setUp(() => ({ status: 401, data: { success: false, message: '帳號或密碼錯誤' } }), { token: null, activeRole: null })
+
+    const error = await http.post('/auth/login', {}).catch((e: unknown) => e)
+
+    expect(isNotified(error)).toBe(false)
   })
 
   it('5xx 顯示通用訊息，不外洩後端細節', async () => {

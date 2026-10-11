@@ -8,6 +8,7 @@ import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
 import AppTable from '@/components/ui/AppTable.vue'
+import { notifyError } from '@/utils/notifyError'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import type {
   FeeSchedule, CreateFeeScheduleRequest,
@@ -89,7 +90,7 @@ async function saveFee() {
     }
     uiStore.showToast('費率已儲存', 'success')
     showFeeModal.value = false
-  } catch { uiStore.showToast('儲存失敗', 'error') }
+  } catch (e) { notifyError(e, '儲存失敗') }
   finally { feeSaving.value = false }
 }
 
@@ -156,7 +157,7 @@ async function savePkg() {
     }
     uiStore.showToast('套餐已儲存', 'success')
     showPkgModal.value = false
-  } catch { uiStore.showToast('儲存失敗', 'error') }
+  } catch (e) { notifyError(e, '儲存失敗') }
   finally { pkgSaving.value = false }
 }
 
@@ -234,7 +235,7 @@ async function saveDisc() {
     }
     uiStore.showToast('折扣已儲存', 'success')
     showDiscModal.value = false
-  } catch { uiStore.showToast('儲存失敗', 'error') }
+  } catch (e) { notifyError(e, '儲存失敗') }
   finally { discSaving.value = false }
 }
 

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
+import { setUpTestPinia } from '@/stores/__tests__/testPinia'
 import type { ClientProfile } from '@/types'
 
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: vi.fn() }) }))
@@ -40,7 +40,7 @@ describe('ClientListView 建立個案', () => {
   })
 
   it('後端回傳初始帳密時，顯示給櫃檯交付', async () => {
-    setActivePinia(createPinia())
+    setUpTestPinia()
     vi.mocked(clientService.createClient).mockResolvedValue(
       created({ userId: 9, initialCredentials: { username: 'client_1_1760000000', password: 'k7Xp2mQa9z' } }),
     )
@@ -52,7 +52,7 @@ describe('ClientListView 建立個案', () => {
   })
 
   it('沒有建立帳號時不顯示帳密視窗', async () => {
-    setActivePinia(createPinia())
+    setUpTestPinia()
     vi.mocked(clientService.createClient).mockResolvedValue(created({}))
 
     await createClientNamed('王小明')

@@ -8,6 +8,7 @@ import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
 import AppTable from '@/components/ui/AppTable.vue'
+import { notifyError } from '@/utils/notifyError'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import type {
   ConsentTemplate,
@@ -95,8 +96,8 @@ async function handleSaveTemplate() {
       selectTemplate(updated)
       uiStore.showToast('範本已更新', 'success')
     }
-  } catch {
-    uiStore.showToast('儲存失敗', 'error')
+  } catch (e) {
+    notifyError(e, '儲存失敗')
   } finally {
     saving.value = false
   }
@@ -109,8 +110,8 @@ async function handleDeleteTemplate() {
     selectedTemplateId.value = null
     isNewTemplate.value = false
     uiStore.showToast('範本已刪除', 'success')
-  } catch {
-    uiStore.showToast('刪除失敗', 'error')
+  } catch (e) {
+    notifyError(e, '刪除失敗')
   }
 }
 

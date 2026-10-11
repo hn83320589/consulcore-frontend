@@ -9,6 +9,7 @@ import AppointmentList from '@/components/appointment/AppointmentList.vue'
 import AppointmentCard from '@/components/appointment/AppointmentCard.vue'
 import QuickBookModal from '@/components/appointment/QuickBookModal.vue'
 import { toLocalDateString } from '@/utils/date'
+import { notifyError } from '@/utils/notifyError'
 import type { Appointment, AppointmentStatus, CreateAppointmentRequest } from '@/types'
 
 const appointmentStore = useAppointmentStore()
@@ -78,8 +79,8 @@ async function handleBook(payload: CreateAppointmentRequest) {
     uiStore.showToast(msg, 'success')
     showQuickBook.value = false
     await loadData()
-  } catch {
-    uiStore.showToast('建立失敗', 'error')
+  } catch (e) {
+    notifyError(e, '建立失敗')
   }
 }
 
@@ -89,8 +90,8 @@ async function handleComplete(id: number) {
     await appointmentStore.complete(id)
     uiStore.showToast('已標記完成', 'success')
     showDetailModal.value = false
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -99,8 +100,8 @@ async function handleCancel(id: number) {
     await appointmentStore.cancel(id)
     uiStore.showToast('預約已取消', 'success')
     showDetailModal.value = false
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -109,8 +110,8 @@ async function handleNoShow(id: number) {
     await appointmentStore.noShow(id)
     uiStore.showToast('已標記未出席', 'success')
     showDetailModal.value = false
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -132,8 +133,8 @@ async function handleBatchComplete() {
     await appointmentStore.batchComplete(selectedIds.value)
     uiStore.showToast(`已完成 ${selectedIds.value.length} 筆預約`, 'success')
     selectedIds.value = []
-  } catch {
-    uiStore.showToast('批次操作失敗', 'error')
+  } catch (e) {
+    notifyError(e, '批次操作失敗')
   }
 }
 
@@ -143,8 +144,8 @@ async function handleBatchCancel() {
     await appointmentStore.batchCancel(selectedIds.value)
     uiStore.showToast(`已取消 ${selectedIds.value.length} 筆預約`, 'success')
     selectedIds.value = []
-  } catch {
-    uiStore.showToast('批次操作失敗', 'error')
+  } catch (e) {
+    notifyError(e, '批次操作失敗')
   }
 }
 

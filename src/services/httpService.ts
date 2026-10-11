@@ -1,5 +1,6 @@
 import axios, { AxiosHeaders, type AxiosAdapter, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import type { ApiResponse } from '@/types'
+import { markNotified } from '@/utils/notifyError'
 
 type ToastType = 'error' | 'warning'
 
@@ -60,7 +61,9 @@ export function createHttpService(deps: HttpServiceDeps): HttpService {
         // 防禦：後端多以 HTTP 狀態碼表達失敗，但若 2xx 仍帶 success:false，視為錯誤
         if (!response.data.success) {
           deps.onToast(response.data.message || '操作失敗', 'error')
-          return Promise.reject(new Error(response.data.message || '操作失敗'))
+          const failure = new Error(response.data.message || '操作失敗')
+          markNotified(failure)
+          return Promise.reject(failure)
         }
         return { ...response, data: response.data.data }
       }
@@ -79,23 +82,30 @@ export function createHttpService(deps: HttpServiceDeps): HttpService {
             deps.onSessionExpired()
           } else if (sentToken) {
             deps.onToast(data?.message || '無法執行此操作', 'warning')
+            markNotified(error)
           }
           return Promise.reject(error)
         }
         if (status === 403) {
           // 可能為權限不足，或首次登入未改密碼（契約 4.4）；顯示後端 message
           deps.onToast(data?.message || '權限不足，無法執行此操作', 'warning')
+          markNotified(error)
         }
-        if (status === 400 || status === 404) {
+        // 409：併發衝突（例如同一時段剛被別人預約），後端訊息可直接顯示
+        if (status === 400 || status === 404 || status === 409) {
           deps.onToast(data?.message || '請求無法完成', 'warning')
+          markNotified(error)
         }
         if (status >= 500) {
           deps.onToast('伺服器錯誤，請稍後再試', 'error')
+          markNotified(error)
         }
       } else if (error.code === 'ECONNABORTED') {
         deps.onToast('請求逾時，請檢查網路連線', 'error')
+        markNotified(error)
       } else if (!error.response) {
         deps.onToast('無法連線至伺服器', 'error')
+        markNotified(error)
       }
       return Promise.reject(error)
     },

@@ -7,6 +7,7 @@ import AppInput from '@/components/ui/AppInput.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import FormBuilder from '@/components/form/FormBuilder.vue'
 import FormRenderer from '@/components/form/FormRenderer.vue'
+import { notifyError } from '@/utils/notifyError'
 import type {
   FormTemplateResponse,
   FormSectionResponse,
@@ -89,8 +90,8 @@ async function handleNew() {
     })
     selectTemplate(created)
     uiStore.showToast('已建立新範本', 'success')
-  } catch {
-    uiStore.showToast('建立失敗', 'error')
+  } catch (e) {
+    notifyError(e, '建立失敗')
   } finally {
     saving.value = false
   }
@@ -102,8 +103,8 @@ async function handleClone(t: FormTemplateResponse) {
     const cloned = await formStore.cloneTemplate(t.id)
     selectTemplate(cloned)
     uiStore.showToast('已複製為可編輯範本', 'success')
-  } catch {
-    uiStore.showToast('複製失敗', 'error')
+  } catch (e) {
+    notifyError(e, '複製失敗')
   } finally {
     saving.value = false
   }
@@ -118,9 +119,9 @@ async function handleSave() {
       sections: draftSections.value,
     })
     uiStore.showToast('範本已儲存', 'success')
-  } catch (e: unknown) {
-    // 契約：系統預設或已有填答紀錄的範本不可改結構，後端回 400
-    uiStore.showToast(e instanceof Error ? e.message : '儲存失敗', 'error')
+  } catch (e) {
+    // 契約：系統預設或已有填答紀錄的範本不可改結構，後端回 400（訊息由 httpService 顯示）
+    notifyError(e, '儲存失敗')
   } finally {
     saving.value = false
   }

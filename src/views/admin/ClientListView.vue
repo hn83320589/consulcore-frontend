@@ -11,6 +11,7 @@ import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import ClientSearchBar from '@/components/client/ClientSearchBar.vue'
 import InitialCredentialsModal from '@/components/client/InitialCredentialsModal.vue'
+import { notifyError } from '@/utils/notifyError'
 import type { ClientProfile, CreateClientRequest, ClientStatus, InitialCredentials } from '@/types'
 
 const router = useRouter()
@@ -124,8 +125,8 @@ async function handleCreate() {
     showCreateModal.value = false
     // 有建立帳號時，後端只在這一次回傳初始帳密，交給櫃檯當場交付
     issuedCredentials.value = created.initialCredentials ?? null
-  } catch {
-    uiStore.showToast('新增失敗', 'error')
+  } catch (e) {
+    notifyError(e, '新增失敗')
   } finally {
     saving.value = false
   }

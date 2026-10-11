@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createPinia, setActivePinia } from 'pinia'
+import { setUpTestPinia } from '@/stores/__tests__/testPinia'
 import type { RoleCode } from '@/types'
 
 // 記錄路由守衛的現行行為（characterization）：Phase 3 抽成純函式時以此為安全網。
@@ -42,7 +42,7 @@ async function navigate(path: string) {
 
 describe('路由守衛', () => {
   beforeEach(async () => {
-    setActivePinia(createPinia())
+    setUpTestPinia()
     vi.clearAllMocks()
     // 每個案例從未登入的登入頁開始，避免前一個案例的位置影響結果
     signIn({ token: null })

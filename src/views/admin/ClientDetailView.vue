@@ -23,6 +23,8 @@ import AppointmentList from '@/components/appointment/AppointmentList.vue'
 import ClientMemoList from '@/components/client/ClientMemoList.vue'
 import PaymentStatusBadge from '@/components/billing/PaymentStatusBadge.vue'
 import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
+import { clientDetailAccess } from '@/utils/clientDetailAccess'
+import { notifyError } from '@/utils/notifyError'
 import type { UpdateClientRequest, ConsentRecord, ClientStatus, Appointment, CreateMemoRequest, UpdateMemoRequest } from '@/types'
 
 const route = useRoute()
@@ -52,17 +54,17 @@ const clientAuditLogs = computed(() =>
 // 依 Sprint 8 權限矩陣以「角色語意」決定 tab 可見性（非 permission）：
 // 晤談紀錄/備忘錄屬臨床私密資料，僅治療中的心理師可見（Owner 雖有權限仍刻意隱藏）；
 // 稽核僅 Owner 可見。後端另有存取控制為最終防線。
+const access = computed(() => clientDetailAccess(authStore.activeRole, authStore.hasPermission))
 const isTherapist = computed(() => authStore.activeRole === 'therapist')
-const isOwner = computed(() => authStore.activeRole === 'owner')
 
 const tabs = computed<Tab[]>(() => [
   { key: 'info', label: '基本資料' },
   { key: 'appointments', label: '預約紀錄' },
-  ...(isTherapist.value ? [{ key: 'sessions', label: '晤談紀錄' }] : []),
-  { key: 'billing', label: '收費紀錄' },
+  ...(access.value.sessions ? [{ key: 'sessions', label: '晤談紀錄' }] : []),
+  ...(access.value.billing ? [{ key: 'billing', label: '收費紀錄' }] : []),
   { key: 'consents', label: '同意書' },
-  ...(isTherapist.value ? [{ key: 'memos', label: '備忘錄' }] : []),
-  ...(isOwner.value ? [{ key: 'audit', label: '稽核' }] : []),
+  ...(access.value.memos ? [{ key: 'memos', label: '備忘錄' }] : []),
+  ...(access.value.audit ? [{ key: 'audit', label: '稽核' }] : []),
 ])
 
 const activeTab = ref('info')
@@ -101,8 +103,8 @@ async function changeStatus(status: ClientStatus) {
   try {
     await clientStore.updateStatus(clientIdNum.value, status)
     uiStore.showToast('狀態已更新', 'success')
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -111,8 +113,8 @@ async function handleSaveInfo(payload: UpdateClientRequest) {
   try {
     await clientStore.updateClient(clientIdNum.value, payload)
     uiStore.showToast('資料已更新', 'success')
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -135,8 +137,8 @@ async function handleAssign() {
     uiStore.showToast('已指派心理師', 'success')
     selectedTherapistId.value = ''
     showAssignModal.value = false
-  } catch {
-    uiStore.showToast('指派失敗', 'error')
+  } catch (e) {
+    notifyError(e, '指派失敗')
   }
 }
 
@@ -165,8 +167,8 @@ async function handleSign(dataUrl: string) {
     })
     uiStore.showToast('同意書已簽署', 'success')
     showSignModal.value = false
-  } catch {
-    uiStore.showToast('簽署失敗', 'error')
+  } catch (e) {
+    notifyError(e, '簽署失敗')
   }
 }
 
@@ -226,8 +228,8 @@ async function handleCreateMemo(payload: CreateMemoRequest) {
   try {
     await sessionNoteStore.createMemo(payload)
     uiStore.showToast('備忘已新增', 'success')
-  } catch {
-    uiStore.showToast('新增失敗', 'error')
+  } catch (e) {
+    notifyError(e, '新增失敗')
   }
 }
 
@@ -235,8 +237,8 @@ async function handleUpdateMemo(id: number, payload: UpdateMemoRequest) {
   try {
     await sessionNoteStore.updateMemo(id, payload)
     uiStore.showToast('備忘已更新', 'success')
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -244,8 +246,8 @@ async function handleDeleteMemo(id: number) {
   try {
     await sessionNoteStore.deleteMemo(id)
     uiStore.showToast('備忘已刪除', 'success')
-  } catch {
-    uiStore.showToast('刪除失敗', 'error')
+  } catch (e) {
+    notifyError(e, '刪除失敗')
   }
 }
 
@@ -258,21 +260,22 @@ function handleViewRecord(record: ConsentRecord) {
 
 // ── Init ────────────────────────────────────
 onMounted(async () => {
-  await Promise.all([
-    clientStore.fetchClient(clientIdNum.value),
-    appointmentStore.fetchAppointments({ clientProfileId: clientIdNum.value }),
-    appointmentStore.fetchSeriesByClient(clientIdNum.value),
-    // 指派心理師下拉才需要；therapist 無 staff.manage，呼叫會 403
-    ...(authStore.hasPermission('staff.manage') ? [staffStore.fetchUsers()] : []),
-    sessionNoteStore.fetchNotesByClient(clientIdNum.value),
-    sessionNoteStore.fetchMemos(clientIdNum.value),
-    billingStore.fetchRecords({ clientProfileId: clientIdNum.value }),
-    billingStore.fetchClientPackages({ clientProfileId: clientIdNum.value }),
-    ...(authStore.activeRole === 'owner'
-      ? [auditStore.fetchLogs({ resourceType: 'client_profile', resourceId: clientIdNum.value })]
+  const id = clientIdNum.value
+  const can = access.value
+  // allSettled：單一區塊失敗（錯誤訊息已由 httpService 顯示）不影響其他區塊載入
+  await Promise.allSettled([
+    clientStore.fetchClient(id),
+    appointmentStore.fetchAppointments({ clientProfileId: id }),
+    appointmentStore.fetchSeriesByClient(id),
+    ...(can.staff ? [staffStore.fetchUsers()] : []),
+    ...(can.sessions ? [sessionNoteStore.fetchNotesByClient(id)] : []),
+    ...(can.memos ? [sessionNoteStore.fetchMemos(id)] : []),
+    ...(can.billing
+      ? [billingStore.fetchRecords({ clientProfileId: id }), billingStore.fetchClientPackages({ clientProfileId: id })]
       : []),
+    ...(can.audit ? [auditStore.fetchLogs({ resourceType: 'client_profile', resourceId: id })] : []),
     consentStore.fetchTemplates(),
-    consentStore.fetchRecordsByClient(clientIdNum.value),
+    consentStore.fetchRecordsByClient(id),
   ])
 })
 </script>
@@ -381,7 +384,7 @@ onMounted(async () => {
           <h3 class="font-semibold text-gray-800">晤談紀錄</h3>
           <AppButton
             size="sm"
-            @click="$router.push({ path: '/admin/sessions/new', query: { clientId: clientId, clientName: clientStore.currentClient?.name } })"
+            @click="$router.push({ path: '/admin/sessions/new', query: { clientId: clientId } })"
           >
             新增紀錄
           </AppButton>

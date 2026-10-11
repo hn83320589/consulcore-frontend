@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { createPinia, setActivePinia } from 'pinia'
+import { setUpTestPinia } from '@/stores/__tests__/testPinia'
 import type { CurrentUser, LoginResponse } from '@/types'
 
 // 記錄現行行為（characterization）：Phase 3 把導航移出 store 時以此為安全網
@@ -44,7 +44,7 @@ function me(overrides: Partial<CurrentUser> = {}): CurrentUser {
 
 describe('authStore', () => {
   beforeEach(() => {
-    setActivePinia(createPinia())
+    setUpTestPinia()
     vi.clearAllMocks()
   })
 
