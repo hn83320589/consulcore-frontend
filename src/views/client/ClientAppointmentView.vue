@@ -9,6 +9,7 @@ import AppBadge from '@/components/ui/AppBadge.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import { toLocalDateString } from '@/utils/date'
+import { notifyError } from '@/utils/notifyError'
 import type { Appointment, AppointmentStatus } from '@/types'
 
 const router = useRouter()
@@ -71,8 +72,8 @@ async function handleCancel() {
     await appointmentStore.cancel(cancelTarget.value.id, cancelReason.value || undefined)
     uiStore.showToast('預約已取消', 'success')
     showCancelModal.value = false
-  } catch {
-    uiStore.showToast('取消失敗', 'error')
+  } catch (e) {
+    notifyError(e, '取消失敗')
   }
 }
 

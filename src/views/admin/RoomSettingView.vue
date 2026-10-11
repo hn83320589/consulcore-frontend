@@ -10,6 +10,7 @@ import AppBadge from '@/components/ui/AppBadge.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
+import { notifyError } from '@/utils/notifyError'
 import type { Room, CreateRoomRequest, UpdateRoomRequest } from '@/types'
 
 const scheduleStore = useScheduleStore()
@@ -65,8 +66,8 @@ async function handleSave() {
       uiStore.showToast('診間已新增', 'success')
     }
     showModal.value = false
-  } catch {
-    uiStore.showToast('操作失敗', 'error')
+  } catch (e) {
+    notifyError(e, '操作失敗')
   } finally {
     saving.value = false
   }
@@ -98,8 +99,8 @@ async function handleAssignTherapist() {
     syncEditingRoom()
     selectedTherapistId.value = ''
     uiStore.showToast('已指派心理師', 'success')
-  } catch {
-    uiStore.showToast('指派失敗', 'error')
+  } catch (e) {
+    notifyError(e, '指派失敗')
   }
 }
 
@@ -109,8 +110,8 @@ async function handleRemoveTherapist(therapistUserId: number) {
     await scheduleStore.removeTherapistFromRoom(editingRoom.value.id, therapistUserId)
     syncEditingRoom()
     uiStore.showToast('已移除指派', 'success')
-  } catch {
-    uiStore.showToast('移除失敗', 'error')
+  } catch (e) {
+    notifyError(e, '移除失敗')
   }
 }
 
@@ -120,8 +121,8 @@ async function handleToggle(room: Room) {
     // 契約無獨立 status 端點，停用/啟用改走 PUT /rooms/{id} 帶 isActive
     await scheduleStore.updateRoom(room.id, { isActive: !room.isActive })
     uiStore.showToast(`已${action} ${room.name}`, 'success')
-  } catch {
-    uiStore.showToast(`${action}失敗`, 'error')
+  } catch (e) {
+    notifyError(e, `${action}失敗`)
   }
 }
 

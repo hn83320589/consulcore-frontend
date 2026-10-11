@@ -15,6 +15,7 @@ import MetricsCard from '@/components/performance/MetricsCard.vue'
 import MetricsTrend from '@/components/performance/MetricsTrend.vue'
 import ReviewForm from '@/components/performance/ReviewForm.vue'
 import { toLocalDateString } from '@/utils/date'
+import { notifyError } from '@/utils/notifyError'
 import type {
   PerformanceReview, ReviewVisibility, TherapistMetrics,
   ViolationRecord, ViolationSeverity, CreatePerformanceReviewRequest,
@@ -135,7 +136,7 @@ async function handleCreateReview(payload: CreatePerformanceReviewRequest) {
     await perfStore.createReview(payload)
     uiStore.showToast('考核已提交', 'success')
     showReviewModal.value = false
-  } catch { uiStore.showToast('提交失敗', 'error') }
+  } catch (e) { notifyError(e, '提交失敗') }
   finally { reviewSaving.value = false }
 }
 
@@ -144,7 +145,7 @@ async function handleDeleteReview(review: PerformanceReview) {
   try {
     await perfStore.deleteReview(review.id)
     uiStore.showToast('已刪除', 'success')
-  } catch { uiStore.showToast('刪除失敗', 'error') }
+  } catch (e) { notifyError(e, '刪除失敗') }
 }
 
 // 可見性設定
@@ -172,7 +173,7 @@ async function handleUpdateVisibility() {
     })
     uiStore.showToast('已更新可見性', 'success')
     showVisibilityModal.value = false
-  } catch { uiStore.showToast('更新失敗', 'error') }
+  } catch (e) { notifyError(e, '更新失敗') }
 }
 
 const visibilityLabels: Record<ReviewVisibility, string> = { hidden: '隱藏', visible: '可見' }
@@ -231,7 +232,7 @@ async function handleCreateViolation() {
     await perfStore.createViolation(payload)
     uiStore.showToast('違規已記錄', 'success')
     showViolationModal.value = false
-  } catch { uiStore.showToast('記錄失敗', 'error') }
+  } catch (e) { notifyError(e, '記錄失敗') }
   finally { violationSaving.value = false }
 }
 
@@ -256,7 +257,7 @@ async function handleResolve() {
     await perfStore.resolveViolation(resolveTarget.value.id, { actionTaken: resolveActionTaken.value })
     uiStore.showToast('已處理', 'success')
     showResolveModal.value = false
-  } catch { uiStore.showToast('操作失敗', 'error') }
+  } catch (e) { notifyError(e, '操作失敗') }
 }
 
 // 駁回（dismiss）：POST /dismiss 無 body
@@ -265,7 +266,7 @@ async function handleDismiss(v: ViolationRecord) {
   try {
     await perfStore.dismissViolation(v.id)
     uiStore.showToast('已駁回', 'success')
-  } catch { uiStore.showToast('操作失敗', 'error') }
+  } catch (e) { notifyError(e, '操作失敗') }
 }
 
 const violationStatusLabels: Record<string, string> = { open: '待處理', resolved: '已解決', dismissed: '已駁回' }

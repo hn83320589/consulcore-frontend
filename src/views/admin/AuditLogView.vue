@@ -4,6 +4,7 @@ import { useAuditStore } from '@/stores/auditStore'
 import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
 import { toLocalDateString } from '@/utils/date'
+import { notifyError } from '@/utils/notifyError'
 
 interface AuditChange {
   field: string
@@ -101,7 +102,7 @@ async function handleExport(format: 'csv' | 'pdf') {
     a.click()
     URL.revokeObjectURL(url)
     uiStore.showToast('已匯出', 'success')
-  } catch { uiStore.showToast('匯出失敗', 'error') }
+  } catch (e) { notifyError(e, '匯出失敗') }
 }
 
 const actionOptions = ['create', 'update', 'delete', 'login', 'lock', 'unlock', 'status_change']

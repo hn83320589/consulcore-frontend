@@ -7,6 +7,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import type { NotificationEventType } from '@/types'
 import { notificationEventMeta } from '@/types'
+import { notifyError } from '@/utils/notifyError'
 
 const authStore = useAuthStore()
 const notifStore = useNotificationStore()
@@ -28,7 +29,7 @@ async function handleChangePassword() {
     await authStore.changePassword(passwordForm.value.currentPassword, passwordForm.value.newPassword)
     uiStore.showToast('密碼已更新', 'success')
     passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
-  } catch { uiStore.showToast('更新失敗', 'error') }
+  } catch (e) { notifyError(e, '更新失敗') }
   finally { changingPassword.value = false }
 }
 
@@ -50,7 +51,7 @@ async function togglePref(eventType: NotificationEventType, channel: 'email' | '
       smsEnabled: channel === 'sms' ? value : pref.smsEnabled,
       inAppEnabled: channel === 'inApp' ? value : pref.inAppEnabled,
     })
-  } catch { uiStore.showToast('更新失敗', 'error') }
+  } catch (e) { notifyError(e, '更新失敗') }
 }
 
 onMounted(() => notifStore.fetchPreferences())

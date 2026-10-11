@@ -12,6 +12,7 @@ import SoapEditor from '@/components/session/SoapEditor.vue'
 import FreeTextEditor from '@/components/session/FreeTextEditor.vue'
 import LockStatusBar from '@/components/session/LockStatusBar.vue'
 import PhrasePanel from '@/components/form/PhrasePanel.vue'
+import { notifyError } from '@/utils/notifyError'
 import type { SessionNoteFormat, SessionNoteType, PhraseCategory } from '@/types'
 
 const route = useRoute()
@@ -103,8 +104,8 @@ async function handleSave(lock = false) {
       uiStore.showToast(lock ? '已建立並鎖定' : '已建立', 'success')
       await router.replace(`/admin/sessions/${created.id}/edit`)
     }
-  } catch {
-    uiStore.showToast('儲存失敗', 'error')
+  } catch (e) {
+    notifyError(e, '儲存失敗')
   } finally {
     saving.value = false
   }
@@ -115,8 +116,8 @@ async function handleUnlock() {
   try {
     await store.unlockNote(noteId.value)
     uiStore.showToast('已解鎖', 'success')
-  } catch {
-    uiStore.showToast('解鎖失敗', 'error')
+  } catch (e) {
+    notifyError(e, '解鎖失敗')
   }
 }
 

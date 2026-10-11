@@ -18,6 +18,7 @@ import type {
   RoleResponse,
 } from '@/types'
 import { PERMISSION_GROUPS } from '@/types'
+import { notifyError } from '@/utils/notifyError'
 
 const staffStore = useStaffStore()
 const uiStore = useUiStore()
@@ -134,8 +135,8 @@ async function handleSaveUser() {
       uiStore.showToast('人員已新增', 'success')
     }
     showUserModal.value = false
-  } catch {
-    uiStore.showToast('操作失敗，請稍後再試', 'error')
+  } catch (e) {
+    notifyError(e, '操作失敗，請稍後再試')
   } finally {
     saving.value = false
   }
@@ -147,8 +148,8 @@ async function handleToggleActive(user: UserResponse) {
   try {
     await staffStore.toggleUserActive(user.id)
     uiStore.showToast(`已${action} ${user.displayName}`, 'success')
-  } catch {
-    uiStore.showToast(`${action}失敗`, 'error')
+  } catch (e) {
+    notifyError(e, `${action}失敗`)
   }
 }
 
@@ -173,8 +174,8 @@ async function handleResetPassword() {
     })
     uiStore.showToast(`已重設 ${resetTarget.value.displayName} 的密碼`, 'success')
     showResetModal.value = false
-  } catch {
-    uiStore.showToast('重設密碼失敗', 'error')
+  } catch (e) {
+    notifyError(e, '重設密碼失敗')
   } finally {
     resetting.value = false
   }
@@ -211,8 +212,8 @@ async function togglePermission(code: string) {
   try {
     await staffStore.updateRolePermissions(selectedRole.value.id, current)
     uiStore.showToast('權限已更新', 'success')
-  } catch {
-    uiStore.showToast('更新權限失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新權限失敗')
   }
 }
 

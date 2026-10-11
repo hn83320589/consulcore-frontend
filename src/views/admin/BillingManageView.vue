@@ -14,6 +14,7 @@ import PaymentStatusBadge from '@/components/billing/PaymentStatusBadge.vue'
 import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
 import RevenueChart from '@/components/billing/RevenueChart.vue'
 import { toLocalDateString } from '@/utils/date'
+import { notifyError } from '@/utils/notifyError'
 import type { BillingRecord, BillingSearchParams, PaymentMethod, PaymentStatus } from '@/types'
 
 const billingStore = useBillingStore()
@@ -93,7 +94,7 @@ async function handleExport() {
     a.click()
     URL.revokeObjectURL(url)
     uiStore.showToast('已匯出', 'success')
-  } catch { uiStore.showToast('匯出失敗', 'error') }
+  } catch (e) { notifyError(e, '匯出失敗') }
 }
 
 function formatDate(val: unknown): string {
@@ -134,7 +135,7 @@ async function handleConfirm() {
     uiStore.showToast('付款已確認', 'success')
     showConfirmModal.value = false
     await loadRecords()
-  } catch { uiStore.showToast('操作失敗', 'error') }
+  } catch (e) { notifyError(e, '操作失敗') }
 }
 
 async function handleWaive(rec: BillingRecord) {
@@ -142,7 +143,7 @@ async function handleWaive(rec: BillingRecord) {
     await billingStore.waiveBilling(rec.id)
     uiStore.showToast('已免收', 'success')
     await loadRecords()
-  } catch { uiStore.showToast('操作失敗', 'error') }
+  } catch (e) { notifyError(e, '操作失敗') }
 }
 
 // ══════════════════════════════════════════════

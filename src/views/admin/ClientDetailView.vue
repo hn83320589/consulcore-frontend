@@ -24,6 +24,7 @@ import ClientMemoList from '@/components/client/ClientMemoList.vue'
 import PaymentStatusBadge from '@/components/billing/PaymentStatusBadge.vue'
 import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
 import { clientDetailAccess } from '@/utils/clientDetailAccess'
+import { notifyError } from '@/utils/notifyError'
 import type { UpdateClientRequest, ConsentRecord, ClientStatus, Appointment, CreateMemoRequest, UpdateMemoRequest } from '@/types'
 
 const route = useRoute()
@@ -102,8 +103,8 @@ async function changeStatus(status: ClientStatus) {
   try {
     await clientStore.updateStatus(clientIdNum.value, status)
     uiStore.showToast('狀態已更新', 'success')
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -112,8 +113,8 @@ async function handleSaveInfo(payload: UpdateClientRequest) {
   try {
     await clientStore.updateClient(clientIdNum.value, payload)
     uiStore.showToast('資料已更新', 'success')
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -136,8 +137,8 @@ async function handleAssign() {
     uiStore.showToast('已指派心理師', 'success')
     selectedTherapistId.value = ''
     showAssignModal.value = false
-  } catch {
-    uiStore.showToast('指派失敗', 'error')
+  } catch (e) {
+    notifyError(e, '指派失敗')
   }
 }
 
@@ -166,8 +167,8 @@ async function handleSign(dataUrl: string) {
     })
     uiStore.showToast('同意書已簽署', 'success')
     showSignModal.value = false
-  } catch {
-    uiStore.showToast('簽署失敗', 'error')
+  } catch (e) {
+    notifyError(e, '簽署失敗')
   }
 }
 
@@ -227,8 +228,8 @@ async function handleCreateMemo(payload: CreateMemoRequest) {
   try {
     await sessionNoteStore.createMemo(payload)
     uiStore.showToast('備忘已新增', 'success')
-  } catch {
-    uiStore.showToast('新增失敗', 'error')
+  } catch (e) {
+    notifyError(e, '新增失敗')
   }
 }
 
@@ -236,8 +237,8 @@ async function handleUpdateMemo(id: number, payload: UpdateMemoRequest) {
   try {
     await sessionNoteStore.updateMemo(id, payload)
     uiStore.showToast('備忘已更新', 'success')
-  } catch {
-    uiStore.showToast('更新失敗', 'error')
+  } catch (e) {
+    notifyError(e, '更新失敗')
   }
 }
 
@@ -245,8 +246,8 @@ async function handleDeleteMemo(id: number) {
   try {
     await sessionNoteStore.deleteMemo(id)
     uiStore.showToast('備忘已刪除', 'success')
-  } catch {
-    uiStore.showToast('刪除失敗', 'error')
+  } catch (e) {
+    notifyError(e, '刪除失敗')
   }
 }
 

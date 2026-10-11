@@ -10,6 +10,7 @@ import type { TemplateFormValue } from '@/components/schedule/TemplateEditor.vue
 import SlotGrid from '@/components/schedule/SlotGrid.vue'
 import ConflictAlert from '@/components/schedule/ConflictAlert.vue'
 import { detectRoomConflicts } from '@/utils/scheduleConflicts'
+import { notifyError } from '@/utils/notifyError'
 import type { Conflict } from '@/components/schedule/ConflictAlert.vue'
 import type {
   ScheduleTemplate,
@@ -106,8 +107,8 @@ async function handleSaveTemplate(value: TemplateFormValue) {
       selectedTemplateId.value = created.id
       uiStore.showToast('範本已建立', 'success')
     }
-  } catch {
-    uiStore.showToast('儲存失敗', 'error')
+  } catch (e) {
+    notifyError(e, '儲存失敗')
   } finally {
     savingTemplate.value = false
   }
@@ -119,8 +120,8 @@ async function handleDeleteTemplate() {
     await scheduleStore.deleteTemplate(selectedTemplate.value.id)
     uiStore.showToast('範本已刪除', 'success')
     selectedTemplateId.value = null
-  } catch {
-    uiStore.showToast('刪除失敗', 'error')
+  } catch (e) {
+    notifyError(e, '刪除失敗')
   }
 }
 
@@ -137,8 +138,8 @@ async function handleExpand() {
     expandResult.value = result
     showResultModal.value = true
     await loadSlots()
-  } catch {
-    uiStore.showToast('展班失敗', 'error')
+  } catch (e) {
+    notifyError(e, '展班失敗')
   } finally {
     expanding.value = false
   }
@@ -168,8 +169,8 @@ async function handleBlockSlot() {
     await scheduleStore.blockSlot(clickedSlot.value.id, slotNote.value || undefined)
     uiStore.showToast('時段已封鎖', 'success')
     showSlotModal.value = false
-  } catch {
-    uiStore.showToast('操作失敗', 'error')
+  } catch (e) {
+    notifyError(e, '操作失敗')
   }
 }
 
@@ -179,8 +180,8 @@ async function handleUnblockSlot() {
     await scheduleStore.unblockSlot(clickedSlot.value.id)
     uiStore.showToast('時段已解除封鎖', 'success')
     showSlotModal.value = false
-  } catch {
-    uiStore.showToast('操作失敗', 'error')
+  } catch (e) {
+    notifyError(e, '操作失敗')
   }
 }
 

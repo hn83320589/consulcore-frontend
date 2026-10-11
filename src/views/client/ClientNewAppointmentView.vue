@@ -6,6 +6,7 @@ import { useAppointmentStore } from '@/stores/appointmentStore'
 import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
 import { toLocalDateString } from '@/utils/date'
+import { notifyError } from '@/utils/notifyError'
 import type { ScheduleSlot } from '@/types'
 
 const router = useRouter()
@@ -82,8 +83,8 @@ async function handleConfirm() {
     })
     uiStore.showToast('預約成功！', 'success')
     await router.push('/client/appointments')
-  } catch {
-    uiStore.showToast('預約失敗，請稍後再試', 'error')
+  } catch (e) {
+    notifyError(e, '預約失敗，請稍後再試')
   } finally {
     submitting.value = false
   }

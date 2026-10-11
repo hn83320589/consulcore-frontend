@@ -10,6 +10,7 @@ import AppTable from '@/components/ui/AppTable.vue'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import type { NotificationTemplate } from '@/types'
 import { notificationEventMeta } from '@/types'
+import { notifyError } from '@/utils/notifyError'
 
 const store = useNotificationStore()
 const uiStore = useUiStore()
@@ -59,7 +60,7 @@ async function handleSave() {
     await store.updateTemplate(editing.value.id, editForm.value)
     uiStore.showToast('已更新', 'success')
     showModal.value = false
-  } catch { uiStore.showToast('更新失敗', 'error') }
+  } catch (e) { notifyError(e, '更新失敗') }
   finally { saving.value = false }
 }
 
