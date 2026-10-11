@@ -9,6 +9,7 @@ import TemplateEditor from '@/components/schedule/TemplateEditor.vue'
 import type { TemplateFormValue } from '@/components/schedule/TemplateEditor.vue'
 import SlotGrid from '@/components/schedule/SlotGrid.vue'
 import ConflictAlert from '@/components/schedule/ConflictAlert.vue'
+import { detectRoomConflicts } from '@/utils/scheduleConflicts'
 import type { Conflict } from '@/components/schedule/ConflictAlert.vue'
 import type {
   ScheduleTemplate,
@@ -183,35 +184,8 @@ async function handleUnblockSlot() {
   }
 }
 
-// ── Conflict Detection（同診間同時段重疊） ────
-const conflicts = computed<Conflict[]>(() => {
-  const result: Conflict[] = []
-  const byDateRoom = new Map<string, ScheduleSlot[]>()
-
-  for (const slot of scheduleStore.slots) {
-    if (slot.roomId == null) continue // 未指派診間者不納入衝突判斷
-    const key = `${slot.date}|${slot.roomId}|${slot.startTime}`
-    const existing = byDateRoom.get(key)
-    if (existing) {
-      existing.push(slot)
-    } else {
-      byDateRoom.set(key, [slot])
-    }
-  }
-
-  for (const [key, group] of byDateRoom) {
-    if (group.length > 1) {
-      const [date, , time] = key.split('|') as [string, string, string]
-      result.push({
-        date,
-        time,
-        roomName: group[0]!.roomName ?? '未指定診間',
-        therapists: group.map((s) => s.therapistName),
-      })
-    }
-  }
-  return result
-})
+// ── Conflict Detection（同診間時段重疊） ────
+const conflicts = computed<Conflict[]>(() => detectRoomConflicts(scheduleStore.slots))
 
 // ── Init ────────────────────────────────────
 onMounted(async () => {
