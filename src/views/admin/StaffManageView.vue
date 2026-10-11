@@ -37,7 +37,7 @@ const columns: TableColumn[] = [
 ]
 
 const tableData = computed(() =>
-  staffStore.users as unknown as Record<string, unknown>[],
+  staffStore.users,
 )
 
 // ── User Modal ──────────────────────────────
@@ -262,28 +262,28 @@ onMounted(async () => {
     <div v-if="activeTab === 'users'">
       <AppTable :columns="columns" :data="tableData" :loading="staffStore.loading">
         <template #cell-roles="{ row }">
-          {{ (row as unknown as UserResponse).roles.join('、') }}
+          {{ row.roles.join('、') }}
         </template>
 
         <template #cell-isActive="{ row }">
-          <AppBadge :variant="(row as unknown as UserResponse).isActive ? 'success' : 'danger'">
-            {{ (row as unknown as UserResponse).isActive ? '啟用' : '停用' }}
+          <AppBadge :variant="row.isActive ? 'success' : 'danger'">
+            {{ row.isActive ? '啟用' : '停用' }}
           </AppBadge>
         </template>
 
         <template #cell-actions="{ row }">
-          <div v-if="canManageUser(row as unknown as UserResponse, authStore.activeRole)" class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openEditModal(row as unknown as UserResponse)">
+          <div v-if="canManageUser(row, authStore.activeRole)" class="flex gap-1">
+            <AppButton size="sm" variant="ghost" @click="openEditModal(row)">
               編輯
             </AppButton>
             <AppButton
               size="sm"
-              :variant="(row as unknown as UserResponse).isActive ? 'danger' : 'secondary'"
-              @click="handleToggleActive(row as unknown as UserResponse)"
+              :variant="row.isActive ? 'danger' : 'secondary'"
+              @click="handleToggleActive(row)"
             >
-              {{ (row as unknown as UserResponse).isActive ? '停用' : '啟用' }}
+              {{ row.isActive ? '停用' : '啟用' }}
             </AppButton>
-            <AppButton size="sm" variant="secondary" @click="openResetModal(row as unknown as UserResponse)">
+            <AppButton size="sm" variant="secondary" @click="openResetModal(row)">
               重設密碼
             </AppButton>
           </div>

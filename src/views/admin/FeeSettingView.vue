@@ -51,7 +51,7 @@ const feeColumns: TableColumn[] = [
   { key: 'isActive', label: '狀態', width: '70px' },
   { key: 'actions', label: '操作', width: '140px' },
 ]
-const feeTableData = computed(() => billingStore.feeSchedules as unknown as Record<string, unknown>[])
+const feeTableData = computed(() => billingStore.feeSchedules)
 
 const showFeeModal = ref(false)
 const editingFee = ref<FeeSchedule | null>(null)
@@ -112,7 +112,7 @@ const pkgColumns: TableColumn[] = [
   { key: 'isActive', label: '狀態', width: '70px' },
   { key: 'actions', label: '操作', width: '140px' },
 ]
-const pkgTableData = computed(() => billingStore.packages as unknown as Record<string, unknown>[])
+const pkgTableData = computed(() => billingStore.packages)
 
 const showPkgModal = ref(false)
 const editingPkg = ref<Pkg | null>(null)
@@ -177,7 +177,7 @@ const discColumns: TableColumn[] = [
   { key: 'isActive', label: '狀態', width: '70px' },
   { key: 'actions', label: '操作', width: '140px' },
 ]
-const discTableData = computed(() => billingStore.discounts as unknown as Record<string, unknown>[])
+const discTableData = computed(() => billingStore.discounts)
 
 const showDiscModal = ref(false)
 const editingDisc = ref<Discount | null>(null)
@@ -284,15 +284,15 @@ onMounted(() => Promise.all([
         <template #cell-amount="{ value }"> ${{ Number(value).toLocaleString() }} </template>
         <template #cell-therapistName="{ value }"> {{ value ?? '全機構' }} </template>
         <template #cell-isActive="{ row }">
-          <AppBadge :variant="(row as unknown as FeeSchedule).isActive ? 'success' : 'danger'">
-            {{ (row as unknown as FeeSchedule).isActive ? '啟用' : '停用' }}
+          <AppBadge :variant="row.isActive ? 'success' : 'danger'">
+            {{ row.isActive ? '啟用' : '停用' }}
           </AppBadge>
         </template>
         <template #cell-actions="{ row }">
           <div class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openFeeModal(row as unknown as FeeSchedule)">編輯</AppButton>
-            <AppButton size="sm" :variant="(row as unknown as FeeSchedule).isActive ? 'danger' : 'secondary'" @click="toggleFee(row as unknown as FeeSchedule)">
-              {{ (row as unknown as FeeSchedule).isActive ? '停用' : '啟用' }}
+            <AppButton size="sm" variant="ghost" @click="openFeeModal(row)">編輯</AppButton>
+            <AppButton size="sm" :variant="row.isActive ? 'danger' : 'secondary'" @click="toggleFee(row)">
+              {{ row.isActive ? '停用' : '啟用' }}
             </AppButton>
           </div>
         </template>
@@ -310,15 +310,15 @@ onMounted(() => Promise.all([
         <template #cell-perSessionAmount="{ value }"> ${{ Number(value).toLocaleString() }} </template>
         <template #cell-validDays="{ value }"> {{ value }} 天 </template>
         <template #cell-isActive="{ row }">
-          <AppBadge :variant="(row as unknown as Pkg).isActive ? 'success' : 'danger'">
-            {{ (row as unknown as Pkg).isActive ? '啟用' : '停用' }}
+          <AppBadge :variant="row.isActive ? 'success' : 'danger'">
+            {{ row.isActive ? '啟用' : '停用' }}
           </AppBadge>
         </template>
         <template #cell-actions="{ row }">
           <div class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openPkgModal(row as unknown as Pkg)">編輯</AppButton>
-            <AppButton size="sm" :variant="(row as unknown as Pkg).isActive ? 'danger' : 'secondary'" @click="togglePkg(row as unknown as Pkg)">
-              {{ (row as unknown as Pkg).isActive ? '停用' : '啟用' }}
+            <AppButton size="sm" variant="ghost" @click="openPkgModal(row)">編輯</AppButton>
+            <AppButton size="sm" :variant="row.isActive ? 'danger' : 'secondary'" @click="togglePkg(row)">
+              {{ row.isActive ? '停用' : '啟用' }}
             </AppButton>
           </div>
         </template>
@@ -333,19 +333,19 @@ onMounted(() => Promise.all([
       <AppTable :columns="discColumns" :data="discTableData">
         <template #cell-discountType="{ value }"> {{ value === 'percentage' ? '百分比' : '固定金額' }} </template>
         <template #cell-value="{ row }">
-          {{ discountValue(row as unknown as Discount) }}
+          {{ discountValue(row) }}
         </template>
         <template #cell-applicableRole="{ value }"> {{ value ?? '不限' }} </template>
         <template #cell-isActive="{ row }">
-          <AppBadge :variant="(row as unknown as Discount).isActive ? 'success' : 'danger'">
-            {{ (row as unknown as Discount).isActive ? '啟用' : '停用' }}
+          <AppBadge :variant="row.isActive ? 'success' : 'danger'">
+            {{ row.isActive ? '啟用' : '停用' }}
           </AppBadge>
         </template>
         <template #cell-actions="{ row }">
           <div class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openDiscModal(row as unknown as Discount)">編輯</AppButton>
-            <AppButton size="sm" :variant="(row as unknown as Discount).isActive ? 'danger' : 'secondary'" @click="toggleDisc(row as unknown as Discount)">
-              {{ (row as unknown as Discount).isActive ? '停用' : '啟用' }}
+            <AppButton size="sm" variant="ghost" @click="openDiscModal(row)">編輯</AppButton>
+            <AppButton size="sm" :variant="row.isActive ? 'danger' : 'secondary'" @click="toggleDisc(row)">
+              {{ row.isActive ? '停用' : '啟用' }}
             </AppButton>
           </div>
         </template>

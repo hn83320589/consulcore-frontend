@@ -25,7 +25,7 @@ const columns: TableColumn[] = [
 ]
 
 const tableData = computed(() =>
-  scheduleStore.rooms as unknown as Record<string, unknown>[],
+  scheduleStore.rooms,
 )
 
 function therapistNames(room: Room): string {
@@ -149,26 +149,26 @@ onMounted(async () => {
 
     <AppTable :columns="columns" :data="tableData">
       <template #cell-therapists="{ row }">
-        {{ therapistNames(row as unknown as Room) }}
+        {{ therapistNames(row) }}
       </template>
 
       <template #cell-isActive="{ row }">
-        <AppBadge :variant="(row as unknown as Room).isActive ? 'success' : 'danger'">
-          {{ (row as unknown as Room).isActive ? '啟用' : '停用' }}
+        <AppBadge :variant="row.isActive ? 'success' : 'danger'">
+          {{ row.isActive ? '啟用' : '停用' }}
         </AppBadge>
       </template>
 
       <template #cell-actions="{ row }">
         <div class="flex gap-1">
-          <AppButton size="sm" variant="ghost" @click="openEdit(row as unknown as Room)">
+          <AppButton size="sm" variant="ghost" @click="openEdit(row)">
             編輯
           </AppButton>
           <AppButton
             size="sm"
-            :variant="(row as unknown as Room).isActive ? 'danger' : 'secondary'"
-            @click="handleToggle(row as unknown as Room)"
+            :variant="row.isActive ? 'danger' : 'secondary'"
+            @click="handleToggle(row)"
           >
-            {{ (row as unknown as Room).isActive ? '停用' : '啟用' }}
+            {{ row.isActive ? '停用' : '啟用' }}
           </AppButton>
         </div>
       </template>

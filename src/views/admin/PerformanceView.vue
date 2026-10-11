@@ -125,7 +125,7 @@ const reviewColumns: TableColumn[] = [
   { key: 'visibility', label: '可見性', width: '90px' },
   { key: 'actions', label: '', width: '160px' },
 ]
-const reviewTableData = computed(() => perfStore.reviews as unknown as Record<string, unknown>[])
+const reviewTableData = computed(() => perfStore.reviews)
 
 const showReviewModal = ref(false)
 const reviewSaving = ref(false)
@@ -190,7 +190,7 @@ const violationColumns: TableColumn[] = [
   { key: 'status', label: '狀態', width: '80px' },
   { key: 'actions', label: '', width: '160px' },
 ]
-const violationTableData = computed(() => perfStore.violations as unknown as Record<string, unknown>[])
+const violationTableData = computed(() => perfStore.violations)
 
 const severityOptions = [
   { label: '低', value: 'low' },
@@ -345,17 +345,17 @@ onMounted(async () => {
       </div>
       <AppTable :columns="reviewColumns" :data="reviewTableData">
         <template #cell-overallScore="{ row }">
-          <span class="font-bold">{{ (row as unknown as PerformanceReview).overallScore.toFixed(1) }}</span>
+          <span class="font-bold">{{ row.overallScore.toFixed(1) }}</span>
         </template>
         <template #cell-visibility="{ row }">
-          <AppBadge :variant="(row as unknown as PerformanceReview).visibility === 'visible' ? 'success' : 'default'">
-            {{ visibilityLabels[(row as unknown as PerformanceReview).visibility] }}
+          <AppBadge :variant="row.visibility === 'visible' ? 'success' : 'default'">
+            {{ visibilityLabels[row.visibility] }}
           </AppBadge>
         </template>
         <template #cell-actions="{ row }">
           <div v-if="isOwner" class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openVisibility(row as unknown as PerformanceReview)">可見性</AppButton>
-            <AppButton size="sm" variant="ghost" @click="handleDeleteReview(row as unknown as PerformanceReview)">刪除</AppButton>
+            <AppButton size="sm" variant="ghost" @click="openVisibility(row)">可見性</AppButton>
+            <AppButton size="sm" variant="ghost" @click="handleDeleteReview(row)">刪除</AppButton>
           </div>
         </template>
       </AppTable>
@@ -368,19 +368,19 @@ onMounted(async () => {
       </div>
       <AppTable :columns="violationColumns" :data="violationTableData">
         <template #cell-severity="{ row }">
-          <AppBadge :variant="severityVariant((row as unknown as ViolationRecord).severity)">
-            {{ severityLabels[(row as unknown as ViolationRecord).severity] }}
+          <AppBadge :variant="severityVariant(row.severity)">
+            {{ severityLabels[row.severity] }}
           </AppBadge>
         </template>
         <template #cell-status="{ row }">
-          <AppBadge :variant="(row as unknown as ViolationRecord).status === 'open' ? 'warning' : (row as unknown as ViolationRecord).status === 'resolved' ? 'success' : 'default'">
-            {{ violationStatusLabels[(row as unknown as ViolationRecord).status] }}
+          <AppBadge :variant="row.status === 'open' ? 'warning' : row.status === 'resolved' ? 'success' : 'default'">
+            {{ violationStatusLabels[row.status] }}
           </AppBadge>
         </template>
         <template #cell-actions="{ row }">
-          <div v-if="(row as unknown as ViolationRecord).status === 'open'" class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openResolve(row as unknown as ViolationRecord)">處理</AppButton>
-            <AppButton size="sm" variant="ghost" @click="handleDismiss(row as unknown as ViolationRecord)">駁回</AppButton>
+          <div v-if="row.status === 'open'" class="flex gap-1">
+            <AppButton size="sm" variant="ghost" @click="openResolve(row)">處理</AppButton>
+            <AppButton size="sm" variant="ghost" @click="handleDismiss(row)">駁回</AppButton>
           </div>
         </template>
       </AppTable>

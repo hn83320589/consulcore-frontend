@@ -39,7 +39,7 @@ const recordColumns: TableColumn[] = [
   { key: 'status', label: '狀態', width: '80px' },
   { key: 'actions', label: '', width: '120px' },
 ]
-const recordTableData = computed(() => billingStore.records as unknown as Record<string, unknown>[])
+const recordTableData = computed(() => billingStore.records)
 
 // ── 篩選 ────────────────────────────────────
 const filters = ref({
@@ -217,12 +217,12 @@ onMounted(async () => {
         <template #cell-originalAmount="{ value }">{{ formatCurrency(value as number) }}</template>
         <template #cell-finalAmount="{ value }">{{ formatCurrency(value as number) }}</template>
         <template #cell-status="{ row }">
-          <PaymentStatusBadge :status="(row as unknown as BillingRecord).status" />
+          <PaymentStatusBadge :status="row.status" />
         </template>
         <template #cell-actions="{ row }">
-          <div v-if="(row as unknown as BillingRecord).status === 'pending'" class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openConfirm(row as unknown as BillingRecord)">收款</AppButton>
-            <AppButton size="sm" variant="ghost" @click="handleWaive(row as unknown as BillingRecord)">免收</AppButton>
+          <div v-if="row.status === 'pending'" class="flex gap-1">
+            <AppButton size="sm" variant="ghost" @click="openConfirm(row)">收款</AppButton>
+            <AppButton size="sm" variant="ghost" @click="handleWaive(row)">免收</AppButton>
           </div>
         </template>
       </AppTable>

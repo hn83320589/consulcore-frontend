@@ -1,15 +1,18 @@
-<script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-
+<script lang="ts">
 export interface TableColumn {
   key: string
   label: string
   width?: string
 }
+</script>
+
+<!-- 泛型：slot 的 row 直接是資料型別 T，呼叫端不必再強制轉型 -->
+<script setup lang="ts" generic="T extends object">
+import { ref, computed, watch } from 'vue'
 
 interface Props {
   columns: TableColumn[]
-  data: Record<string, unknown>[]
+  data: T[]
   loading?: boolean
   emptyText?: string
   pageSize?: number
@@ -28,6 +31,20 @@ const pagedData = computed(() => {
   const start = (currentPage.value - 1) * props.pageSize
   return props.data.slice(start, start + props.pageSize)
 })
+
+defineSlots<{
+  [name: `cell-${string}`]: (props: { row: T; value: unknown }) => unknown
+}>()
+
+// 有 id 就用 id 當 key（排序或分頁變動時 DOM 才不會錯位），沒有才退回 index
+function rowKey(row: T, index: number): string | number {
+  const id = (row as { id?: unknown }).id
+  return typeof id === 'number' || typeof id === 'string' ? id : index
+}
+
+function cellValue(row: T, key: string): unknown {
+  return (row as Record<string, unknown>)[key]
+}
 
 watch(() => props.data.length, () => {
   if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
@@ -73,12 +90,12 @@ function goPage(page: number) {
           <tr
             v-for="(row, index) in pagedData"
             v-else
-            :key="index"
+            :key="rowKey(row, index)"
             class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
           >
             <td v-for="col in columns" :key="col.key" class="px-4 py-3">
-              <slot :name="`cell-${col.key}`" :row="row" :value="row[col.key]">
-                {{ row[col.key] ?? '' }}
+              <slot :name="`cell-${col.key}`" :row="row" :value="cellValue(row, col.key)">
+                {{ cellValue(row, col.key) ?? '' }}
               </slot>
             </td>
           </tr>
