@@ -22,10 +22,10 @@ const uiStore = useUiStore()
         :key="toast.id"
         class="px-4 py-3 rounded-app shadow-lg text-sm text-white min-w-[240px]"
         :class="{
-          'bg-green-600': toast.type === 'success',
-          'bg-red-500': toast.type === 'error',
-          'bg-yellow-500': toast.type === 'warning',
-          'bg-blue-500': toast.type === 'info',
+          'bg-success': toast.type === 'success',
+          'bg-danger': toast.type === 'error',
+          'bg-warning': toast.type === 'warning',
+          'bg-info': toast.type === 'info',
         }"
       >
         {{ toast.message }}

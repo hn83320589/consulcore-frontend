@@ -10,9 +10,11 @@ import AppointmentCard from '@/components/appointment/AppointmentCard.vue'
 import QuickBookModal from '@/components/appointment/QuickBookModal.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
+import { toCalendarEvents } from '@/utils/calendarEvents'
 import type { Appointment, AppointmentStatus, CreateAppointmentRequest } from '@/types'
 
 const appointmentStore = useAppointmentStore()
+const calendarEvents = computed(() => toCalendarEvents(appointmentStore.appointments))
 const uiStore = useUiStore()
 
 // ── View Toggle ─────────────────────────────
@@ -229,7 +231,7 @@ onMounted(() => loadData())
     <!-- Calendar View -->
     <div v-if="viewMode === 'calendar'">
       <AppointmentCalendar
-        :events="appointmentStore.calendarEvents"
+        :events="calendarEvents"
         :resources="calendarResources"
         @event-click="handleEventClick"
         @date-select="handleDateSelect"

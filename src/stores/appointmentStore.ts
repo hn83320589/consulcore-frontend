@@ -5,20 +5,11 @@ import type {
   Appointment,
   CreateAppointmentRequest,
   AppointmentSearchParams,
-  CalendarEvent,
   AppointmentSeries,
   CreateSeriesRequest,
   RenewSeriesRequest,
   ScheduleSlot,
 } from '@/types'
-import type { AppointmentStatus } from '@/types'
-
-const statusColors: Record<AppointmentStatus, { bg: string; border: string }> = {
-  scheduled: { bg: '#3B82F6', border: '#2563EB' },
-  completed: { bg: '#9CA3AF', border: '#6B7280' },
-  cancelled: { bg: '#EF4444', border: '#DC2626' },
-  no_show: { bg: '#F97316', border: '#EA580C' },
-}
 
 export const useAppointmentStore = defineStore('appointment', () => {
   // ── State ──────────────────────────────────
@@ -29,19 +20,6 @@ export const useAppointmentStore = defineStore('appointment', () => {
   const loading = ref(false)
 
   // ── Derived ────────────────────────────────
-  const calendarEvents = computed<CalendarEvent[]>(() =>
-    appointments.value.map((apt) => ({
-      id: String(apt.id),
-      title: `${apt.clientName} — ${apt.therapistName}`,
-      start: `${apt.date}T${apt.startTime}`,
-      end: `${apt.date}T${apt.endTime}`,
-      resourceId: String(apt.therapistUserId),
-      backgroundColor: statusColors[apt.status].bg,
-      borderColor: statusColors[apt.status].border,
-      extendedProps: { appointment: apt },
-    })),
-  )
-
   const upcomingAppointments = computed(() =>
     appointments.value
       .filter((a) => a.status === 'scheduled')
@@ -148,7 +126,6 @@ export const useAppointmentStore = defineStore('appointment', () => {
     pendingRenewals,
     clientSeries,
     loading,
-    calendarEvents,
     upcomingAppointments,
     fetchAppointments,
     fetchAppointment,

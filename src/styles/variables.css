@@ -7,6 +7,22 @@
   --border-radius: 6px;
   --spacing-unit: 0.75rem;
   --font-size-base: 14px;
+
+  /* 語意色（兩種風格共用；數值沿用原本寫死的 Tailwind 色） */
+  --color-success: #16A34A; /* green-600 */
+  --color-danger: #EF4444;  /* red-500 */
+  --color-warning: #EAB308; /* yellow-500 */
+  --color-info: #3B82F6;    /* blue-500 */
+
+  /* 預約狀態（行事曆） */
+  --color-status-scheduled: #3B82F6;
+  --color-status-scheduled-border: #2563EB;
+  --color-status-completed: #9CA3AF;
+  --color-status-completed-border: #6B7280;
+  --color-status-cancelled: #EF4444;
+  --color-status-cancelled-border: #DC2626;
+  --color-status-no_show: #F97316;
+  --color-status-no_show-border: #EA580C;
 }
 
 /* ClientLayout — 溫暖風格 */
