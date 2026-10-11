@@ -15,6 +15,8 @@ import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
 import RevenueChart from '@/components/billing/RevenueChart.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
+import { formatCurrency, formatDate } from '@/utils/format'
+import { downloadBlob } from '@/utils/download'
 import type { BillingRecord, BillingSearchParams, PaymentMethod, PaymentStatus } from '@/types'
 
 const billingStore = useBillingStore()
@@ -37,7 +39,7 @@ const recordColumns: TableColumn[] = [
   { key: 'status', label: '狀態', width: '80px' },
   { key: 'actions', label: '', width: '120px' },
 ]
-const recordTableData = computed(() => billingStore.records as unknown as Record<string, unknown>[])
+const recordTableData = computed(() => billingStore.records)
 
 // ── 篩選 ────────────────────────────────────
 const filters = ref({
@@ -87,26 +89,14 @@ function resetFilters() {
 async function handleExport() {
   try {
     const blob = await billingStore.exportRecords(buildParams())
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `billing-${toLocalDateString(new Date()).replace(/-/g, '')}.csv`
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadBlob(blob, `billing-${toLocalDateString(new Date()).replace(/-/g, '')}.csv`)
     uiStore.showToast('已匯出', 'success')
   } catch (e) { notifyError(e, '匯出失敗') }
 }
 
-function formatDate(val: unknown): string {
-  return val ? new Date(String(val)).toLocaleDateString('zh-TW') : '-'
-}
 function paymentTypeLabel(val: unknown): string {
   return val === 'package_purchase' ? '套餐' : '單次'
 }
-function formatCurrency(val: unknown): string {
-  return `$${Number(val).toLocaleString()}`
-}
-
 // Confirm Payment Modal
 const showConfirmModal = ref(false)
 const confirmTarget = ref<BillingRecord | null>(null)
@@ -222,17 +212,17 @@ onMounted(async () => {
       </div>
 
       <AppTable :columns="recordColumns" :data="recordTableData" :loading="billingStore.loading">
-        <template #cell-createdAt="{ value }">{{ formatDate(value) }}</template>
+        <template #cell-createdAt="{ value }">{{ formatDate(value as string) }}</template>
         <template #cell-paymentType="{ value }">{{ paymentTypeLabel(value) }}</template>
-        <template #cell-originalAmount="{ value }">{{ formatCurrency(value) }}</template>
-        <template #cell-finalAmount="{ value }">{{ formatCurrency(value) }}</template>
+        <template #cell-originalAmount="{ value }">{{ formatCurrency(value as number) }}</template>
+        <template #cell-finalAmount="{ value }">{{ formatCurrency(value as number) }}</template>
         <template #cell-status="{ row }">
-          <PaymentStatusBadge :status="(row as unknown as BillingRecord).status" />
+          <PaymentStatusBadge :status="row.status" />
         </template>
         <template #cell-actions="{ row }">
-          <div v-if="(row as unknown as BillingRecord).status === 'pending'" class="flex gap-1">
-            <AppButton size="sm" variant="ghost" @click="openConfirm(row as unknown as BillingRecord)">收款</AppButton>
-            <AppButton size="sm" variant="ghost" @click="handleWaive(row as unknown as BillingRecord)">免收</AppButton>
+          <div v-if="row.status === 'pending'" class="flex gap-1">
+            <AppButton size="sm" variant="ghost" @click="openConfirm(row)">收款</AppButton>
+            <AppButton size="sm" variant="ghost" @click="handleWaive(row)">免收</AppButton>
           </div>
         </template>
       </AppTable>

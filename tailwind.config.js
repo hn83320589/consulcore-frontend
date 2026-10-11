@@ -8,6 +8,10 @@ export default {
         'primary-hover': 'var(--color-primary-hover)',
         'app-bg': 'var(--color-bg)',
         'app-text': 'var(--color-text)',
+        success: 'var(--color-success)',
+        danger: 'var(--color-danger)',
+        warning: 'var(--color-warning)',
+        info: 'var(--color-info)',
       },
       borderRadius: {
         app: 'var(--border-radius)',

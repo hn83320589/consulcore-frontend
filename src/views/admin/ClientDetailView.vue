@@ -20,9 +20,10 @@ import ClientInfoCard from '@/components/client/ClientInfoCard.vue'
 import ConsentStatus from '@/components/client/ConsentStatus.vue'
 import SignaturePad from '@/components/form/SignaturePad.vue'
 import AppointmentList from '@/components/appointment/AppointmentList.vue'
+import ClientSessionsTab from '@/components/client/detail/ClientSessionsTab.vue'
+import ClientBillingTab from '@/components/client/detail/ClientBillingTab.vue'
+import ClientAuditTab from '@/components/client/detail/ClientAuditTab.vue'
 import ClientMemoList from '@/components/client/ClientMemoList.vue'
-import PaymentStatusBadge from '@/components/billing/PaymentStatusBadge.vue'
-import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
 import { clientDetailAccess } from '@/utils/clientDetailAccess'
 import { notifyError } from '@/utils/notifyError'
 import type { UpdateClientRequest, ConsentRecord, ClientStatus, Appointment, CreateMemoRequest, UpdateMemoRequest } from '@/types'
@@ -38,8 +39,6 @@ const consentStore = useConsentStore()
 const staffStore = useStaffStore()
 const uiStore = useUiStore()
 
-// clientId 字串僅供路由 query 使用（例如導向新增晤談紀錄）
-const clientId = computed(() => route.params.id as string)
 // 個案域 API 使用數字 id
 const clientIdNum = computed(() => Number(route.params.id))
 
@@ -183,44 +182,6 @@ const clientSeries = computed(() => appointmentStore.clientSeries)
 
 function handleAppointmentClick(_apt: Appointment) {
   // 可擴展為顯示詳情 modal
-}
-
-// ── Session Notes ───────────────────────────
-const clientNotes = computed(() =>
-  sessionNoteStore.notes
-    .filter((n) => n.clientProfileId === clientIdNum.value)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-)
-
-const expandedNoteId = ref<number | null>(null)
-
-function toggleNote(id: number) {
-  expandedNoteId.value = expandedNoteId.value === id ? null : id
-}
-
-function formatNoteDate(date: string): string {
-  return new Date(date).toLocaleDateString('zh-TW', { year: 'numeric', month: 'short', day: 'numeric' })
-}
-
-// ── Billing ─────────────────────────────────
-const clientBillingRecords = computed(() =>
-  billingStore.records
-    .filter((r) => r.clientProfileId === clientIdNum.value)
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-)
-
-const clientPackages = computed(() =>
-  billingStore.clientPackages.filter((p) => p.clientProfileId === clientIdNum.value),
-)
-
-const pendingTotal = computed(() =>
-  clientBillingRecords.value
-    .filter((r) => r.status === 'pending')
-    .reduce((sum, r) => sum + r.finalAmount, 0),
-)
-
-function formatCurrency(val: number): string {
-  return `$${val.toLocaleString()}`
 }
 
 // ── Client Memos ────────────────────────────
@@ -379,133 +340,8 @@ onMounted(async () => {
           @click="handleAppointmentClick"
         />
       </div>
-      <div v-if="activeTab === 'sessions'" class="space-y-4">
-        <div class="flex items-center justify-between">
-          <h3 class="font-semibold text-gray-800">晤談紀錄</h3>
-          <AppButton
-            size="sm"
-            @click="$router.push({ path: '/admin/sessions/new', query: { clientId: clientId } })"
-          >
-            新增紀錄
-          </AppButton>
-        </div>
-
-        <div v-if="clientNotes.length === 0" class="bg-white border border-gray-200 rounded-app p-8 text-center text-gray-400 text-sm">
-          尚無晤談紀錄
-        </div>
-        <div v-else class="space-y-2">
-          <div
-            v-for="note in clientNotes"
-            :key="note.id"
-            class="bg-white border border-gray-200 rounded-app overflow-hidden"
-          >
-            <button
-              class="w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-50"
-              @click="toggleNote(note.id)"
-            >
-              <div class="flex items-center gap-3">
-                <span class="text-gray-600 font-medium">{{ formatNoteDate(note.createdAt) }}</span>
-                <AppBadge :variant="note.type === 'closure' ? 'warning' : 'default'">
-                  {{ note.type === 'closure' ? '結案摘要' : '晤談' }}
-                </AppBadge>
-                <span class="text-xs text-gray-400">{{ note.format === 'soap' ? 'SOAP' : '自由文字' }}</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <span v-if="note.isLocked" class="text-yellow-500 text-xs">🔒</span>
-                <span class="text-gray-400">{{ expandedNoteId === note.id ? '▲' : '▼' }}</span>
-              </div>
-            </button>
-            <div v-if="expandedNoteId === note.id" class="px-4 pb-4 border-t border-gray-100">
-              <div v-if="note.format === 'soap'" class="space-y-2 mt-3 text-sm">
-                <div v-for="soap in [
-                  { label: 'S', val: note.soapS },
-                  { label: 'O', val: note.soapO },
-                  { label: 'A', val: note.soapA },
-                  { label: 'P', val: note.soapP },
-                ]" :key="soap.label">
-                  <p class="text-xs font-medium text-gray-500 uppercase">{{ soap.label }}</p>
-                  <p class="text-gray-700 whitespace-pre-wrap">{{ soap.val || '—' }}</p>
-                </div>
-              </div>
-              <div v-else-if="note.freeTextContent" class="mt-3">
-                <p class="text-sm text-gray-700 whitespace-pre-wrap">{{ note.freeTextContent }}</p>
-              </div>
-              <div class="flex gap-2 mt-3">
-                <AppButton
-                  v-if="!note.isLocked"
-                  size="sm" variant="ghost"
-                  @click="$router.push(`/admin/sessions/${note.id}/edit`)"
-                >
-                  編輯
-                </AppButton>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div v-if="activeTab === 'billing'" class="space-y-6">
-        <!-- Summary -->
-        <div class="grid grid-cols-2 gap-4">
-          <div class="bg-yellow-50 border border-yellow-100 rounded-app p-4">
-            <p class="text-sm text-yellow-600">待收款</p>
-            <p class="text-xl font-bold text-yellow-700">{{ formatCurrency(pendingTotal) }}</p>
-          </div>
-          <div class="bg-green-50 border border-green-100 rounded-app p-4">
-            <p class="text-sm text-green-600">付款筆數</p>
-            <p class="text-xl font-bold text-green-700">{{ clientBillingRecords.length }} 筆</p>
-          </div>
-        </div>
-
-        <!-- 套餐使用 -->
-        <div>
-          <h4 class="font-semibold text-gray-800 mb-3">套餐使用</h4>
-          <div v-if="clientPackages.length === 0" class="bg-white border border-gray-200 rounded-app p-8 text-center text-gray-400 text-sm">
-            尚無套餐
-          </div>
-          <div v-else class="space-y-3">
-            <div
-              v-for="pkg in clientPackages"
-              :key="pkg.id"
-              class="bg-white border border-gray-200 rounded-app p-4"
-            >
-              <PackageUsageBar
-                :used="pkg.sessionsUsed"
-                :remaining="pkg.sessionsRemaining"
-                :label="pkg.packageName"
-              />
-              <p class="text-xs text-gray-400 mt-2">到期日：{{ new Date(pkg.expiresAt).toLocaleDateString('zh-TW') }}</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Payment Records -->
-        <div>
-          <h4 class="font-semibold text-gray-800 mb-3">付款紀錄</h4>
-          <div v-if="clientBillingRecords.length === 0" class="bg-white border border-gray-200 rounded-app p-8 text-center text-gray-400 text-sm">
-            尚無付款紀錄
-          </div>
-          <div v-else class="bg-white border border-gray-200 rounded-app overflow-hidden">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="bg-gray-50 border-b border-gray-200">
-                  <th class="px-4 py-2 text-left text-gray-600">建立日期</th>
-                  <th class="px-4 py-2 text-right text-gray-600">原價</th>
-                  <th class="px-4 py-2 text-right text-gray-600">應收</th>
-                  <th class="px-4 py-2 text-left text-gray-600">狀態</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="rec in clientBillingRecords" :key="rec.id" class="border-b border-gray-100">
-                  <td class="px-4 py-2">{{ new Date(rec.createdAt).toLocaleDateString('zh-TW') }}</td>
-                  <td class="px-4 py-2 text-right">{{ formatCurrency(rec.originalAmount) }}</td>
-                  <td class="px-4 py-2 text-right">{{ formatCurrency(rec.finalAmount) }}</td>
-                  <td class="px-4 py-2"><PaymentStatusBadge :status="rec.status" /></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+      <ClientSessionsTab v-if="activeTab === 'sessions'" :client-id="clientIdNum" />
+      <ClientBillingTab v-if="activeTab === 'billing'" :client-id="clientIdNum" />
       <div v-if="activeTab === 'consents'" class="space-y-6">
         <div class="flex items-center justify-between">
           <h3 class="font-semibold text-gray-800">同意書</h3>
@@ -523,33 +359,7 @@ onMounted(async () => {
         />
       </div>
 
-      <!-- Tab: Audit (Owner only) -->
-      <div v-if="activeTab === 'audit'" class="space-y-3">
-        <h3 class="font-semibold text-gray-800">稽核紀錄</h3>
-        <div v-if="clientAuditLogs.length === 0" class="bg-white border border-gray-200 rounded-app p-8 text-center text-gray-400 text-sm">
-          尚無稽核紀錄
-        </div>
-        <div v-else class="bg-white border border-gray-200 rounded-app overflow-hidden">
-          <table class="w-full text-sm">
-            <thead>
-              <tr class="bg-gray-50 border-b border-gray-200">
-                <th class="px-4 py-2 text-left text-gray-600">時間</th>
-                <th class="px-4 py-2 text-left text-gray-600">操作者</th>
-                <th class="px-4 py-2 text-left text-gray-600">動作</th>
-                <th class="px-4 py-2 text-left text-gray-600">描述</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="log in clientAuditLogs" :key="log.id" class="border-b border-gray-100">
-                <td class="px-4 py-2 text-xs text-gray-500">{{ new Date(log.createdAt).toLocaleString('zh-TW') }}</td>
-                <td class="px-4 py-2">{{ log.userName ?? '—' }}</td>
-                <td class="px-4 py-2"><span class="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{{ log.action }}</span></td>
-                <td class="px-4 py-2 text-gray-600">{{ log.description ?? '—' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <ClientAuditTab v-if="activeTab === 'audit'" :logs="clientAuditLogs" />
     </AppTabs>
 
     <!-- Assign Therapist Modal -->

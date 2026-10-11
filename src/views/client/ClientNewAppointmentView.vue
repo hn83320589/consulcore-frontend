@@ -7,6 +7,7 @@ import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
+import { formatDayWithWeekday } from '@/utils/format'
 import type { ScheduleSlot } from '@/types'
 
 const router = useRouter()
@@ -60,14 +61,6 @@ const selectedSlot = ref<ScheduleSlot | null>(null)
 function selectSlot(slot: ScheduleSlot) {
   selectedSlot.value = slot
   step.value = 3
-}
-
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('zh-TW', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  })
 }
 
 // ── Step 3: 確認 ────────────────────────────
@@ -160,7 +153,7 @@ onMounted(() => {
       </div>
       <div v-else class="space-y-4">
         <div v-for="[date, dateSlots] in slotsByDate" :key="date">
-          <p class="font-medium text-app-text mb-2">{{ formatDate(date) }}</p>
+          <p class="font-medium text-app-text mb-2">{{ formatDayWithWeekday(date, 'long') }}</p>
           <div class="flex flex-wrap gap-2">
             <button
               v-for="slot in dateSlots"
@@ -191,7 +184,7 @@ onMounted(() => {
           </div>
           <div>
             <p class="text-app-text/50">日期</p>
-            <p class="font-medium text-app-text">{{ formatDate(selectedSlot.date) }}</p>
+            <p class="font-medium text-app-text">{{ formatDayWithWeekday(selectedSlot.date, 'long') }}</p>
           </div>
           <div>
             <p class="text-app-text/50">時段</p>

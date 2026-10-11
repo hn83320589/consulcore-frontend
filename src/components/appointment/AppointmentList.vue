@@ -36,7 +36,7 @@ const columns: TableColumn[] = [
 ]
 
 const tableData = computed(() =>
-  props.appointments as unknown as Record<string, unknown>[],
+  props.appointments,
 )
 
 const statusLabel: Record<AppointmentStatus, string> = {
@@ -59,24 +59,24 @@ const statusVariant: Record<AppointmentStatus, 'info' | 'success' | 'default' | 
     <template v-if="selectable" #cell-checkbox="{ row }">
       <input
         type="checkbox"
-        :checked="selectedIds.includes((row as unknown as Appointment).id)"
+        :checked="selectedIds.includes(row.id)"
         class="accent-[var(--color-primary)]"
-        @change="emit('select', (row as unknown as Appointment).id)"
+        @change="emit('select', row.id)"
       />
     </template>
 
     <template #cell-time="{ row }">
-      {{ (row as unknown as Appointment).startTime }} - {{ (row as unknown as Appointment).endTime }}
+      {{ row.startTime }} - {{ row.endTime }}
     </template>
 
     <template #cell-status="{ row }">
-      <AppBadge :variant="statusVariant[(row as unknown as Appointment).status]">
-        {{ statusLabel[(row as unknown as Appointment).status] }}
+      <AppBadge :variant="statusVariant[row.status]">
+        {{ statusLabel[row.status] }}
       </AppBadge>
     </template>
 
     <template #cell-actions="{ row }">
-      <AppButton size="sm" variant="ghost" @click="emit('click', row as unknown as Appointment)">
+      <AppButton size="sm" variant="ghost" @click="emit('click', row)">
         查看
       </AppButton>
     </template>

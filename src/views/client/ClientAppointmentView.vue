@@ -10,6 +10,7 @@ import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
+import { formatDayWithWeekday } from '@/utils/format'
 import type { Appointment, AppointmentStatus } from '@/types'
 
 const router = useRouter()
@@ -45,14 +46,6 @@ const statusVariant: Record<AppointmentStatus, 'info' | 'success' | 'default' | 
   completed: 'default',
   cancelled: 'danger',
   no_show: 'warning',
-}
-
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('zh-TW', {
-    weekday: 'short',
-    month: 'long',
-    day: 'numeric',
-  })
 }
 
 // ── Cancel ──────────────────────────────────
@@ -123,7 +116,7 @@ onMounted(() => {
         >
           <div class="flex items-start justify-between">
             <div>
-              <p class="font-medium text-app-text">{{ formatDate(apt.date) }}</p>
+              <p class="font-medium text-app-text">{{ formatDayWithWeekday(apt.date) }}</p>
               <p class="text-sm text-app-text/60 mt-1">
                 {{ apt.startTime }} - {{ apt.endTime }}
               </p>
@@ -157,7 +150,7 @@ onMounted(() => {
         >
           <div class="flex items-center justify-between">
             <div>
-              <p class="font-medium text-app-text">{{ formatDate(apt.date) }}</p>
+              <p class="font-medium text-app-text">{{ formatDayWithWeekday(apt.date) }}</p>
               <p class="text-sm text-app-text/50">
                 {{ apt.startTime }} - {{ apt.endTime }} · {{ apt.therapistName }}
               </p>
@@ -173,7 +166,7 @@ onMounted(() => {
     <!-- Cancel Modal -->
     <AppModal :open="showCancelModal" title="取消預約" @close="showCancelModal = false">
       <p class="text-sm text-app-text/70 mb-4">
-        確定要取消 {{ cancelTarget ? formatDate(cancelTarget.date) : '' }}
+        確定要取消 {{ cancelTarget ? formatDayWithWeekday(cancelTarget.date) : '' }}
         {{ cancelTarget?.startTime }} 的預約嗎？
       </p>
       <AppInput v-model="cancelReason" label="取消原因" placeholder="選填" />

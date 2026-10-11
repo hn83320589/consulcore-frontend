@@ -24,7 +24,7 @@ const columns: TableColumn[] = [
   { key: 'actions', label: '', width: '60px' },
 ]
 
-const tableData = () => store.templates as unknown as Record<string, unknown>[]
+const tableData = () => store.templates
 
 const channelLabels: Record<string, string> = {
   email: 'Email',
@@ -73,21 +73,21 @@ onMounted(() => store.fetchTemplates())
 
     <AppTable :columns="columns" :data="tableData()">
       <template #cell-eventType="{ row }">
-        {{ eventLabel((row as unknown as NotificationTemplate).eventType) }}
+        {{ eventLabel(row.eventType) }}
       </template>
       <template #cell-channel="{ row }">
-        {{ channelLabels[(row as unknown as NotificationTemplate).channel] ?? (row as unknown as NotificationTemplate).channel }}
+        {{ channelLabels[row.channel] ?? row.channel }}
       </template>
       <template #cell-isActive="{ row }">
-        <AppBadge :variant="(row as unknown as NotificationTemplate).isActive ? 'success' : 'danger'">
-          {{ (row as unknown as NotificationTemplate).isActive ? '啟用' : '停用' }}
+        <AppBadge :variant="row.isActive ? 'success' : 'danger'">
+          {{ row.isActive ? '啟用' : '停用' }}
         </AppBadge>
       </template>
       <template #cell-isRequired="{ row }">
-        <span v-if="(row as unknown as NotificationTemplate).isRequired" class="text-xs text-red-500">必要</span>
+        <span v-if="row.isRequired" class="text-xs text-red-500">必要</span>
       </template>
       <template #cell-actions="{ row }">
-        <AppButton size="sm" variant="ghost" @click="openEdit(row as unknown as NotificationTemplate)">編輯</AppButton>
+        <AppButton size="sm" variant="ghost" @click="openEdit(row)">編輯</AppButton>
       </template>
     </AppTable>
 

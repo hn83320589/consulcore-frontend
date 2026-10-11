@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useAppointmentStore } from '@/stores/appointmentStore'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
+import { formatDayWithWeekday } from '@/utils/format'
 import type { AppointmentStatus } from '@/types'
 
 const router = useRouter()
@@ -23,14 +24,6 @@ const statusLabel: Record<AppointmentStatus, string> = {
   completed: '已完成',
   cancelled: '已取消',
   no_show: '未出席',
-}
-
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('zh-TW', {
-    weekday: 'short',
-    month: 'long',
-    day: 'numeric',
-  })
 }
 
 onMounted(() => {
@@ -76,7 +69,7 @@ onMounted(() => {
           class="bg-white rounded-app border border-orange-100 p-5 flex items-center justify-between"
         >
           <div>
-            <p class="font-medium text-app-text">{{ formatDate(apt.date) }}</p>
+            <p class="font-medium text-app-text">{{ formatDayWithWeekday(apt.date) }}</p>
             <p class="text-sm text-app-text/60 mt-0.5">
               {{ apt.startTime }} - {{ apt.endTime }} · {{ apt.therapistName }}
             </p>

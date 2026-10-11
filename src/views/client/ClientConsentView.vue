@@ -4,6 +4,7 @@ import { useConsentStore } from '@/stores/consentStore'
 import { useAuthStore } from '@/stores/authStore'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppModal from '@/components/ui/AppModal.vue'
+import { formatDate } from '@/utils/format'
 import type { ConsentRecord, ConsentRecordStatus } from '@/types'
 
 const consentStore = useConsentStore()
@@ -21,10 +22,6 @@ const statusVariants: Record<ConsentRecordStatus, 'success' | 'danger' | 'defaul
   pending: 'default',
   signed: 'success',
   voided: 'danger',
-}
-
-function formatDate(iso: string | null | undefined): string {
-  return iso ? new Date(iso).toLocaleDateString('zh-TW') : '—'
 }
 
 onMounted(() => {

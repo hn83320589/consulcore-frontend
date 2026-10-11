@@ -2,12 +2,9 @@
 import { onMounted } from 'vue'
 import { useNotificationStore } from '@/stores/notificationStore'
 import AppButton from '@/components/ui/AppButton.vue'
+import { formatShortDateTime } from '@/utils/format'
 
 const store = useNotificationStore()
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleString('zh-TW', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
 
 onMounted(() => store.fetchNotifications())
 </script>
@@ -40,7 +37,7 @@ onMounted(() => store.fetchNotifications())
             </p>
             <p class="text-sm text-app-text/60 mt-1">{{ n.body }}</p>
           </div>
-          <span class="text-xs text-app-text/40 whitespace-nowrap ml-3">{{ formatTime(n.createdAt) }}</span>
+          <span class="text-xs text-app-text/40 whitespace-nowrap ml-3">{{ formatShortDateTime(n.createdAt) }}</span>
         </div>
         <div v-if="n.status !== 'read'" class="w-2 h-2 bg-primary rounded-full absolute top-4 left-2" />
       </button>

@@ -9,6 +9,7 @@ import AppInput from '@/components/ui/AppInput.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
 import AppTable from '@/components/ui/AppTable.vue'
 import { notifyError } from '@/utils/notifyError'
+import { formatDate } from '@/utils/format'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import type {
   ConsentTemplate,
@@ -126,7 +127,7 @@ const recordColumns: TableColumn[] = [
 ]
 
 const recordTableData = computed(() =>
-  consentStore.records as unknown as Record<string, unknown>[],
+  consentStore.records,
 )
 
 // 簽署紀錄查詢：後端 GET /consent-records 支援 triggerEvent + status 篩選（空=全部）
@@ -138,10 +139,6 @@ function handleRecordFilter() {
     triggerEvent: recordFilterTriggerEvent.value || undefined,
     status: recordFilterStatus.value || undefined,
   })
-}
-
-function formatDate(iso: string | null | undefined): string {
-  return iso ? new Date(iso).toLocaleDateString('zh-TW') : '—'
 }
 
 // ── View Record Modal ───────────────────────
@@ -273,15 +270,15 @@ onMounted(async () => {
           v{{ value }}
         </template>
         <template #cell-signedAt="{ row }">
-          {{ formatDate((row as unknown as ConsentRecord).signedAt) }}
+          {{ formatDate(row.signedAt) }}
         </template>
         <template #cell-status="{ row }">
-          <AppBadge :variant="statusVariants[(row as unknown as ConsentRecord).status]">
-            {{ statusLabels[(row as unknown as ConsentRecord).status] }}
+          <AppBadge :variant="statusVariants[row.status]">
+            {{ statusLabels[row.status] }}
           </AppBadge>
         </template>
         <template #cell-actions="{ row }">
-          <AppButton size="sm" variant="ghost" @click="viewRecord(row as unknown as ConsentRecord)">
+          <AppButton size="sm" variant="ghost" @click="viewRecord(row)">
             查看
           </AppButton>
         </template>

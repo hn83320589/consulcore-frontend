@@ -5,6 +5,8 @@ import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
+import { formatDateTime } from '@/utils/format'
+import { downloadBlob } from '@/utils/download'
 
 interface AuditChange {
   field: string
@@ -81,10 +83,6 @@ function parseChanges(changes?: string | null): AuditChange[] | null {
   }
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('zh-TW')
-}
-
 // Export：CSV / PDF 共用單一端點，帶不同 format
 async function handleExport(format: 'csv' | 'pdf') {
   try {
@@ -95,12 +93,7 @@ async function handleExport(format: 'csv' | 'pdf') {
       endDate: filterEndDate.value || undefined,
       format,
     })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `audit_${toLocalDateString(new Date())}.${format}`
-    a.click()
-    URL.revokeObjectURL(url)
+    downloadBlob(blob, `audit_${toLocalDateString(new Date())}.${format}`)
     uiStore.showToast('已匯出', 'success')
   } catch (e) { notifyError(e, '匯出失敗') }
 }
@@ -185,7 +178,7 @@ onMounted(() => loadLogs())
           </template>
           <template v-for="log in auditStore.logs" v-else :key="log.id">
             <tr class="border-b border-gray-100 hover:bg-gray-50">
-              <td class="px-4 py-3 text-xs text-gray-500">{{ formatDate(log.createdAt) }}</td>
+              <td class="px-4 py-3 text-xs text-gray-500">{{ formatDateTime(log.createdAt) }}</td>
               <td class="px-4 py-3">{{ log.userName ?? '—' }}</td>
               <td class="px-4 py-3"><span class="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{{ log.action }}</span></td>
               <td class="px-4 py-3 text-xs">{{ resourceLabel(log.resourceType) }}</td>

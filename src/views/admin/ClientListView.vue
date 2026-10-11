@@ -12,6 +12,7 @@ import AppInput from '@/components/ui/AppInput.vue'
 import ClientSearchBar from '@/components/client/ClientSearchBar.vue'
 import InitialCredentialsModal from '@/components/client/InitialCredentialsModal.vue'
 import { notifyError } from '@/utils/notifyError'
+import { formatDate } from '@/utils/format'
 import type { ClientProfile, CreateClientRequest, ClientStatus, InitialCredentials } from '@/types'
 
 const router = useRouter()
@@ -35,7 +36,7 @@ const tableData = computed(() => {
   const list = statusFilter.value
     ? clientStore.clients.filter((c) => c.status === statusFilter.value)
     : clientStore.clients
-  return list as unknown as Record<string, unknown>[]
+  return list
 })
 
 const statusVariant: Record<ClientStatus, 'success' | 'warning' | 'danger' | 'default'> = {
@@ -55,11 +56,6 @@ const statusLabel: Record<ClientStatus, string> = {
 function therapistNames(client: ClientProfile): string {
   if (!client.therapists?.length) return '—'
   return client.therapists.map((t) => t.therapistName).join('、')
-}
-
-function formatDate(iso: string | null): string {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleDateString('zh-TW')
 }
 
 // ── Search ──────────────────────────────────
@@ -155,21 +151,21 @@ onMounted(() => clientStore.fetchClients())
     <!-- Table -->
     <AppTable :columns="columns" :data="tableData" :loading="clientStore.loading">
       <template #cell-status="{ row }">
-        <AppBadge :variant="statusVariant[(row as unknown as ClientProfile).status]">
-          {{ statusLabel[(row as unknown as ClientProfile).status] }}
+        <AppBadge :variant="statusVariant[row.status]">
+          {{ statusLabel[row.status] }}
         </AppBadge>
       </template>
 
       <template #cell-therapists="{ row }">
-        {{ therapistNames(row as unknown as ClientProfile) }}
+        {{ therapistNames(row) }}
       </template>
 
       <template #cell-createdAt="{ row }">
-        {{ formatDate((row as unknown as ClientProfile).createdAt) }}
+        {{ formatDate(row.createdAt) }}
       </template>
 
       <template #cell-actions="{ row }">
-        <AppButton size="sm" variant="ghost" @click="goToDetail(row as unknown as ClientProfile)">
+        <AppButton size="sm" variant="ghost" @click="goToDetail(row)">
           查看
         </AppButton>
       </template>
