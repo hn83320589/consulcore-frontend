@@ -2,6 +2,8 @@
 import { ref, onMounted, computed } from 'vue'
 import { useStaffStore } from '@/stores/staffStore'
 import { useUiStore } from '@/stores/uiStore'
+import { useAuthStore } from '@/stores/authStore'
+import { assignableRoles, canManageUser } from '@/utils/staffAccess'
 import AppTable from '@/components/ui/AppTable.vue'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -19,6 +21,7 @@ import { PERMISSION_GROUPS } from '@/types'
 
 const staffStore = useStaffStore()
 const uiStore = useUiStore()
+const authStore = useAuthStore()
 
 // ── Tab ─────────────────────────────────────
 const activeTab = ref<'users' | 'permissions'>('users')
@@ -57,9 +60,12 @@ const userForm = ref<{
 const saving = ref(false)
 
 // 角色多選來源（契約 7.1：roles: string[]）
-const roleChoices = computed(() =>
-  staffStore.roles.map((r) => ({ name: r.name, description: r.description })),
-)
+const roleChoices = computed(() => {
+  const allowed = assignableRoles(staffStore.roles.map((r) => r.name), authStore.activeRole)
+  return staffStore.roles
+    .filter((r) => allowed.includes(r.name))
+    .map((r) => ({ name: r.name, description: r.description }))
+})
 
 function toggleFormRole(name: string) {
   const idx = userForm.value.roles.indexOf(name)
@@ -265,7 +271,7 @@ onMounted(async () => {
         </template>
 
         <template #cell-actions="{ row }">
-          <div class="flex gap-1">
+          <div v-if="canManageUser(row as unknown as UserResponse, authStore.activeRole)" class="flex gap-1">
             <AppButton size="sm" variant="ghost" @click="openEditModal(row as unknown as UserResponse)">
               編輯
             </AppButton>
