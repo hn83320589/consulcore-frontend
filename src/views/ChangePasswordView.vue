@@ -51,7 +51,7 @@ async function handleSubmit() {
       </p>
       <p v-else class="text-center text-gray-400 text-sm mb-6">ConsulCore</p>
 
-      <form @submit.prevent="handleSubmit" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleSubmit">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">目前密碼</label>
           <input

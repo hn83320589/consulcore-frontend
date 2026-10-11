@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": [
+    "src/**/__tests__/*",
+    "src/**/*.ts",
+    "src/**/*.vue",
+    "env.d.ts"
+  ],
+  "exclude": [],
+  "compilerOptions": {
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "node"
+    ]
+  }
+}

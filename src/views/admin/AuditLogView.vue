@@ -181,7 +181,7 @@ onMounted(() => loadLogs())
           <template v-else-if="auditStore.logs.length === 0">
             <tr><td :colspan="columns.length" class="px-4 py-8 text-center text-gray-400">暫無紀錄</td></tr>
           </template>
-          <template v-else v-for="log in auditStore.logs" :key="log.id">
+          <template v-for="log in auditStore.logs" v-else :key="log.id">
             <tr class="border-b border-gray-100 hover:bg-gray-50">
               <td class="px-4 py-3 text-xs text-gray-500">{{ formatDate(log.createdAt) }}</td>
               <td class="px-4 py-3">{{ log.userName ?? '—' }}</td>

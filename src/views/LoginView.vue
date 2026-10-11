@@ -42,7 +42,7 @@ async function handleLogin() {
       <h1 class="text-2xl font-bold text-center text-primary mb-1">諮心管理</h1>
       <p class="text-center text-gray-400 text-sm mb-6">ConsulCore</p>
 
-      <form @submit.prevent="handleLogin" class="space-y-4">
+      <form class="space-y-4" @submit.prevent="handleLogin">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">帳號</label>
           <input
