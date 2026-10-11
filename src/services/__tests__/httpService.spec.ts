@@ -98,6 +98,14 @@ describe('httpService', () => {
     expect(onToast).toHaveBeenCalledWith('找不到個案', 'warning')
   })
 
+  // B7：後端對同時預約同一時段等併發衝突回 409
+  it('409 顯示後端訊息（例如時段剛被別人預約）', async () => {
+    const { http, onToast } = setUp(() => ({ status: 409, data: { success: false, message: '資料剛被其他人更新' } }))
+
+    await expect(http.post('/appointments', {})).rejects.toBeInstanceOf(AxiosError)
+    expect(onToast).toHaveBeenCalledWith('資料剛被其他人更新', 'warning')
+  })
+
   it('5xx 顯示通用訊息，不外洩後端細節', async () => {
     const { http, onToast } = setUp(() => ({ status: 500, data: { success: false, message: 'NullReferenceException' } }))
 

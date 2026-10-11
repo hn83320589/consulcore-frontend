@@ -86,7 +86,8 @@ export function createHttpService(deps: HttpServiceDeps): HttpService {
           // 可能為權限不足，或首次登入未改密碼（契約 4.4）；顯示後端 message
           deps.onToast(data?.message || '權限不足，無法執行此操作', 'warning')
         }
-        if (status === 400 || status === 404) {
+        // 409：併發衝突（例如同一時段剛被別人預約），後端訊息可直接顯示
+        if (status === 400 || status === 404 || status === 409) {
           deps.onToast(data?.message || '請求無法完成', 'warning')
         }
         if (status >= 500) {
