@@ -5,8 +5,8 @@
 ### 1. 建立 View 檔案
 
 位置依角色決定：
-- 機構後台：`frontend/src/views/admin/XxxView.vue`
-- 個案端：`frontend/src/views/client/XxxView.vue`
+- 機構後台：`src/views/admin/XxxView.vue`
+- 個案端：`src/views/client/XxxView.vue`
 
 ```vue
 <script setup lang="ts">
@@ -28,7 +28,7 @@ onMounted(async () => {
 </template>
 ```
 
-### 2. 註冊路由（`frontend/src/router/index.ts`）
+### 2. 註冊路由（`src/router/index.ts`）
 
 ```typescript
 // 機構後台路由（在 AdminLayout children 下）
@@ -36,11 +36,7 @@ onMounted(async () => {
   path: 'xxx',
   name: 'admin-xxx',
   component: () => import('@/views/admin/XxxView.vue'),
-  meta: {
-    requiresAuth: true,
-    requiredPermission: 'xxx.view',  // 對應 Permission.code
-    title: '頁面標題'
-  }
+  meta: { title: '頁面標題' }  // 角色限制由父層 AdminLayout 的 meta.roles 統一處理
 }
 
 // 個案端路由（在 ClientLayout children 下）
@@ -48,11 +44,7 @@ onMounted(async () => {
   path: 'xxx',
   name: 'client-xxx',
   component: () => import('@/views/client/XxxView.vue'),
-  meta: {
-    requiresAuth: true,
-    requiredRole: 'client',
-    title: '頁面標題'
-  }
+  meta: { title: '頁面標題' }  // 父層 ClientLayout 已設 meta.roles: ['client']
 }
 ```
 
@@ -64,8 +56,8 @@ onMounted(async () => {
 {
   label: '選單名稱',
   icon: 'icon-name',
-  to: '/admin/xxx',
-  permission: 'xxx.view'
+  path: '/admin/xxx',
+  permission: 'xxx.view'  // 須與後端權限碼一字不差
 }
 ```
 
@@ -108,7 +100,7 @@ onMounted(async () => {
 ## 檢查清單
 
 - [ ] View 放在正確的資料夾（admin/ 或 client/）
-- [ ] 路由已註冊，meta 含權限資訊
+- [ ] 路由已註冊在正確的 Layout 之下
 - [ ] 側欄選單已加入（機構後台頁面）
 - [ ] 使用對應的 Pinia Store，不直接呼叫 API
 - [ ] TypeScript 型別完整定義

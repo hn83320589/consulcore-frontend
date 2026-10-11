@@ -11,7 +11,7 @@
 
 諮心管理（ConsulCore）是一套針對心理諮商所與個人執業心理師的全流程執業管理工具。本倉庫為前端 SPA 專案。
 
-後端倉庫：`consulcore-backend`（.NET 9 Web API，獨立部署）
+後端倉庫：`consulcore-backend`（.NET 10 Web API，獨立部署）
 後端 API base URL（開發）：`http://localhost:5037/api`
 
 ### 技術棧
@@ -19,13 +19,13 @@
 | 項目 | 技術 | 版本 |
 |------|------|------|
 | 框架 | Vue 3 Composition API | 3.5+ |
-| 語言 | TypeScript（嚴格模式） | 5.x |
-| 狀態管理 | Pinia + pinia-plugin-persistedstate | 2.x + 4.x |
+| 語言 | TypeScript（嚴格模式） | 6.x |
+| 狀態管理 | Pinia + pinia-plugin-persistedstate | 3.x + 4.x |
 | HTTP | Axios | 1.x |
 | CSS | Tailwind CSS | 3.x |
 | 日曆 | FullCalendar | 6.x |
 | 簽名 | signature_pad | 5.x |
-| 建置 | Vite | 7.x |
+| 建置 | Vite | 8.x |
 | 路由 | Vue Router | 4.x |
 
 ### 專案結構
@@ -211,14 +211,15 @@ consulcore-frontend/
 | feeService | /api/fee-schedules + /api/packages |
 | discountService | /api/discounts |
 | reportService | /api/reports |
-| fileService | 檔案上傳（簽名圖等） |
+| clientMemoService | /api/client-memos |
+| violationService | /api/violation-records |
 
 ---
 
 ## 元件架構
 
 ### 基礎 UI（components/ui/）
-AppButton, AppInput, AppSelect, AppModal, AppTable, AppCalendar, AppTabs, AppBadge, AppToast, AppCard
+AppButton, AppInput, AppSelect, AppModal, ConfirmModal, AppTable, AppTabs, AppBadge
 
 ### 業務元件
 | 分類 | 元件 |
