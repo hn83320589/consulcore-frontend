@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AppButton from '@/components/ui/AppButton.vue'
+import { formatDateTime } from '@/utils/format'
 
 interface Props {
   isLocked: boolean
@@ -16,10 +17,6 @@ defineEmits<{
   unlock: []
 }>()
 
-function formatDate(iso: string | null): string {
-  if (!iso) return ''
-  return new Date(iso).toLocaleString('zh-TW')
-}
 </script>
 
 <template>
@@ -31,7 +28,7 @@ function formatDate(iso: string | null): string {
       <span v-if="isLocked" class="text-yellow-600">🔒 已鎖定</span>
       <span v-else class="text-green-600">📝 編輯中</span>
       <span v-if="isLocked && lockedAt" class="text-yellow-500 text-xs">
-        {{ formatDate(lockedAt) }}{{ lockedBy ? ` · ${lockedBy}` : '' }}
+        {{ formatDateTime(lockedAt) }}{{ lockedBy ? ` · ${lockedBy}` : '' }}
       </span>
     </div>
     <AppButton

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { Bar, Doughnut } from 'vue-chartjs'
+import { formatCurrency } from '@/utils/format'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -103,9 +104,6 @@ const doughnutOptions = {
   },
 }
 
-function formatCurrency(amount: number): string {
-  return `$${amount.toLocaleString()}`
-}
 </script>
 
 <template>

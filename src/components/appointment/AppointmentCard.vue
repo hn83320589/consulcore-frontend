@@ -2,6 +2,7 @@
 import type { Appointment, AppointmentStatus, SessionType, VisitType } from '@/types'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
+import { formatDayWithWeekday } from '@/utils/format'
 
 interface Props {
   appointment: Appointment
@@ -41,9 +42,6 @@ const visitTypeLabel: Record<VisitType, string> = {
   follow_up: '後續',
 }
 
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString('zh-TW', { weekday: 'short', month: 'short', day: 'numeric' })
-}
 </script>
 
 <template>
@@ -76,7 +74,7 @@ function formatDate(date: string): string {
       </div>
       <div>
         <p class="text-gray-500 text-xs">日期</p>
-        <p class="font-medium">{{ formatDate(appointment.date) }}</p>
+        <p class="font-medium">{{ formatDayWithWeekday(appointment.date) }}</p>
       </div>
       <div>
         <p class="text-gray-500 text-xs">時段</p>

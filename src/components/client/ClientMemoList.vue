@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
+import { formatShortDateTime } from '@/utils/format'
 import type { ClientMemo, MemoCategory, CreateMemoRequest, UpdateMemoRequest } from '@/types'
 
 interface Props {
@@ -77,9 +78,6 @@ function handleUpdate(id: number) {
   editingId.value = null
 }
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleString('zh-TW', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-}
 </script>
 
 <template>
@@ -130,7 +128,7 @@ function formatDate(iso: string): string {
             <div class="flex items-start justify-between mb-1">
               <div class="flex items-center gap-2">
                 <span class="text-xs text-gray-500">{{ memo.therapistName }}</span>
-                <span class="text-xs text-gray-300">{{ formatDate(memo.createdAt) }}</span>
+                <span class="text-xs text-gray-300">{{ formatShortDateTime(memo.createdAt) }}</span>
                 <AppBadge :variant="categoryVariants[memo.category]" class="text-[10px]">
                   {{ categoryLabels[memo.category] }}
                 </AppBadge>

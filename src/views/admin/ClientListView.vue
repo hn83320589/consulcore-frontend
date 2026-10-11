@@ -12,6 +12,7 @@ import AppInput from '@/components/ui/AppInput.vue'
 import ClientSearchBar from '@/components/client/ClientSearchBar.vue'
 import InitialCredentialsModal from '@/components/client/InitialCredentialsModal.vue'
 import { notifyError } from '@/utils/notifyError'
+import { formatDate } from '@/utils/format'
 import type { ClientProfile, CreateClientRequest, ClientStatus, InitialCredentials } from '@/types'
 
 const router = useRouter()
@@ -55,11 +56,6 @@ const statusLabel: Record<ClientStatus, string> = {
 function therapistNames(client: ClientProfile): string {
   if (!client.therapists?.length) return '—'
   return client.therapists.map((t) => t.therapistName).join('、')
-}
-
-function formatDate(iso: string | null): string {
-  if (!iso) return '—'
-  return new Date(iso).toLocaleDateString('zh-TW')
 }
 
 // ── Search ──────────────────────────────────

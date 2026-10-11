@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ConsentRecord, ConsentRecordStatus } from '@/types'
 import AppBadge from '@/components/ui/AppBadge.vue'
+import { formatDate } from '@/utils/format'
 
 interface Props {
   records: ConsentRecord[]
@@ -24,9 +25,6 @@ const statusVariants: Record<ConsentRecordStatus, 'success' | 'danger' | 'defaul
   voided: 'danger',
 }
 
-function formatDate(iso: string | null | undefined): string {
-  return iso ? new Date(iso).toLocaleDateString('zh-TW') : '—'
-}
 </script>
 
 <template>

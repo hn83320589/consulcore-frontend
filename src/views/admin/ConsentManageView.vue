@@ -9,6 +9,7 @@ import AppInput from '@/components/ui/AppInput.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
 import AppTable from '@/components/ui/AppTable.vue'
 import { notifyError } from '@/utils/notifyError'
+import { formatDate } from '@/utils/format'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import type {
   ConsentTemplate,
@@ -138,10 +139,6 @@ function handleRecordFilter() {
     triggerEvent: recordFilterTriggerEvent.value || undefined,
     status: recordFilterStatus.value || undefined,
   })
-}
-
-function formatDate(iso: string | null | undefined): string {
-  return iso ? new Date(iso).toLocaleDateString('zh-TW') : '—'
 }
 
 // ── View Record Modal ───────────────────────

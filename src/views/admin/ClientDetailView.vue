@@ -25,6 +25,7 @@ import PaymentStatusBadge from '@/components/billing/PaymentStatusBadge.vue'
 import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
 import { clientDetailAccess } from '@/utils/clientDetailAccess'
 import { notifyError } from '@/utils/notifyError'
+import { formatCurrency, formatDateWithYear } from '@/utils/format'
 import type { UpdateClientRequest, ConsentRecord, ClientStatus, Appointment, CreateMemoRequest, UpdateMemoRequest } from '@/types'
 
 const route = useRoute()
@@ -198,10 +199,6 @@ function toggleNote(id: number) {
   expandedNoteId.value = expandedNoteId.value === id ? null : id
 }
 
-function formatNoteDate(date: string): string {
-  return new Date(date).toLocaleDateString('zh-TW', { year: 'numeric', month: 'short', day: 'numeric' })
-}
-
 // ── Billing ─────────────────────────────────
 const clientBillingRecords = computed(() =>
   billingStore.records
@@ -218,10 +215,6 @@ const pendingTotal = computed(() =>
     .filter((r) => r.status === 'pending')
     .reduce((sum, r) => sum + r.finalAmount, 0),
 )
-
-function formatCurrency(val: number): string {
-  return `$${val.toLocaleString()}`
-}
 
 // ── Client Memos ────────────────────────────
 async function handleCreateMemo(payload: CreateMemoRequest) {
@@ -404,7 +397,7 @@ onMounted(async () => {
               @click="toggleNote(note.id)"
             >
               <div class="flex items-center gap-3">
-                <span class="text-gray-600 font-medium">{{ formatNoteDate(note.createdAt) }}</span>
+                <span class="text-gray-600 font-medium">{{ formatDateWithYear(note.createdAt) }}</span>
                 <AppBadge :variant="note.type === 'closure' ? 'warning' : 'default'">
                   {{ note.type === 'closure' ? '結案摘要' : '晤談' }}
                 </AppBadge>
