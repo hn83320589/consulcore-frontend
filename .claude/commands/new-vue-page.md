@@ -36,7 +36,7 @@ onMounted(async () => {
   path: 'xxx',
   name: 'admin-xxx',
   component: () => import('@/views/admin/XxxView.vue'),
-  meta: { title: '頁面標題' }  // 角色限制由父層 AdminLayout 的 meta.roles 統一處理
+  meta: { title: '頁面標題', permission: 'xxx.view' }  // 角色由父層 meta.roles 處理；permission 必填（測試會檢查）
 }
 
 // 個案端路由（在 ClientLayout children 下）
@@ -50,14 +50,13 @@ onMounted(async () => {
 
 ### 3. 加入側欄選單（如需要）
 
-在 `AdminSidebar.vue` 的選單配置中加入對應項目，用 `permissions` 控制顯示：
+在 `AdminSidebar.vue` 的選單配置中加入對應項目。顯示與否由該路由的 `meta.permission` 決定，選單項目不需再寫權限：
 
 ```typescript
 {
   label: '選單名稱',
   icon: 'icon-name',
   path: '/admin/xxx',
-  permission: 'xxx.view'  // 須與後端權限碼一字不差
 }
 ```
 
@@ -100,7 +99,7 @@ onMounted(async () => {
 ## 檢查清單
 
 - [ ] View 放在正確的資料夾（admin/ 或 client/）
-- [ ] 路由已註冊在正確的 Layout 之下
+- [ ] 路由已註冊在正確的 Layout 之下，後台頁面有 `meta.permission`
 - [ ] 側欄選單已加入（機構後台頁面）
 - [ ] 使用對應的 Pinia Store，不直接呼叫 API
 - [ ] TypeScript 型別完整定義

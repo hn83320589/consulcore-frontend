@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { useUiStore } from '@/stores/uiStore'
 import type { RoleCode } from '@/types'
 
 // ── Views ──────────────────────────────────────
@@ -41,6 +42,8 @@ declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
     roles?: RoleCode[]
+    /** 進入此頁所需的權限碼（與後端權限碼一致）；側欄選單也從這裡讀 */
+    permission?: string
     title?: string
   }
 }
@@ -73,21 +76,21 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresAuth: true, roles: ['owner', 'therapist', 'admin'] },
     children: [
       { path: 'dashboard', name: 'AdminDashboard', component: DashboardView, meta: { title: '儀表板' } },
-      { path: 'staff', name: 'StaffManage', component: StaffManageView, meta: { title: '人員管理' } },
-      { path: 'clients', name: 'ClientList', component: ClientListView, meta: { title: '個案管理' } },
-      { path: 'clients/:id', name: 'ClientDetail', component: ClientDetailView, meta: { title: '個案詳情' } },
-      { path: 'consents', name: 'ConsentManage', component: ConsentManageView, meta: { title: '同意書管理' } },
-      { path: 'rooms', name: 'RoomSetting', component: RoomSettingView, meta: { title: '診間設定' } },
-      { path: 'schedule', name: 'ScheduleManage', component: ScheduleManageView, meta: { title: '排班管理' } },
-      { path: 'appointments', name: 'AppointmentManage', component: AppointmentManageView, meta: { title: '預約管理' } },
-      { path: 'sessions/new', name: 'SessionNoteNew', component: SessionNoteEditorView, meta: { title: '新增晤談紀錄' } },
-      { path: 'sessions/:id/edit', name: 'SessionNoteEdit', component: SessionNoteEditorView, meta: { title: '編輯晤談紀錄' } },
-      { path: 'fee-settings', name: 'FeeSetting', component: FeeSettingView, meta: { title: '費率設定' } },
-      { path: 'billing', name: 'BillingManage', component: BillingManageView, meta: { title: '收費管理' } },
-      { path: 'notifications', name: 'NotificationTemplate', component: NotificationTemplateView, meta: { title: '通知範本' } },
-      { path: 'performance', name: 'Performance', component: PerformanceView, meta: { title: '考核管理' } },
-      { path: 'audit-log', name: 'AuditLog', component: AuditLogView, meta: { title: '稽核紀錄' } },
-      { path: 'settings', name: 'OrgSetting', component: OrgSettingView, meta: { title: '機構設定' } },
+      { path: 'staff', name: 'StaffManage', component: StaffManageView, meta: { title: '人員管理', permission: 'staff.manage' } },
+      { path: 'clients', name: 'ClientList', component: ClientListView, meta: { title: '個案管理', permission: 'client.view' } },
+      { path: 'clients/:id', name: 'ClientDetail', component: ClientDetailView, meta: { title: '個案詳情', permission: 'client.view' } },
+      { path: 'consents', name: 'ConsentManage', component: ConsentManageView, meta: { title: '同意書管理', permission: 'consent.view' } },
+      { path: 'rooms', name: 'RoomSetting', component: RoomSettingView, meta: { title: '診間設定', permission: 'room.manage' } },
+      { path: 'schedule', name: 'ScheduleManage', component: ScheduleManageView, meta: { title: '排班管理', permission: 'schedule.view' } },
+      { path: 'appointments', name: 'AppointmentManage', component: AppointmentManageView, meta: { title: '預約管理', permission: 'appointment.view' } },
+      { path: 'sessions/new', name: 'SessionNoteNew', component: SessionNoteEditorView, meta: { title: '新增晤談紀錄', permission: 'session.view' } },
+      { path: 'sessions/:id/edit', name: 'SessionNoteEdit', component: SessionNoteEditorView, meta: { title: '編輯晤談紀錄', permission: 'session.view' } },
+      { path: 'fee-settings', name: 'FeeSetting', component: FeeSettingView, meta: { title: '費率設定', permission: 'billing.view' } },
+      { path: 'billing', name: 'BillingManage', component: BillingManageView, meta: { title: '收費管理', permission: 'billing.view' } },
+      { path: 'notifications', name: 'NotificationTemplate', component: NotificationTemplateView, meta: { title: '通知範本', permission: 'notification.manage' } },
+      { path: 'performance', name: 'Performance', component: PerformanceView, meta: { title: '考核管理', permission: 'performance.view' } },
+      { path: 'audit-log', name: 'AuditLog', component: AuditLogView, meta: { title: '稽核紀錄', permission: 'audit.view' } },
+      { path: 'settings', name: 'OrgSetting', component: OrgSettingView, meta: { title: '機構設定', permission: 'org.settings' } },
     ],
   },
 
@@ -154,6 +157,13 @@ router.beforeEach(async (to) => {
   // 檢查角色權限
   const requiredRoles = to.meta.roles
   if (requiredRoles && authStore.activeRole && !requiredRoles.includes(authStore.activeRole)) {
+    return authStore.getDashboardPath(authStore.activeRole)
+  }
+
+  // 檢查頁面權限碼：側欄隱藏不等於擋下，直接輸入網址也要擋
+  const requiredPermission = to.meta.permission
+  if (requiredPermission && authStore.activeRole && !authStore.hasPermission(requiredPermission)) {
+    useUiStore().showToast('權限不足，無法進入此頁面', 'warning')
     return authStore.getDashboardPath(authStore.activeRole)
   }
 

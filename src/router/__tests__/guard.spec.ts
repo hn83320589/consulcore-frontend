@@ -116,12 +116,31 @@ describe('路由守衛', () => {
     expect(store.permissions).toContain('staff.manage')
   })
 
-  // 現況：路由只檢查角色、不檢查權限碼（側欄隱藏不等於擋網址）。
-  // Phase 2 的 F4 會改為依權限擋下，屆時此案例要跟著改成「導回 dashboard」。
-  it('現況：沒有 audit.view 權限的治療師仍可直接用網址進入稽核頁', async () => {
+  // F4：路由依 meta.permission 擋下，不再只靠側欄隱藏
+  it('沒有該頁權限時，直接輸入網址會被導回 dashboard', async () => {
     signIn({ activeRole: 'therapist', permissions: ['client.view'] })
 
+    expect(await navigate('/admin/audit-log')).toBe('/admin/dashboard')
+  })
+
+  it('有該頁權限時可以進入', async () => {
+    signIn({ activeRole: 'owner', permissions: ['audit.view'] })
+
     expect(await navigate('/admin/audit-log')).toBe('/admin/audit-log')
+  })
+
+  it('動態路由（個案詳情）同樣檢查權限', async () => {
+    signIn({ activeRole: 'therapist', permissions: ['appointment.view'] })
+
+    expect(await navigate('/admin/clients/3')).toBe('/admin/dashboard')
+  })
+
+  it('後台除了 dashboard，每一頁都必須宣告所需權限', () => {
+    const admin = router.getRoutes().filter((r) => r.path.startsWith('/admin/'))
+    const missing = admin.filter((r) => r.path !== '/admin/dashboard' && !r.meta.permission).map((r) => r.path)
+
+    expect(admin.length).toBeGreaterThan(10)
+    expect(missing).toEqual([])
   })
 
   it('設定頁面標題', async () => {

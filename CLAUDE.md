@@ -144,8 +144,10 @@ consulcore-frontend/
 已登入 + 多角色 + 未選角色 → /select-role
 /client/* + 非 Client 身份 → 對應 Dashboard
 /admin/* + 非機構身份 → 對應 Dashboard
-特定頁面 + 權限不足 → Dashboard + 提示
+特定頁面 + 權限不足 → Dashboard + 提示（route meta.permission）
 ```
+
+後台頁面一律在路由宣告 `meta.permission`（測試會檢查）；側欄選單從路由讀取所需權限，不另外維護。
 
 ---
 
