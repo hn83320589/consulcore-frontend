@@ -586,7 +586,7 @@ onMounted(async () => {
       @close="viewingRecord = null"
     >
       <div v-if="viewingRecord">
-        <div class="prose prose-sm max-w-none mb-4" v-html="viewingRecord.contentSnapshot" />
+        <div class="prose prose-sm max-w-none mb-4 whitespace-pre-wrap">{{ viewingRecord.contentSnapshot }}</div>
         <div v-if="viewingRecord.signatureImage" class="border-t border-gray-200 pt-4">
           <p class="text-xs text-gray-500 mb-2">簽名</p>
           <img :src="viewingRecord.signatureImage" alt="簽名" class="h-20" />
