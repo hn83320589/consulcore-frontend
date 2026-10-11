@@ -130,8 +130,11 @@ onMounted(async () => {
   await store.fetchPhrases()
   if (noteId.value == null && clientProfileId.value) {
     if (clientStore.currentClient?.id !== clientProfileId.value) {
-      // 失敗時 httpService 已顯示錯誤訊息；標題只是少了姓名，不影響撰寫紀錄
-      await clientStore.fetchClient(clientProfileId.value).catch(() => undefined)
+      try {
+        await clientStore.fetchClient(clientProfileId.value)
+      } catch {
+        // 失敗時 httpService 已顯示錯誤訊息；標題只是少了姓名，不影響撰寫紀錄
+      }
     }
     clientName.value = clientStore.currentClient?.id === clientProfileId.value ? clientStore.currentClient.name : ''
   }
