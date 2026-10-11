@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { useAppointmentStore } from '@/stores/appointmentStore'
 import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
+import { toLocalDateString } from '@/utils/date'
 import type { ScheduleSlot } from '@/types'
 
 const router = useRouter()
@@ -91,8 +92,8 @@ async function handleConfirm() {
 // ── Init ────────────────────────────────────
 onMounted(() => {
   const now = new Date()
-  const startDate = now.toISOString().slice(0, 10)
-  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10)
+  const startDate = toLocalDateString(now)
+  const endDate = toLocalDateString(new Date(now.getFullYear(), now.getMonth() + 1, 0))
   appointmentStore.fetchAvailableSlots({ startDate, endDate })
 })
 </script>

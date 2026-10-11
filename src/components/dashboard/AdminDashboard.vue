@@ -3,12 +3,13 @@ import { computed, onMounted } from 'vue'
 import { useClientStore } from '@/stores/clientStore'
 import { useBillingStore } from '@/stores/billingStore'
 import { useAppointmentStore } from '@/stores/appointmentStore'
+import { toLocalDateString } from '@/utils/date'
 
 const clientStore = useClientStore()
 const billingStore = useBillingStore()
 const appointmentStore = useAppointmentStore()
 
-const today = new Date().toISOString().slice(0, 10)
+const today = toLocalDateString(new Date())
 
 const todayCount = computed(
   () => appointmentStore.appointments.filter((a) => a.date === today).length,

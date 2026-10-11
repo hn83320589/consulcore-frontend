@@ -27,6 +27,13 @@ export default defineConfigWithVueTs(
       'vue/html-self-closing': 'off',
       // 以型別宣告的選填 prop 預設即為 undefined，不需要再補預設值
       'vue/require-default-prop': 'off',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.property.name='slice'][callee.object.callee.property.name='toISOString']",
+          message: 'toISOString() 是 UTC，在 UTC+8 會差一天；日期字串請用 @/utils/date 的 toLocalDateString()。',
+        },
+      ],
     },
   },
 )

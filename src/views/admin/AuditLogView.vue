@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useAuditStore } from '@/stores/auditStore'
 import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
+import { toLocalDateString } from '@/utils/date'
 
 interface AuditChange {
   field: string
@@ -96,7 +97,7 @@ async function handleExport(format: 'csv' | 'pdf') {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `audit_${new Date().toISOString().slice(0, 10)}.${format}`
+    a.download = `audit_${toLocalDateString(new Date())}.${format}`
     a.click()
     URL.revokeObjectURL(url)
     uiStore.showToast('已匯出', 'success')
