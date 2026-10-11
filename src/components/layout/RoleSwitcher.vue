@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 import type { RoleCode } from '@/types'
 
 const authStore = useAuthStore()
+const authActions = useAuthActions()
 const open = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
@@ -14,9 +16,9 @@ const roleLabels: Record<RoleCode, string> = {
   client: '個案',
 }
 
-function handleSwitch(role: RoleCode) {
+async function handleSwitch(role: RoleCode) {
   open.value = false
-  authStore.switchRole(role)
+  await authActions.switchRole(role)
 }
 
 function handleClickOutside(e: MouseEvent) {

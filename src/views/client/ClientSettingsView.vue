@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 import { useNotificationStore } from '@/stores/notificationStore'
 import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
@@ -10,6 +11,7 @@ import { notificationEventMeta } from '@/types'
 import { notifyError } from '@/utils/notifyError'
 
 const authStore = useAuthStore()
+const authActions = useAuthActions()
 const notifStore = useNotificationStore()
 const uiStore = useUiStore()
 
@@ -26,7 +28,7 @@ async function handleChangePassword() {
   }
   changingPassword.value = true
   try {
-    await authStore.changePassword(passwordForm.value.currentPassword, passwordForm.value.newPassword)
+    await authActions.changePassword(passwordForm.value.currentPassword, passwordForm.value.newPassword)
     uiStore.showToast('密碼已更新', 'success')
     passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
   } catch (e) { notifyError(e, '更新失敗') }

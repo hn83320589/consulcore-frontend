@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 
 const authStore = useAuthStore()
+const authActions = useAuthActions()
 
 const currentPassword = ref('')
 const newPassword = ref('')
@@ -33,7 +35,7 @@ async function handleSubmit() {
   loading.value = true
   try {
     // 成功後 store 會清除狀態並導回 /login，要求重新登入換發 token
-    await authStore.changePassword(currentPassword.value, newPassword.value)
+    await authActions.changePassword(currentPassword.value, newPassword.value)
   } catch (e: unknown) {
     error.value = e instanceof Error ? e.message : '變更密碼失敗，請稍後再試'
   } finally {

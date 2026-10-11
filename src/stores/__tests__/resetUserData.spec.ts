@@ -4,8 +4,6 @@ import type { ClientProfile } from '@/types'
 
 // F5：登出或切換角色後，上一位使用者（或上一個角色）的個案、晤談紀錄、收費資料
 // 原本仍留在記憶體中的各 store；共用電腦上下一位登入者可能短暫看到
-const push = vi.fn()
-vi.mock('vue-router', () => ({ useRouter: () => ({ push }) }))
 vi.mock('@/services/authService', () => ({
   default: { getMe: vi.fn().mockResolvedValue({ roles: ['therapist', 'client'], permissions: [] }) },
 }))

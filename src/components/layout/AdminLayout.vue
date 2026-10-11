@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 import { useUiStore } from '@/stores/uiStore'
 import AdminSidebar from './AdminSidebar.vue'
 import RoleSwitcher from './RoleSwitcher.vue'
 import NotificationBell from './NotificationBell.vue'
 
-const authStore = useAuthStore()
+const authActions = useAuthActions()
 const uiStore = useUiStore()
 </script>
 
@@ -57,7 +57,7 @@ const uiStore = useUiStore()
           <RoleSwitcher />
           <button
             class="text-sm text-gray-500 hover:text-gray-700 hidden sm:inline"
-            @click="authStore.logout()"
+            @click="authActions.logout()"
           >
             登出
           </button>

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/authStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 import { parseLoginError } from '@/utils/loginError'
 
-const authStore = useAuthStore()
+const authActions = useAuthActions()
 
 const username = ref('')
 const password = ref('')
@@ -14,7 +14,7 @@ async function handleLogin() {
   error.value = ''
   loading.value = true
   try {
-    await authStore.login({ username: username.value, password: password.value })
+    await authActions.login({ username: username.value, password: password.value })
   } catch (e: unknown) {
     error.value = parseLoginError(e)
   } finally {

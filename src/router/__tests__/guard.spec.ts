@@ -4,11 +4,6 @@ import type { RoleCode } from '@/types'
 
 // 記錄路由守衛的現行行為（characterization）：Phase 3 抽成純函式時以此為安全網。
 // 使用真實的 router 與全部路由，順便確認所有頁面模組都能被載入。
-// authStore 在 setup 內呼叫 useRouter()（測試中不在元件內，inject 取不到），只替換這個函式
-vi.mock('vue-router', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('vue-router')>()),
-  useRouter: () => ({ push: vi.fn() }),
-}))
 vi.mock('@/services/authService', () => ({
   default: { login: vi.fn(), getMe: vi.fn(), changePassword: vi.fn() },
 }))
