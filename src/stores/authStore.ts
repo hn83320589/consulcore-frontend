@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import authService from '@/services/authService'
 import { registerAuthProvider } from '@/services/httpService'
+import { resetUserData } from './resetUserData'
 import type { User, RoleCode, LoginRequest } from '@/types'
 
 export const useAuthStore = defineStore(
@@ -89,11 +90,14 @@ export const useAuthStore = defineStore(
       permissions.value = []
       mustChangePassword.value = false
       clientProfileId.value = null
+      resetUserData()
       router.push('/login')
     }
 
     async function switchRole(role: RoleCode) {
       activeRole.value = role
+      // 另一個身份不應看到前一個身份載入的資料（例如治療師的個案清單）
+      resetUserData()
       // 切換角色後重新取得該角色的權限
       await fetchMe()
       await router.push(getDashboardPath(role))

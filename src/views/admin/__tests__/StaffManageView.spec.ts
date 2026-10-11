@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
-import { createPinia, setActivePinia } from 'pinia'
+import { setUpTestPinia } from '@/stores/__tests__/testPinia'
 import type { RoleCode, UserResponse } from '@/types'
 
 vi.mock('vue-router', () => ({ useRouter: () => ({ push: vi.fn() }) }))
@@ -23,7 +23,7 @@ function user(id: number, roles: string[]): UserResponse {
 }
 
 async function render(activeRole: RoleCode) {
-  setActivePinia(createPinia())
+  setUpTestPinia()
   useAuthStore().activeRole = activeRole
   vi.mocked(staffService.getUsers).mockResolvedValue([user(1, ['owner']), user(2, ['therapist'])])
   const wrapper = mount(StaffManageView, { attachTo: document.body })
