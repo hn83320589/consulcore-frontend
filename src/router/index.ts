@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useUiStore } from '@/stores/uiStore'
 import type { RoleCode } from '@/types'
+import { needsPermissionLoad, resolveNavigation } from './navigation'
 
 // ── Views ──────────────────────────────────────
 import LoginView from '@/views/LoginView.vue'
@@ -98,52 +99,19 @@ const router = createRouter({
 })
 
 // ── Navigation Guard ───────────────────────────
+// 判斷規則在 navigation.ts（純函式、有表格測試）；這裡只負責補抓權限與提示
 router.beforeEach(async (to) => {
   const authStore = useAuthStore()
 
-  // 不需要認證的頁面（如 login）
-  if (to.meta.requiresAuth === false) {
-    // 已登入就直接跳 dashboard
-    if (authStore.isAuthenticated && authStore.activeRole) {
-      return authStore.getDashboardPath(authStore.activeRole)
-    }
-    return true
+  if (needsPermissionLoad(to, authStore, authStore.permissions.length > 0)) {
+    // 失敗時 store 已清除登入狀態，必須明確回登入頁，不能繼續往下判斷
+    if (!(await authStore.fetchMe())) return '/login'
   }
 
-  // 需要認證但未登入
-  if (!authStore.isAuthenticated) {
-    return '/login'
-  }
-
-  // 首次登入強制改密碼（契約 4.4）：鎖定只能停在改密碼頁
-  if (authStore.mustChangePassword && to.name !== 'ChangePassword') {
-    return '/change-password'
-  }
-
-  // 已登入但有多角色且未選擇角色（且不是正在前往選角色頁）
-  if (!authStore.activeRole && to.name !== 'RoleSelect') {
-    return '/select-role'
-  }
-
-  // 重整後 permissions 不持久化，首次進入受保護頁時補抓（唯一來源 /me）
-  if (authStore.activeRole && authStore.permissions.length === 0) {
-    await authStore.fetchMe()
-  }
-
-  // 檢查角色權限
-  const requiredRoles = to.meta.roles
-  if (requiredRoles && authStore.activeRole && !requiredRoles.includes(authStore.activeRole)) {
-    return authStore.getDashboardPath(authStore.activeRole)
-  }
-
-  // 檢查頁面權限碼：側欄隱藏不等於擋下，直接輸入網址也要擋
-  const requiredPermission = to.meta.permission
-  if (requiredPermission && authStore.activeRole && !authStore.hasPermission(requiredPermission)) {
-    useUiStore().showToast('權限不足，無法進入此頁面', 'warning')
-    return authStore.getDashboardPath(authStore.activeRole)
-  }
-
-  return true
+  const result = resolveNavigation(to, authStore)
+  if (result === true) return true
+  if (result.notice) useUiStore().showToast(result.notice, 'warning')
+  return result.redirect
 })
 
 // ── Dynamic Title ──────────────────────────────

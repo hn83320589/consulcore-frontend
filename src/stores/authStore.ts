@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import authService from '@/services/authService'
 import { registerAuthProvider } from '@/services/httpService'
 import { resetUserData } from './resetUserData'
+import { dashboardPathFor } from '@/router/navigation'
 import type { User, RoleCode, LoginRequest } from '@/types'
 
 export const useAuthStore = defineStore(
@@ -106,7 +107,7 @@ export const useAuthStore = defineStore(
     }
 
     function getDashboardPath(role: RoleCode): string {
-      return role === 'client' ? '/client/dashboard' : '/admin/dashboard'
+      return dashboardPathFor(role)
     }
 
     return {

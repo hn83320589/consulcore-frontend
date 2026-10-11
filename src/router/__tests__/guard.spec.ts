@@ -138,6 +138,13 @@ describe('路由守衛', () => {
     expect(missing).toEqual([])
   })
 
+  it('補抓權限失敗時回到登入頁，不放行到受保護頁面', async () => {
+    vi.mocked(authService.getMe).mockRejectedValue(new Error('network'))
+    signIn({ activeRole: 'owner', permissions: [] })
+
+    expect(await navigate('/admin/clients')).toBe('/login')
+  })
+
   it('設定頁面標題', async () => {
     signIn({ activeRole: 'owner' })
     await navigate('/admin/clients')

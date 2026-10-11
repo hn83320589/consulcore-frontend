@@ -246,7 +246,8 @@ AdminLayout, ClientLayout, AdminSidebar, ClientNavbar, RoleSwitcher, Notificatio
 - 所有 API 呼叫走對應的 Service，不在 component 直接呼叫 axios
 - Store 只做資料管理，不含 UI 邏輯（顯示/隱藏/導航不放 Store）
 - 元件 Props 必須定義 TypeScript interface
-- 路由守衛統一在 `router/index.ts` 管理
+- 路由守衛：判斷規則在 `router/navigation.ts`（純函式 `resolveNavigation`，表格測試），`router/index.ts` 只負責補抓權限與提示
+- Store 不負責換頁：需要「改登入狀態 + 換頁」時用 `composables/useAuthActions`
 - 錯誤處理統一走 httpService 攔截器：API 錯誤由攔截器顯示後端訊息；頁面 catch 只處理 UI 狀態，需要提示時用 `notifyError(e, '通用訊息')`（攔截器已顯示過的錯誤會自動略過，避免重複 toast）
 - 使用 CSS 變數（`var(--color-primary)`），不寫死顏色
 - 命名：camelCase（變數/函式）、PascalCase（元件/型別）
