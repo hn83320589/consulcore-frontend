@@ -8,6 +8,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
+import { toLocalDateString } from '@/utils/date'
 import type { Appointment, AppointmentStatus } from '@/types'
 
 const router = useRouter()
@@ -17,7 +18,7 @@ const uiStore = useUiStore()
 
 const activeTab = ref<'upcoming' | 'history'>('upcoming')
 
-const today = new Date().toISOString().slice(0, 10)
+const today = toLocalDateString(new Date())
 
 const upcoming = computed(() =>
   appointmentStore.appointments

@@ -83,7 +83,7 @@ onMounted(() => {
           <span>v{{ viewingRecord.templateVersion }}</span>
           <span>· {{ formatDate(viewingRecord.signedAt) }}</span>
         </div>
-        <div class="prose prose-sm max-w-none border-t pt-4 mb-4" v-html="viewingRecord.contentSnapshot" />
+        <div class="prose prose-sm max-w-none border-t pt-4 mb-4 whitespace-pre-wrap">{{ viewingRecord.contentSnapshot }}</div>
         <div v-if="viewingRecord.signatureImage" class="border-t pt-4">
           <p class="text-xs text-app-text/50 mb-2">您的簽名</p>
           <img :src="viewingRecord.signatureImage" alt="簽名" class="h-20" />

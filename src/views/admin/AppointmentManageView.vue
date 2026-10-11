@@ -8,6 +8,7 @@ import AppointmentCalendar from '@/components/appointment/AppointmentCalendar.vu
 import AppointmentList from '@/components/appointment/AppointmentList.vue'
 import AppointmentCard from '@/components/appointment/AppointmentCard.vue'
 import QuickBookModal from '@/components/appointment/QuickBookModal.vue'
+import { toLocalDateString } from '@/utils/date'
 import type { Appointment, AppointmentStatus, CreateAppointmentRequest } from '@/types'
 
 const appointmentStore = useAppointmentStore()
@@ -24,8 +25,8 @@ const filterTo = ref('')
 
 function getDateRange() {
   const now = new Date()
-  const startDate = filterFrom.value || new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10)
-  const endDate = filterTo.value || new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10)
+  const startDate = filterFrom.value || toLocalDateString(new Date(now.getFullYear(), now.getMonth(), 1))
+  const endDate = filterTo.value || toLocalDateString(new Date(now.getFullYear(), now.getMonth() + 1, 0))
   return { startDate, endDate }
 }
 

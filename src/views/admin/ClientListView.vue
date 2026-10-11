@@ -10,7 +10,8 @@ import AppBadge from '@/components/ui/AppBadge.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
 import ClientSearchBar from '@/components/client/ClientSearchBar.vue'
-import type { ClientProfile, CreateClientRequest, ClientStatus } from '@/types'
+import InitialCredentialsModal from '@/components/client/InitialCredentialsModal.vue'
+import type { ClientProfile, CreateClientRequest, ClientStatus, InitialCredentials } from '@/types'
 
 const router = useRouter()
 const clientStore = useClientStore()
@@ -27,6 +28,7 @@ const columns: TableColumn[] = [
 
 // 狀態非後端搜尋參數，於前端過濾
 const statusFilter = ref<ClientStatus | ''>('')
+const issuedCredentials = ref<InitialCredentials | null>(null)
 
 const tableData = computed(() => {
   const list = statusFilter.value
@@ -117,9 +119,11 @@ async function handleCreate() {
       referralSource: createForm.value.referralSource || undefined,
       createAccount: createForm.value.createAccount,
     }
-    await clientStore.createClient(payload)
+    const created = await clientStore.createClient(payload)
     uiStore.showToast('個案已新增', 'success')
     showCreateModal.value = false
+    // 有建立帳號時，後端只在這一次回傳初始帳密，交給櫃檯當場交付
+    issuedCredentials.value = created.initialCredentials ?? null
   } catch {
     uiStore.showToast('新增失敗', 'error')
   } finally {
@@ -198,5 +202,7 @@ onMounted(() => clientStore.fetchClients())
         </AppButton>
       </template>
     </AppModal>
+
+    <InitialCredentialsModal :credentials="issuedCredentials" @close="issuedCredentials = null" />
   </div>
 </template>

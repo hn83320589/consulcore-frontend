@@ -14,6 +14,7 @@ import type { TableColumn } from '@/components/ui/AppTable.vue'
 import MetricsCard from '@/components/performance/MetricsCard.vue'
 import MetricsTrend from '@/components/performance/MetricsTrend.vue'
 import ReviewForm from '@/components/performance/ReviewForm.vue'
+import { toLocalDateString } from '@/utils/date'
 import type {
   PerformanceReview, ReviewVisibility, TherapistMetrics,
   ViolationRecord, ViolationSeverity, CreatePerformanceReviewRequest,
@@ -31,16 +32,13 @@ const periodFilter = ref('quarterly')
 
 // ══════════ Tab 1: Metrics ══════════
 // period 選單換算成 startDate/endDate（後端 metrics 端點必填），以今日為 endDate 回推。
-function fmtDate(d: Date): string {
-  return d.toISOString().slice(0, 10)
-}
 function computeRange(period: string): MetricsSearchParams {
   const end = new Date()
   const start = new Date()
   if (period === 'monthly') start.setMonth(start.getMonth() - 1)
   else if (period === 'yearly') start.setFullYear(start.getFullYear() - 1)
   else start.setMonth(start.getMonth() - 3) // quarterly（預設）
-  return { startDate: fmtDate(start), endDate: fmtDate(end) }
+  return { startDate: toLocalDateString(start), endDate: toLocalDateString(end) }
 }
 
 async function loadMetrics() {

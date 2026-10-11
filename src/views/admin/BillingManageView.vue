@@ -13,6 +13,7 @@ import type { TableColumn } from '@/components/ui/AppTable.vue'
 import PaymentStatusBadge from '@/components/billing/PaymentStatusBadge.vue'
 import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
 import RevenueChart from '@/components/billing/RevenueChart.vue'
+import { toLocalDateString } from '@/utils/date'
 import type { BillingRecord, BillingSearchParams, PaymentMethod, PaymentStatus } from '@/types'
 
 const billingStore = useBillingStore()
@@ -88,7 +89,7 @@ async function handleExport() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `billing-${new Date().toISOString().slice(0, 10).replace(/-/g, '')}.csv`
+    a.download = `billing-${toLocalDateString(new Date()).replace(/-/g, '')}.csv`
     a.click()
     URL.revokeObjectURL(url)
     uiStore.showToast('已匯出', 'success')

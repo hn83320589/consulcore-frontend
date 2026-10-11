@@ -2,11 +2,12 @@
 import { computed, onMounted } from 'vue'
 import { useClientStore } from '@/stores/clientStore'
 import { useAppointmentStore } from '@/stores/appointmentStore'
+import { toLocalDateString } from '@/utils/date'
 
 const clientStore = useClientStore()
 const appointmentStore = useAppointmentStore()
 
-const today = new Date().toISOString().slice(0, 10)
+const today = toLocalDateString(new Date())
 
 // therapist 身份下後端自動只回自己的個案 / 預約
 const todayAppointments = computed(() =>

@@ -13,29 +13,31 @@ interface MenuItem {
   label: string
   icon: string
   path: string
-  permission?: string
 }
 
-// permission 碼須與契約第 5 節的 32 個權限碼一字不差（單數、正確命名空間）
+// 所需權限由路由的 meta.permission 決定（router/index.ts），側欄不另外維護
 const allMenuItems: MenuItem[] = [
   { label: '儀表板', icon: '📊', path: '/admin/dashboard' },
-  { label: '預約管理', icon: '📅', path: '/admin/appointments', permission: 'appointment.view' },
-  { label: '排班管理', icon: '🗓️', path: '/admin/schedule', permission: 'schedule.view' },
-  { label: '個案管理', icon: '👤', path: '/admin/clients', permission: 'client.view' },
-  { label: '晤談紀錄', icon: '📝', path: '/admin/sessions/new', permission: 'session.view' },
-  { label: '收費管理', icon: '💰', path: '/admin/billing', permission: 'billing.view' },
-  { label: '同意書', icon: '📋', path: '/admin/consents', permission: 'consent.view' },
-  { label: '考核管理', icon: '📈', path: '/admin/performance', permission: 'performance.view' },
-  { label: '諮商室', icon: '🏠', path: '/admin/rooms', permission: 'room.manage' },
-  { label: '人員管理', icon: '👥', path: '/admin/staff', permission: 'staff.manage' },
-  { label: '費率設定', icon: '⚙️', path: '/admin/fee-settings', permission: 'billing.view' },
-  { label: '通知範本', icon: '🔔', path: '/admin/notifications', permission: 'notification.manage' },
-  { label: '稽核紀錄', icon: '📜', path: '/admin/audit-log', permission: 'audit.view' },
-  { label: '機構設定', icon: '🏢', path: '/admin/settings', permission: 'org.settings' },
+  { label: '預約管理', icon: '📅', path: '/admin/appointments' },
+  { label: '排班管理', icon: '🗓️', path: '/admin/schedule' },
+  { label: '個案管理', icon: '👤', path: '/admin/clients' },
+  { label: '晤談紀錄', icon: '📝', path: '/admin/sessions/new' },
+  { label: '收費管理', icon: '💰', path: '/admin/billing' },
+  { label: '同意書', icon: '📋', path: '/admin/consents' },
+  { label: '考核管理', icon: '📈', path: '/admin/performance' },
+  { label: '諮商室', icon: '🏠', path: '/admin/rooms' },
+  { label: '人員管理', icon: '👥', path: '/admin/staff' },
+  { label: '費率設定', icon: '⚙️', path: '/admin/fee-settings' },
+  { label: '通知範本', icon: '🔔', path: '/admin/notifications' },
+  { label: '稽核紀錄', icon: '📜', path: '/admin/audit-log' },
+  { label: '機構設定', icon: '🏢', path: '/admin/settings' },
 ]
 
 const visibleMenuItems = computed(() =>
-  allMenuItems.filter((item) => !item.permission || authStore.hasPermission(item.permission)),
+  allMenuItems.filter((item) => {
+    const permission = router.resolve(item.path).meta.permission
+    return !permission || authStore.hasPermission(permission)
+  }),
 )
 
 const collapsed = computed(() => uiStore.sidebarCollapsed)

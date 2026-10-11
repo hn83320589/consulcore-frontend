@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { toLocalDateString } from '@/utils/date'
 import type { ScheduleSlot, SlotStatus } from '@/types'
 
 interface Props {
@@ -14,7 +15,7 @@ const emit = defineEmits<{
   'slot-click': [slot: ScheduleSlot]
 }>()
 
-const today = new Date().toISOString().slice(0, 10)
+const today = toLocalDateString(new Date())
 
 const statusColors: Record<SlotStatus, string> = {
   available: 'bg-green-100 text-green-700 border-green-200',
