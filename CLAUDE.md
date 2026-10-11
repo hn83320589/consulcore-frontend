@@ -248,6 +248,7 @@ AdminLayout, ClientLayout, AdminSidebar, ClientNavbar, RoleSwitcher, Notificatio
 - 錯誤處理統一走 httpService 攔截器
 - 使用 CSS 變數（`var(--color-primary)`），不寫死顏色
 - 命名：camelCase（變數/函式）、PascalCase（元件/型別）
+- 測試放在被測檔案旁的 `__tests__/*.spec.ts`（Vitest + happy-dom）；新功能與 bug 修正先寫測試
 
 ## 環境變數
 
@@ -263,6 +264,7 @@ npm run dev                  # 啟動 (http://localhost:5173)
 npm run build                # 建置
 npm run type-check           # TypeScript 檢查
 npm run lint                 # Lint
+npm test                     # Vitest 單元測試（npm run test:watch 監看模式）
 ```
 
 ## 最新異動記錄
@@ -272,3 +274,4 @@ npm run lint                 # Lint
 | 2026-04-03 | 初始版本，Phase 1 完整架構 |
 | 2026-08-02 | 全面對齊後端契約（`frontend-integration.md`）：認證地基扁平化 + `mustChangePassword` 流程、13 域型別/enum/URL/verb 對齊、httpService 移除 X-Organization-Id、ID 一律 number、狀態變更改 POST/PATCH。詳見 `prompts/fix-plan.md` |
 | 2026-08-02 | Phase 5 收尾：OrgSettingView（表單建構器）、DashboardView 三角色元件、ClientDetail Tab 權限收斂、診間心理師指派、eslint 導入（flat config）。後端待補端點見 `consulcore-backend/docs/frontend-requested-endpoints.md` |
+| 2026-10-11 | 導入 Vitest（authStore、路由守衛 characterization 測試）、GitHub Actions CI（type-check / lint / test / build）、ESLint 改 flat/recommended（排版規則關閉） |
