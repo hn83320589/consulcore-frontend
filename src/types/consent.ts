@@ -1,58 +1,20 @@
-export type ConsentTriggerEvent = 'manual' | 'first_visit' | 'annual_renewal' | 'service_change'
+import type { Schemas } from './schema'
 
-export type ConsentRecordStatus = 'pending' | 'signed' | 'voided'
+export type ConsentTriggerEvent = Schemas['ConsentTemplateResponseDto']['triggerEvent']
 
-export interface ConsentTemplate {
-  id: number
-  title: string
-  content: string
-  version: number
-  triggerEvent: ConsentTriggerEvent
-  isActive: boolean
-  createdAt: string
-  updatedAt: string
-}
+export type ConsentRecordStatus = Schemas['ConsentRecordResponseDto']['status']
 
-export interface CreateConsentTemplateRequest {
-  title: string
-  content: string
-  triggerEvent?: ConsentTriggerEvent
-}
+export type ConsentTemplate = Schemas['ConsentTemplateResponseDto']
 
-export interface UpdateConsentTemplateRequest {
-  title?: string
-  content?: string
-  triggerEvent?: ConsentTriggerEvent
-  isActive?: boolean
-}
+export type CreateConsentTemplateRequest = Schemas['CreateConsentTemplateDto']
 
-export interface ConsentRecord {
-  id: number
-  consentTemplateId: number
-  templateTitle: string
-  clientProfileId: number
-  clientName: string
-  contentSnapshot: string
-  templateVersion: number
-  signatureImage?: string | null
-  signedRemotely: boolean
-  status: ConsentRecordStatus
-  signedAt?: string | null
-  voidedAt?: string | null
-  voidReason?: string | null
-  createdAt: string
-}
+export type UpdateConsentTemplateRequest = Schemas['UpdateConsentTemplateDto']
 
-export interface SignConsentRequest {
-  consentTemplateId: number
-  clientProfileId: number
-  signatureImage?: string | null // Base64
-  signedRemotely: boolean
-}
+export type ConsentRecord = Schemas['ConsentRecordResponseDto']
 
-export interface VoidConsentRequest {
-  reason: string
-}
+export type SignConsentRequest = Schemas['SignConsentDto']
+
+export type VoidConsentRequest = Schemas['VoidConsentDto']
 
 export interface ConsentRecordSearchParams {
   clientProfileId?: number

@@ -1,16 +1,10 @@
+import type { Schemas } from './schema'
+
 // 角色權限 Role（契約 7.2，/api/roles）與權限模型（契約第 5 節）
 
-export interface RoleResponse {
-  id: number
-  name: string
-  description?: string | null
-  isSystemDefault: boolean
-  permissions: string[] // 權限碼
-}
+export type RoleResponse = Schemas['RoleResponseDto']
 
-export interface UpdateRolePermissionsRequest {
-  permissionCodes: string[]
-}
+export type UpdateRolePermissionsRequest = Schemas['UpdateRolePermissionsDto']
 
 // 全部權限碼（契約 5.1，32 個），依模組分組供權限矩陣 UI 使用。
 // 後端不提供 /roles/permissions 端點，故清單由前端維護。

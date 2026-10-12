@@ -1,44 +1,10 @@
-export type SessionNoteFormat = 'soap' | 'free_text'
-export type SessionNoteType = 'session' | 'closure'
+import type { Schemas } from './schema'
 
-export interface SessionNote {
-  id: number
-  clientProfileId: number
-  clientName: string
-  therapistUserId: number
-  therapistName: string
-  appointmentId?: number | null
-  type: SessionNoteType
-  format: SessionNoteFormat
-  soapS?: string | null
-  soapO?: string | null
-  soapA?: string | null
-  soapP?: string | null
-  freeTextContent?: string | null
-  intakeSummaryImported: boolean
-  isLocked: boolean
-  lockedAt?: string | null
-  lockedBy?: number | null
-  createdAt: string
-  updatedAt: string
-}
+export type SessionNoteFormat = Schemas['SessionNoteResponseDto']['format']
+export type SessionNoteType = Schemas['SessionNoteResponseDto']['type']
 
-export interface CreateSessionNoteRequest {
-  clientProfileId: number
-  appointmentId?: number | null
-  type?: SessionNoteType
-  format?: SessionNoteFormat
-  soapS?: string | null
-  soapO?: string | null
-  soapA?: string | null
-  soapP?: string | null
-  freeTextContent?: string | null
-}
+export type SessionNote = Schemas['SessionNoteResponseDto']
 
-export interface UpdateSessionNoteRequest {
-  soapS?: string | null
-  soapO?: string | null
-  soapA?: string | null
-  soapP?: string | null
-  freeTextContent?: string | null
-}
+export type CreateSessionNoteRequest = Schemas['CreateSessionNoteDto']
+
+export type UpdateSessionNoteRequest = Schemas['UpdateSessionNoteDto']

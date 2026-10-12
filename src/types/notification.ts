@@ -1,67 +1,23 @@
-export type NotificationChannel = 'email' | 'sms' | 'in_app'
-export type NotificationEventType =
-  | 'account_created'
-  | 'appointment_created'
-  | 'appointment_cancelled'
-  | 'appointment_reminder'
-  | 'therapist_leave'
-  | 'series_renewal'
-  | 'package_low'
-  | 'package_expiring'
-export type NotificationStatus = 'queued' | 'sent' | 'failed' | 'read'
+import type { Schemas } from './schema'
 
-export interface NotificationTemplate {
-  id: number
-  eventType: NotificationEventType
-  channel: NotificationChannel
-  subject: string
-  bodyTemplate: string
-  isRequired: boolean
-  isActive: boolean
-}
+export type NotificationChannel = Schemas['NotificationLogResponseDto']['channel']
+export type NotificationEventType = Schemas['NotificationTemplateResponseDto']['eventType']
+export type NotificationStatus = Schemas['NotificationLogResponseDto']['status']
 
-export interface CreateNotificationTemplateRequest {
-  eventType: NotificationEventType
-  channel?: NotificationChannel
-  subject: string
-  bodyTemplate: string
-  isRequired: boolean
-}
+export type NotificationTemplate = Schemas['NotificationTemplateResponseDto']
 
-export interface UpdateNotificationTemplateRequest {
-  subject?: string
-  bodyTemplate?: string
-  isActive?: boolean
-}
+export type CreateNotificationTemplateRequest = Schemas['CreateNotificationTemplateDto']
 
-export interface Notification {
-  id: number
-  channel: NotificationChannel
-  subject: string
-  body: string
-  status: NotificationStatus
-  sentAt?: string | null
-  readAt?: string | null
-  createdAt: string
-}
+export type UpdateNotificationTemplateRequest = Schemas['UpdateNotificationTemplateDto']
 
-export interface NotificationPreference {
-  eventType: NotificationEventType
-  emailEnabled: boolean
-  smsEnabled: boolean
-  inAppEnabled: boolean
-}
+export type Notification = Schemas['NotificationLogResponseDto']
 
-export interface UpdatePreferenceRequest {
-  eventType: NotificationEventType
-  emailEnabled: boolean
-  smsEnabled: boolean
-  inAppEnabled: boolean
-}
+export type NotificationPreference = Schemas['PreferenceResponseDto']
 
-export interface UnreadCount {
-  unreadCount: number
-}
+// 後端三個開關省略時預設 true；前端一律送齊，store 更新本地狀態時依賴這點
+export type UpdatePreferenceRequest = Required<Schemas['UpdatePreferenceDto']>
+
+export type UnreadCount = Schemas['UnreadCountDto']
 
 /**
  * eventType 的中文 label 與「是否為必要通知」metadata。

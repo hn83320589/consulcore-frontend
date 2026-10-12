@@ -54,15 +54,16 @@ const previewSections = computed<FormSectionResponse[]>(() =>
   draftSections.value.map((s, sIdx) => ({
     id: sIdx,
     title: s.title,
-    sortOrder: s.sortOrder,
+    // 請求 DTO 省略時後端以 0 / false 處理，預覽照同樣的預設值
+    sortOrder: s.sortOrder ?? 0,
     isRequired: s.isRequired ?? false,
     fields: (s.fields ?? []).map((f, fIdx) => ({
       id: sIdx * 1000 + fIdx,
       label: f.label,
       fieldType: f.fieldType ?? 'text',
       options: f.options ?? null,
-      isRequired: f.isRequired,
-      sortOrder: f.sortOrder,
+      isRequired: f.isRequired ?? false,
+      sortOrder: f.sortOrder ?? 0,
       placeholder: f.placeholder ?? null,
       validationRules: f.validationRules ?? null,
     })),
