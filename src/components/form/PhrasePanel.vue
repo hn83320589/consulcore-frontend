@@ -57,7 +57,7 @@ const filteredPhrases = computed(() =>
       <button
         v-for="phrase in filteredPhrases"
         :key="phrase.id"
-        class="w-full text-left p-2 rounded hover:bg-gray-50 transition-colors"
+        class="w-full text-left p-2 rounded-sm hover:bg-gray-50 transition-colors"
         :title="phrase.content"
         @click="emit('insert', phrase.content)"
       >

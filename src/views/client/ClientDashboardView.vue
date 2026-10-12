@@ -83,14 +83,14 @@ onMounted(() => {
     <!-- Quick Links -->
     <div class="grid grid-cols-2 gap-3">
       <button
-        class="bg-white rounded-app border border-orange-100 p-5 text-left hover:shadow-sm transition-shadow"
+        class="bg-white rounded-app border border-orange-100 p-5 text-left hover:shadow-xs transition-shadow"
         @click="router.push('/client/consents')"
       >
         <p class="font-medium text-app-text">同意書</p>
         <p class="text-sm text-app-text/50 mt-1">查看已簽署的同意書</p>
       </button>
       <button
-        class="bg-white rounded-app border border-orange-100 p-5 text-left hover:shadow-sm transition-shadow"
+        class="bg-white rounded-app border border-orange-100 p-5 text-left hover:shadow-xs transition-shadow"
         @click="router.push('/client/settings')"
       >
         <p class="font-medium text-app-text">設定</p>

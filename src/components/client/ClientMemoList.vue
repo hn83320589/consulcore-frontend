@@ -155,7 +155,7 @@ function handleUpdate(id: number) {
               <textarea
                 v-model="editContent"
                 rows="2"
-                class="w-full px-2 py-1 border border-gray-300 rounded text-sm mb-2"
+                class="w-full px-2 py-1 border border-gray-300 rounded-sm text-sm mb-2"
               />
               <div class="flex gap-1">
                 <AppButton size="sm" @click="handleUpdate(memo.id)">儲存</AppButton>

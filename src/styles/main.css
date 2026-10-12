@@ -1,8 +1,57 @@
-@import './variables.css';
+@import './variables.css' layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+/*
+  這些 token 的實際值由 variables.css 依雙風格（:root / .client-theme）提供，名稱與 Tailwind 的 theme 變數相同。
+  inline：class 直接使用 var(--color-primary)；reference：不輸出同名的 theme 變數，
+  否則會產生 --color-primary: var(--color-primary) 的循環定義，只是剛好被 variables.css 蓋掉才沒出事。
+*/
+@theme inline reference {
+  --color-primary: var(--color-primary);
+  --color-primary-hover: var(--color-primary-hover);
+  --color-app-bg: var(--color-bg);
+  --color-app-text: var(--color-text);
+  --color-success: var(--color-success);
+  --color-danger: var(--color-danger);
+  --color-warning: var(--color-warning);
+  --color-info: var(--color-info);
+
+  --radius-app: var(--border-radius);
+
+  --spacing-unit: var(--spacing-unit);
+
+  --text-base: var(--font-size-base);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  /* v4 的按鈕預設游標改為 default、placeholder 改為半透明文字色；維持 v3 的外觀 */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-gray-400);
+  }
+}
 
 body {
   margin: 0;

@@ -331,7 +331,7 @@ onMounted(async () => {
                       type="checkbox"
                       :checked="hasRolePermission(perm.code)"
                       :disabled="selectedRole.isSystemDefault"
-                      class="accent-[var(--color-primary)]"
+                      class="accent-primary"
                       @change="togglePermission(perm.code)"
                     />
                     <span class="text-gray-600">{{ perm.label }}</span>
@@ -378,7 +378,7 @@ onMounted(async () => {
               <input
                 type="checkbox"
                 :checked="userForm.roles.includes(role.name)"
-                class="accent-[var(--color-primary)]"
+                class="accent-primary"
                 @change="toggleFormRole(role.name)"
               />
               <span class="text-gray-600">{{ role.name }}</span>

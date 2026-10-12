@@ -24,7 +24,7 @@ const roleInfo: Record<RoleCode, { label: string; description: string; icon: str
         <button
           v-for="role in authStore.roles"
           :key="role"
-          class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-left hover:border-primary hover:shadow-md transition-all"
+          class="bg-white rounded-lg shadow-xs border border-gray-200 p-6 text-left hover:border-primary hover:shadow-md transition-all"
           @click="authActions.switchRole(role as RoleCode)"
         >
           <span class="text-3xl block mb-3">{{ roleInfo[role as RoleCode]?.icon }}</span>

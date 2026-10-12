@@ -37,7 +37,7 @@ const uiStore = useUiStore()
     <!-- Main Area -->
     <div class="flex-1 flex flex-col overflow-hidden min-w-0">
       <!-- Top Bar -->
-      <header class="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 flex-shrink-0">
+      <header class="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 shrink-0">
         <!-- Left: mobile hamburger + breadcrumb -->
         <div class="flex items-center gap-3">
           <button

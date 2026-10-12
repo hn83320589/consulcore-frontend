@@ -187,7 +187,7 @@ onMounted(() => clientStore.fetchClients())
         <AppInput v-model="createForm.referralSource" label="轉介來源" placeholder="選填" />
 
         <label class="flex items-center gap-2 mt-2">
-          <input v-model="createForm.createAccount" type="checkbox" class="accent-[var(--color-primary)]" />
+          <input v-model="createForm.createAccount" type="checkbox" class="accent-primary" />
           <span class="text-sm text-gray-600">同時為此個案建立登入帳號</span>
         </label>
       </form>

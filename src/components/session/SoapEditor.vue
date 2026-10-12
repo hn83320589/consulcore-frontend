@@ -101,7 +101,7 @@ defineExpose({ insertAtCursor })
         :value="fieldValue(section.field)"
         :disabled="disabled"
         rows="4"
-        class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
+        class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
         :placeholder="`輸入${section.label.split('—')[1]?.trim() ?? ''}...`"
         @input="emitUpdate(section.field, ($event.target as HTMLTextAreaElement).value)"
       />

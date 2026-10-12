@@ -113,15 +113,15 @@ onMounted(() => notifStore.fetchPreferences())
               <span v-if="isRequired(pref.eventType)" class="text-[10px] text-red-400 ml-1">必要</span>
             </td>
             <td class="px-4 py-3 text-center">
-              <input type="checkbox" :checked="pref.emailEnabled" :disabled="isRequired(pref.eventType)" class="accent-[var(--color-primary)]"
+              <input type="checkbox" :checked="pref.emailEnabled" :disabled="isRequired(pref.eventType)" class="accent-primary"
                 @change="togglePref(pref.eventType, 'email', !pref.emailEnabled)" />
             </td>
             <td class="px-4 py-3 text-center">
-              <input type="checkbox" :checked="pref.smsEnabled" :disabled="isRequired(pref.eventType)" class="accent-[var(--color-primary)]"
+              <input type="checkbox" :checked="pref.smsEnabled" :disabled="isRequired(pref.eventType)" class="accent-primary"
                 @change="togglePref(pref.eventType, 'sms', !pref.smsEnabled)" />
             </td>
             <td class="px-4 py-3 text-center">
-              <input type="checkbox" :checked="pref.inAppEnabled" :disabled="isRequired(pref.eventType)" class="accent-[var(--color-primary)]"
+              <input type="checkbox" :checked="pref.inAppEnabled" :disabled="isRequired(pref.eventType)" class="accent-primary"
                 @change="togglePref(pref.eventType, 'inApp', !pref.inAppEnabled)" />
             </td>
           </tr>
