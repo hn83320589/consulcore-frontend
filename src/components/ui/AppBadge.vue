@@ -10,7 +10,7 @@ withDefaults(defineProps<Props>(), {
 
 <template>
   <span
-    class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full"
+    class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full whitespace-nowrap"
     :class="{
       'bg-gray-100 text-gray-700': variant === 'default',
       'bg-green-100 text-green-700': variant === 'success',

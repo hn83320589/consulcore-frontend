@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAuthActions } from '@/composables/useAuthActions'
 import { useUiStore } from '@/stores/uiStore'
 import AdminSidebar from './AdminSidebar.vue'
@@ -7,6 +9,10 @@ import NotificationBell from './NotificationBell.vue'
 
 const authActions = useAuthActions()
 const uiStore = useUiStore()
+const route = useRoute()
+
+// 手機選單點了項目換頁後自動收起，否則新頁面仍被選單蓋住
+watch(() => route.fullPath, () => uiStore.setMobileNav(false))
 </script>
 
 <template>
@@ -24,12 +30,13 @@ const uiStore = useUiStore()
       leave-to-class="opacity-0"
     >
       <div
-        v-if="!uiStore.sidebarCollapsed"
+        v-if="uiStore.mobileNavOpen"
+        data-testid="mobile-nav"
         class="fixed inset-0 z-40 md:hidden"
       >
-        <div class="absolute inset-0 bg-black/30" @click="uiStore.toggleSidebar()" />
+        <div data-testid="mobile-nav-backdrop" class="absolute inset-0 bg-black/30" @click="uiStore.setMobileNav(false)" />
         <div class="relative w-60">
-          <AdminSidebar />
+          <AdminSidebar mobile />
         </div>
       </div>
     </Transition>
@@ -42,7 +49,8 @@ const uiStore = useUiStore()
         <div class="flex items-center gap-3">
           <button
             class="md:hidden text-gray-500 hover:text-gray-700 p-1"
-            @click="uiStore.toggleSidebar()"
+            aria-label="開啟選單"
+            @click="uiStore.setMobileNav(true)"
           >
             ☰
           </button>

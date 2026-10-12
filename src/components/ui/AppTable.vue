@@ -3,6 +3,8 @@ export interface TableColumn {
   key: string
   label: string
   width?: string
+  /** 長文字欄位（描述、備註）允許換行；其餘欄位不換行，窄螢幕時改為整個表格左右滑動 */
+  wrap?: boolean
 }
 </script>
 
@@ -58,8 +60,9 @@ function goPage(page: number) {
 
 <template>
   <div>
+    <!-- 窄螢幕時表格維持最小寬度、整個左右滑動，避免欄位被壓縮到文字逐字換行 -->
     <div class="overflow-x-auto border border-gray-200 rounded-app">
-      <table class="w-full text-sm">
+      <table class="w-full min-w-[36rem] text-sm">
         <thead>
           <tr class="bg-gray-50 border-b border-gray-200">
             <th
@@ -94,7 +97,7 @@ function goPage(page: number) {
             :key="rowKey(row, index)"
             class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
           >
-            <td v-for="col in columns" :key="col.key" class="px-4 py-3">
+            <td v-for="col in columns" :key="col.key" class="px-4 py-3" :class="{ 'whitespace-nowrap': !col.wrap }">
               <slot :name="`cell-${col.key}`" :row="row" :value="cellValue(row, col.key)">
                 {{ cellValue(row, col.key) ?? '' }}
               </slot>

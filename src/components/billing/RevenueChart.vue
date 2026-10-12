@@ -135,8 +135,8 @@ const doughnutOptions = {
     </div>
 
     <!-- Therapist Table -->
-    <div class="mt-6 bg-white border border-gray-200 rounded-app overflow-hidden">
-      <table class="w-full text-sm">
+    <div class="mt-6 bg-white border border-gray-200 rounded-app overflow-x-auto">
+      <table class="w-full min-w-[36rem] text-sm">
         <thead>
           <tr class="bg-gray-50 border-b border-gray-200">
             <th class="px-4 py-2 text-left text-gray-600">心理師</th>

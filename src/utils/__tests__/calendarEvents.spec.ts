@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { toCalendarEvents } from '@/utils/calendarEvents'
+import { calendarViewForWidth, toCalendarEvents } from '@/utils/calendarEvents'
 import type { Appointment } from '@/types'
 
 const apt = (status: Appointment['status']): Appointment => ({
@@ -23,5 +23,17 @@ describe('toCalendarEvents', () => {
 
     expect(event!.backgroundColor).toBe(`var(--color-status-${status})`)
     expect(event!.borderColor).toBe(`var(--color-status-${status}-border)`)
+  })
+})
+
+// RWD：手機寬度的 7 天週檢視每欄只剩約 40px，日期擠成三行、預約內容放不下
+describe('calendarViewForWidth', () => {
+  it.each([
+    [375, 'timeGridDay'],
+    [767, 'timeGridDay'],
+    [768, 'timeGridWeek'],
+    [1280, 'timeGridWeek'],
+  ])('寬度 %i → %s', (width, view) => {
+    expect(calendarViewForWidth(width)).toBe(view)
   })
 })

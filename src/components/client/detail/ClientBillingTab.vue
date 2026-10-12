@@ -71,8 +71,8 @@ const pendingTotal = computed(() =>
       <div v-if="clientBillingRecords.length === 0" class="bg-white border border-gray-200 rounded-app p-8 text-center text-gray-400 text-sm">
         尚無付款紀錄
       </div>
-      <div v-else class="bg-white border border-gray-200 rounded-app overflow-hidden">
-        <table class="w-full text-sm">
+      <div v-else class="bg-white border border-gray-200 rounded-app overflow-x-auto">
+        <table class="w-full min-w-[36rem] text-sm">
           <thead>
             <tr class="bg-gray-50 border-b border-gray-200">
               <th class="px-4 py-2 text-left text-gray-600">建立日期</th>

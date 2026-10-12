@@ -243,13 +243,13 @@ onMounted(async () => {
 
 <template>
   <div v-if="clientStore.currentClient">
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
+    <!-- Header：窄螢幕時操作按鈕換到下一列 -->
+    <div class="flex flex-wrap items-start justify-between gap-3 mb-6">
       <div>
         <h1 class="text-xl font-bold text-app-text">
           {{ clientStore.currentClient.name }}
         </h1>
-        <div class="flex items-center gap-2 mt-1">
+        <div class="flex flex-wrap items-center gap-2 mt-1">
           <AppBadge :variant="statusVariant[clientStore.currentClient.status]">
             {{ statusLabel[clientStore.currentClient.status] }}
           </AppBadge>
@@ -258,7 +258,7 @@ onMounted(async () => {
           </span>
         </div>
       </div>
-      <div v-if="canManageClient" class="flex gap-2">
+      <div v-if="canManageClient" class="flex flex-wrap gap-2">
         <AppButton size="sm" variant="secondary" @click="showAssignModal = true">
           指派心理師
         </AppButton>
