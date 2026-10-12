@@ -5408,6 +5408,7 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @description 取消預約時的備註；body 可整個省略 */
         AppointmentNoteDto: {
             note?: string | null;
         };
@@ -5437,6 +5438,7 @@ export interface components {
             /** @enum {string} */
             status: "scheduled" | "completed" | "cancelled" | "no_show";
             note?: string | null;
+            /** @description 溫和提示（BR-06），例如個案預約非慣用心理師；不阻擋建立。空陣列代表無提示 */
             hints: string[];
             /** Format: date-time */
             createdAt: string;
@@ -5548,6 +5550,7 @@ export interface components {
             /** @enum {string} */
             category: "personality" | "trigger" | "preference" | "family" | "other";
             content: string;
+            /** @description true = 目前的心理師可編輯；false = 他人所寫，唯讀（BR-16） */
             isEditable: boolean;
             /** Format: date-time */
             createdAt: string;
@@ -5727,7 +5730,10 @@ export interface components {
             startTime: string;
             /** @enum {string} */
             frequency?: "weekly" | "biweekly";
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 1–3 個月（BR-07 上限 3 個月）
+             */
             months?: number;
         };
         CreateClientMemoDto: {
@@ -5752,8 +5758,12 @@ export interface components {
             referralSource?: string | null;
             notes?: string | null;
             medicalHistory?: string | null;
+            /** @description true = 同時建立個案帳號；隨機初始帳密只在回應的 initialCredentials 回傳一次 */
             createAccount?: boolean;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 建檔時指派的心理師（選填；須為本機構啟用中的 therapist）
+             */
             therapistUserId?: number | null;
         };
         CreateConsentTemplateDto: {
@@ -5770,8 +5780,12 @@ export interface components {
             percentageValue?: number | null;
             /** Format: double */
             fixedAmount?: number | null;
+            /** @description 綁定角色標籤時自動套用（BR-11） */
             applicableRole?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description null = 機構通用折扣；有值 = 該心理師專屬（查找時專屬優先）
+             */
             therapistUserId?: number | null;
         };
         CreateFeeScheduleDto: {
@@ -5780,7 +5794,10 @@ export interface components {
             sessionType?: "individual" | "couple" | "family";
             /** @enum {string} */
             visitType?: "initial" | "follow_up";
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description null = 機構通用費率；查找時心理師專屬優先（BR-09）
+             */
             therapistUserId?: number | null;
             /** Format: double */
             amount: number;
@@ -5789,11 +5806,13 @@ export interface components {
             label: string;
             /** @enum {string} */
             fieldType?: "text" | "textarea" | "select" | "radio" | "checkbox" | "date" | "number" | "scale";
+            /** @description JSON 字串（select / radio / checkbox 的選項） */
             options?: string | null;
             isRequired?: boolean;
             /** Format: int32 */
             sortOrder?: number;
             placeholder?: string | null;
+            /** @description JSON 字串 */
             validationRules?: string | null;
         };
         CreateFormSectionDto: {
@@ -5861,7 +5880,10 @@ export interface components {
             dayOfWeek: number;
             startTime: string;
             endTime: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 每個時段的長度（分鐘，10–120）
+             */
             slotDuration?: number;
         };
         CreateSessionNoteDto: {
@@ -5886,6 +5908,7 @@ export interface components {
             password: string;
             displayName: string;
             phone?: string | null;
+            /** @description 角色名稱，至少 1 個 */
             roles: string[];
         };
         CreateViolationRecordDto: {
@@ -5929,8 +5952,12 @@ export interface components {
             percentageValue?: number | null;
             /** Format: double */
             fixedAmount?: number | null;
+            /** @description 綁定角色標籤時自動套用（BR-11） */
             applicableRole?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description null = 機構通用折扣；有值 = 該心理師專屬（查找時專屬優先）
+             */
             therapistUserId?: number | null;
             isActive: boolean;
         };
@@ -5973,7 +6000,10 @@ export interface components {
             sessionType: "individual" | "couple" | "family";
             /** @enum {string} */
             visitType: "initial" | "follow_up";
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description null = 機構通用費率；查找時心理師專屬優先（BR-09）
+             */
             therapistUserId?: number | null;
             therapistName?: string | null;
             /** Format: double */
@@ -5996,6 +6026,7 @@ export interface components {
         FieldValueDto: {
             /** Format: int32 */
             fieldId: number;
+            /** @description JSON 字串 */
             value?: string | null;
         };
         FieldValueResponseDto: {
@@ -6004,6 +6035,7 @@ export interface components {
             fieldLabel: string;
             /** @enum {string} */
             fieldType: "text" | "textarea" | "select" | "radio" | "checkbox" | "date" | "number" | "scale";
+            /** @description JSON 字串 */
             value?: string | null;
         };
         FormFieldResponseDto: {
@@ -6012,11 +6044,13 @@ export interface components {
             label: string;
             /** @enum {string} */
             fieldType: "text" | "textarea" | "select" | "radio" | "checkbox" | "date" | "number" | "scale";
+            /** @description JSON 字串（select / radio / checkbox 的選項） */
             options?: string | null;
             isRequired: boolean;
             /** Format: int32 */
             sortOrder: number;
             placeholder?: string | null;
+            /** @description JSON 字串 */
             validationRules?: string | null;
         };
         FormSectionResponseDto: {
@@ -6131,11 +6165,13 @@ export interface components {
             month?: number;
         };
         MetricPointDto: {
+            /** @description "yyyy-MM" */
             period: string;
             /** Format: double */
             value: number;
         };
         MetricsTrendDto: {
+            /** @description 指標鍵，同 TherapistMetricsDto 的欄位名（如 appointmentCompletionRate） */
             metric: string;
             points: components["schemas"]["MetricPointDto"][];
         };
@@ -6335,6 +6371,7 @@ export interface components {
             teamworkScore: number;
             /** Format: int32 */
             overallScore: number;
+            /** @description 質性考核；非 Owner 檢視時為 null（BR-18） */
             comment?: string | null;
             /** @enum {string} */
             visibility: "hidden" | "visible";
@@ -6434,6 +6471,7 @@ export interface components {
             name: string;
             description?: string | null;
             isSystemDefault: boolean;
+            /** @description 權限碼（如 client.manage） */
             permissions: string[];
         };
         RoleResponseDtoApiResponse: {
@@ -6519,7 +6557,10 @@ export interface components {
             dayOfWeek: number;
             startTime: string;
             endTime: string;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 每個時段的長度（分鐘）
+             */
             slotDuration: number;
             isActive: boolean;
             /** Format: date-time */
@@ -6595,6 +6636,7 @@ export interface components {
             consentTemplateId: number;
             /** Format: int32 */
             clientProfileId: number;
+            /** @description 簽名圖片（Base64） */
             signatureImage?: string | null;
             signedRemotely?: boolean;
         };
@@ -6618,21 +6660,45 @@ export interface components {
             /** Format: int32 */
             therapistUserId: number;
             therapistName: string;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 預約完成率（%）
+             */
             appointmentCompletionRate: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 未到率（%）
+             */
             noShowRate: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 紀錄及時性：晤談後平均多久完成紀錄（小時）
+             */
             avgNoteDelayHours: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 紀錄鎖定率（%）
+             */
             noteLockRate: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 個案留存率（%）
+             */
             clientRetentionRate: number;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 月諮商次數
+             */
             monthlySessionCount: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 月諮商時數
+             */
             monthlySessionHours: number;
-            /** Format: double */
+            /**
+             * Format: double
+             * @description 收費完成率（%）
+             */
             paymentCompletionRate: number;
         };
         TherapistMetricsDtoApiResponse: {
@@ -6707,11 +6773,13 @@ export interface components {
         };
         UpdateConsentTemplateDto: {
             title?: string | null;
+            /** @description 更新內容時版本自動 +1；既有簽署紀錄保留簽署當時的快照 */
             content?: string | null;
             /** @enum {string|null} */
             triggerEvent?: "manual" | "first_visit" | "annual_renewal" | "service_change" | null;
             isActive?: boolean | null;
         };
+        /** @description 不含 TherapistUserId：心理師綁定只在建立時設定 */
         UpdateDiscountDto: {
             name?: string | null;
             /** Format: double */
@@ -6729,6 +6797,7 @@ export interface components {
         UpdateFormTemplateDto: {
             name?: string | null;
             isActive?: boolean | null;
+            /** @description 傳入時整組覆蓋並 version +1；null 表示不變更 */
             sections?: components["schemas"]["CreateFormSectionDto"][] | null;
         };
         UpdateNotificationTemplateDto: {
@@ -6780,10 +6849,14 @@ export interface components {
         UpdateScheduleTemplateDto: {
             startTime?: string | null;
             endTime?: string | null;
-            /** Format: int32 */
+            /**
+             * Format: int32
+             * @description 每個時段的長度（分鐘，10–120）
+             */
             slotDuration?: number | null;
             isActive?: boolean | null;
         };
+        /** @description 只更新內容，不含 type / format */
         UpdateSessionNoteDto: {
             soapS?: string | null;
             soapO?: string | null;
