@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { Appointment, AppointmentStatus, SessionType, VisitType } from '@/types'
+import type { Appointment, SessionType, VisitType } from '@/types'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import { formatDayWithWeekday } from '@/utils/format'
+import { appointmentStatusLabel, appointmentStatusVariant } from '@/utils/appointmentStatus'
 
 interface Props {
   appointment: Appointment
@@ -17,19 +18,6 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const statusLabel: Record<AppointmentStatus, string> = {
-  scheduled: '已排定',
-  completed: '已完成',
-  cancelled: '已取消',
-  no_show: '未出席',
-}
-
-const statusVariant: Record<AppointmentStatus, 'info' | 'success' | 'default' | 'danger' | 'warning'> = {
-  scheduled: 'info',
-  completed: 'default',
-  cancelled: 'danger',
-  no_show: 'warning',
-}
 
 const sessionTypeLabel: Record<SessionType, string> = {
   individual: '個別',
@@ -48,8 +36,8 @@ const visitTypeLabel: Record<VisitType, string> = {
   <div class="space-y-4">
     <!-- Status -->
     <div class="flex items-center justify-between">
-      <AppBadge :variant="statusVariant[appointment.status]">
-        {{ statusLabel[appointment.status] }}
+      <AppBadge :variant="appointmentStatusVariant(appointment.status)">
+        {{ appointmentStatusLabel(appointment.status) }}
       </AppBadge>
       <span class="text-xs text-gray-400">#{{ appointment.id }}</span>
     </div>
