@@ -6841,12 +6841,12 @@ export interface components {
             therapistName: string;
             /**
              * Format: double
-             * @description 預約完成率（%）：已完成 ÷ 已有結果的預約（不含仍為已排定者）
+             * @description 預約完成率（%）：已完成 ÷（已完成 + 未出席）；已排定、已取消不計
              */
             appointmentCompletionRate: number;
             /**
              * Format: double
-             * @description 未到率（%）：未到 ÷ 已有結果的預約（不含仍為已排定者）
+             * @description 未到率（%）：未出席 ÷（已完成 + 未出席）；已排定、已取消不計
              */
             noShowRate: number;
             /**
