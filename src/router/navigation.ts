@@ -31,6 +31,9 @@ export function needsPermissionLoad(to: NavigationTarget, auth: NavigationAuth, 
 
 /** 依登入狀態決定放行或導向何處（權限須已載入） */
 export function resolveNavigation(to: NavigationTarget, auth: NavigationAuth): NavigationResult {
+  // 任何狀態都可看的頁面（404）
+  if (to.meta.public) return true
+
   // 不需登入的頁面（登入頁）：已登入且已選角色就直接回首頁
   if (to.meta.requiresAuth === false) {
     return auth.isAuthenticated && auth.activeRole ? { redirect: dashboardPathFor(auth.activeRole) } : true

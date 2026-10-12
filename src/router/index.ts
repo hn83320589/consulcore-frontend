@@ -17,6 +17,8 @@ import LoginView from '@/views/LoginView.vue'
 declare module 'vue-router' {
   interface RouteMeta {
     requiresAuth?: boolean
+    /** 不論登入狀態都可進入（例如 404），守衛直接放行 */
+    public?: boolean
     roles?: RoleCode[]
     /** 進入此頁所需的權限碼（與後端權限碼一致）；側欄選單也從這裡讀 */
     permission?: string
@@ -89,7 +91,9 @@ const routes: RouteRecordRaw[] = [
   // ── Fallback ─────────────────────────────────
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/login',
+    name: 'NotFound',
+    component: () => import('@/views/NotFoundView.vue'),
+    meta: { public: true, title: '找不到頁面' },
   },
 ]
 

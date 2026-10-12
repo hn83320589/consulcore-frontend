@@ -41,15 +41,37 @@ function formatTime(iso: string): string {
   return `${Math.floor(hr / 24)} 天前`
 }
 
+// 分頁在背景時不輪詢（開多個分頁時請求量會成倍增加），回到前景立即更新一次
+function startPolling() {
+  stopPolling()
+  pollTimer = setInterval(() => store.fetchUnreadCount(), 30000)
+}
+
+function stopPolling() {
+  if (pollTimer) clearInterval(pollTimer)
+  pollTimer = null
+}
+
+function handleVisibilityChange() {
+  if (document.hidden) {
+    stopPolling()
+  } else {
+    store.fetchUnreadCount()
+    startPolling()
+  }
+}
+
 onMounted(() => {
   store.fetchUnreadCount()
   document.addEventListener('click', handleClickOutside)
-  pollTimer = setInterval(() => store.fetchUnreadCount(), 30000)
+  document.addEventListener('visibilitychange', handleVisibilityChange)
+  if (!document.hidden) startPolling()
 })
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
-  if (pollTimer) clearInterval(pollTimer)
+  document.removeEventListener('visibilitychange', handleVisibilityChange)
+  stopPolling()
 })
 </script>
 

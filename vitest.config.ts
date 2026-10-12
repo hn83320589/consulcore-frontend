@@ -12,6 +12,8 @@ export default mergeConfig(
       environment: 'happy-dom',
       root: fileURLToPath(new URL('./', import.meta.url)),
       include: ['src/**/__tests__/*.spec.ts'],
+      // .env.development 不進版控；測試不連真的 API，給一個固定值讓 httpService 能建立
+      env: { VITE_API_BASE_URL: 'http://localhost:5037/api' },
     },
   }),
 )
