@@ -19,6 +19,7 @@ import type {
 } from '@/types'
 import { PERMISSION_GROUPS } from '@/types'
 import { notifyError } from '@/utils/notifyError'
+import { roleLabel, rolesLabel } from '@/utils/labels'
 
 const staffStore = useStaffStore()
 const uiStore = useUiStore()
@@ -36,8 +37,9 @@ const columns: TableColumn[] = [
   { key: 'actions', label: '操作', width: '200px' },
 ]
 
+// 「人員」只列有後台角色的帳號；只有個案身份的帳號在個案管理處理
 const tableData = computed(() =>
-  staffStore.users,
+  staffStore.users.filter((u) => u.roles.some((r) => r !== 'client')),
 )
 
 // ── User Modal ──────────────────────────────
@@ -192,7 +194,7 @@ const selectedRole = computed<RoleResponse | undefined>(() =>
 
 const permissionRoleOptions = computed(() =>
   staffStore.roles.map((r) => ({
-    label: `${r.name}${r.isSystemDefault ? '（系統預設）' : ''}`,
+    label: `${roleLabel(r.name)}${r.isSystemDefault ? '（系統預設）' : ''}`,
     value: String(r.id),
   })),
 )
@@ -263,7 +265,7 @@ onMounted(async () => {
     <div v-if="activeTab === 'users'">
       <AppTable :columns="columns" :data="tableData" :loading="staffStore.loading">
         <template #cell-roles="{ row }">
-          {{ row.roles.join('、') }}
+          {{ rolesLabel(row.roles) }}
         </template>
 
         <template #cell-isActive="{ row }">
@@ -382,7 +384,7 @@ onMounted(async () => {
                 class="accent-primary"
                 @change="toggleFormRole(role.name)"
               />
-              <span class="text-gray-600">{{ role.name }}</span>
+              <span class="text-gray-600">{{ roleLabel(role.name) }}</span>
             </label>
           </div>
         </div>
