@@ -26,16 +26,17 @@ function isActive(path: string): boolean {
 
 <template>
   <header class="bg-white/80 backdrop-blur-xs border-b border-orange-100 sticky top-0 z-40">
-    <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+    <!-- 手機：第一列 Logo + 登出，第二列導覽可左右滑動；sm 以上合併為單列 -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 flex flex-wrap sm:flex-nowrap items-center justify-between gap-x-4 sm:h-16">
       <!-- Logo -->
-      <span class="font-bold text-primary text-lg">ConsulCore</span>
+      <span class="font-bold text-primary text-lg h-12 sm:h-auto flex items-center">ConsulCore</span>
 
       <!-- Nav Links -->
-      <nav class="flex items-center gap-1">
+      <nav class="order-last sm:order-none w-full sm:w-auto flex items-center gap-1 overflow-x-auto pb-2 sm:pb-0">
         <button
           v-for="item in navItems"
           :key="item.path"
-          class="px-3 py-2 text-sm rounded-app transition-colors"
+          class="shrink-0 whitespace-nowrap px-3 py-2 text-sm rounded-app transition-colors"
           :class="isActive(item.path)
             ? 'text-primary font-medium bg-orange-50'
             : 'text-app-text/60 hover:text-app-text'"
@@ -47,7 +48,7 @@ function isActive(path: string): boolean {
 
       <!-- User -->
       <button
-        class="text-sm text-app-text/60 hover:text-app-text"
+        class="whitespace-nowrap text-sm text-app-text/60 hover:text-app-text"
         @click="authActions.logout()"
       >
         登出
