@@ -1,7 +1,7 @@
 import { defineConfig, type Plugin } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
-import { requireApiBaseUrl } from './src/utils/apiBaseUrl'
+import { requireApiBaseUrl } from './src/utils/apiBaseUrl.ts'
 
 // 正式建置時就檢查 API 位址：否則要等部署後打開頁面才會發現（執行時 httpService 也會再檢查一次）
 const requireApiBaseUrlOnBuild: Plugin = {
