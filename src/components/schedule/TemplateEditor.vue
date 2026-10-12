@@ -2,7 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
-import AppInput from '@/components/ui/AppInput.vue'
+import { useTherapistOptions } from '@/composables/useTherapistOptions'
 import type { ScheduleTemplate, DayOfWeek } from '@/types'
 
 /** TemplateEditor 對外送出的表單值（單日排班範本，對齊契約） */
@@ -37,6 +37,7 @@ const dayLabels: Record<DayOfWeek, string> = {
 }
 const days: DayOfWeek[] = [1, 2, 3, 4, 5, 6, 0]
 const dayOptions = days.map((d) => ({ label: `週${dayLabels[d]}`, value: String(d) }))
+const { options: therapistOptions } = useTherapistOptions()
 
 // ── Form state ──────────────────────────────
 // 契約：新增時可設 therapistUserId + dayOfWeek；編輯時僅能改 start/end/duration/isActive
@@ -103,11 +104,12 @@ function handleSave() {
         <label class="block text-sm font-medium text-gray-700 mb-1">心理師</label>
         <p class="px-3 py-2 text-sm text-gray-800">{{ props.template?.therapistName }}</p>
       </div>
-      <AppInput
+      <AppSelect
         v-else
         v-model="therapistUserId"
-        label="心理師 ID"
-        placeholder="待接入心理師下拉"
+        label="心理師"
+        :options="therapistOptions"
+        placeholder="選擇心理師"
       />
 
       <!-- 星期：新增可選、編輯唯讀（契約 Update 不含 dayOfWeek） -->

@@ -2798,6 +2798,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** 資料庫連不上時回 503，讓監控與負載平衡器知道這台不可用 */
         get: {
             parameters: {
                 query?: never;
@@ -2809,6 +2810,17 @@ export interface paths {
             responses: {
                 /** @description OK */
                 200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["HealthStatusDtoApiResponse"];
+                        "application/json": components["schemas"]["HealthStatusDtoApiResponse"];
+                        "text/json": components["schemas"]["HealthStatusDtoApiResponse"];
+                    };
+                };
+                /** @description Service Unavailable */
+                503: {
                     headers: {
                         [name: string]: unknown;
                     };
@@ -4952,6 +4964,44 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/therapists": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 機構內啟用中的心理師（下拉選單用） */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["TherapistOptionDtoListApiResponse"];
+                        "application/json": components["schemas"]["TherapistOptionDtoListApiResponse"];
+                        "text/json": components["schemas"]["TherapistOptionDtoListApiResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/users": {
         parameters: {
             query?: never;
@@ -6134,7 +6184,10 @@ export interface components {
             errors?: string[] | null;
         };
         HealthStatusDto: {
+            /** @description healthy / unhealthy */
             status: string;
+            /** @description ok / unreachable */
+            database: string;
             /** Format: date-time */
             timestamp: string;
         };
@@ -6750,6 +6803,18 @@ export interface components {
             success: boolean;
             message: string;
             data?: components["schemas"]["TherapistMetricsDto"][] | null;
+            errors?: string[] | null;
+        };
+        /** @description 心理師下拉選單的一個選項：只含識別與顯示用的姓名，不含聯絡資料。 */
+        TherapistOptionDto: {
+            /** Format: int32 */
+            id: number;
+            displayName: string;
+        };
+        TherapistOptionDtoListApiResponse: {
+            success: boolean;
+            message: string;
+            data?: components["schemas"]["TherapistOptionDto"][] | null;
             errors?: string[] | null;
         };
         TherapistRevenueDto: {
