@@ -21,13 +21,13 @@
 |------|------|------|
 | 框架 | Vue 3 Composition API | 3.5+ |
 | 語言 | TypeScript（嚴格模式） | 6.x |
-| 狀態管理 | Pinia + pinia-plugin-persistedstate | 3.x + 4.x |
+| 狀態管理 | Pinia + pinia-plugin-persistedstate | 4.x + 4.x |
 | HTTP | Axios | 1.x |
-| CSS | Tailwind CSS | 3.x |
+| CSS | Tailwind CSS | 4.x |
 | 日曆 | FullCalendar | 6.x |
 | 簽名 | signature_pad | 5.x |
 | 建置 | Vite | 8.x |
-| 路由 | Vue Router | 4.x |
+| 路由 | Vue Router | 5.x |
 
 ### 專案結構
 
@@ -90,7 +90,7 @@ consulcore-frontend/
 
 **規則：元件內不寫死顏色，一律用 CSS 變數。**
 
-語意色（兩種風格共用，定義於 `styles/variables.css`，Tailwind 已對應）：`success` / `danger` / `warning` / `info`
+語意色（兩種風格共用，值定義於 `styles/variables.css`，在 `styles/main.css` 的 `@theme inline reference` 對應成 Tailwind class；Tailwind 4 沒有 `tailwind.config.js`）：`success` / `danger` / `warning` / `info`
 （例：`bg-success`、`text-danger`）；預約狀態色 `--color-status-{scheduled|completed|cancelled|no_show}[-border]`。
 既有程式仍有約 150 處寫死的 Tailwind 色（`bg-red-500` 等），修改到該處時順手改用語意色。
 
