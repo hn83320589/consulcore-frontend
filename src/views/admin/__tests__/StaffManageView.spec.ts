@@ -88,8 +88,9 @@ describe('StaffManageView 人員清單', () => {
     document.body.innerHTML = ''
   })
 
-  // 角色原本顯示代碼 therapist；個案帳號也列在「人員」清單
-  it('角色顯示中文，只有個案身份的帳號不列出', async () => {
+  // 角色原本顯示代碼 therapist；個案帳號混在「人員」清單。
+  // 個案帳號的重設密碼、停用只在這裡，所以分開顯示而不是移除
+  it('角色顯示中文，個案帳號預設不列在後台人員，切換後可管理', async () => {
     setUpTestPinia()
     useAuthStore().activeRole = 'owner'
     vi.mocked(staffService.getUsers).mockResolvedValue([
@@ -101,5 +102,10 @@ describe('StaffManageView 人員清單', () => {
     expect(wrapper.text()).toContain('機構負責人')
     expect(wrapper.text()).toContain('心理師、個案')
     expect(wrapper.text()).not.toContain('使用者3')
+
+    await wrapper.get('[data-testid="account-kind"]').setValue('client')
+
+    expect(wrapper.text()).toContain('使用者3')
+    expect(wrapper.text()).not.toContain('機構負責人')
   })
 })
