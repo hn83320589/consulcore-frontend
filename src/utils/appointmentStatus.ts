@@ -32,3 +32,15 @@ export function todaysAppointments(appointments: readonly Appointment[], today: 
     .filter((a) => a.date === today && a.status !== 'cancelled')
     .sort((a, b) => a.startTime.localeCompare(b.startTime))
 }
+
+/**
+ * 個案最近一次預約的心理師：優先取今天以前最近一次未取消的，沒有則取最近一筆即將到來的。
+ * 個案端沒有讀取指派關係的權限，以預約紀錄推算。
+ */
+export function recentTherapistId(appointments: readonly Appointment[], today: string): number | null {
+  const key = (a: Appointment) => `${a.date} ${a.startTime}`
+  const active = appointments.filter((a) => a.status !== 'cancelled')
+  const past = active.filter((a) => a.date <= today).sort((a, b) => key(b).localeCompare(key(a)))
+  const upcoming = active.filter((a) => a.date > today).sort((a, b) => key(a).localeCompare(key(b)))
+  return (past[0] ?? upcoming[0])?.therapistUserId ?? null
+}

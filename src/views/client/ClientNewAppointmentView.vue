@@ -8,6 +8,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
 import { formatDayWithWeekday } from '@/utils/format'
+import { recentTherapistId } from '@/utils/appointmentStatus'
 import type { ScheduleSlot } from '@/types'
 
 const router = useRouter()
@@ -19,6 +20,7 @@ const uiStore = useUiStore()
 const step = ref(1)
 
 // ── Step 1: 選心理師 ────────────────────────
+const recentId = computed(() => recentTherapistId(appointmentStore.appointments, toLocalDateString(new Date())))
 const therapists = computed(() => {
   const map = new Map<number, string>()
   for (const slot of appointmentStore.availableSlots) {
@@ -26,7 +28,9 @@ const therapists = computed(() => {
       map.set(slot.therapistUserId, slot.therapistName)
     }
   }
+  // 最近預約的心理師排第一位，呼應「建議維持固定心理師」的提示
   return Array.from(map, ([id, name]) => ({ id, name }))
+    .sort((a, b) => Number(b.id === recentId.value) - Number(a.id === recentId.value))
 })
 
 const selectedTherapistId = ref<number | null>(null)
@@ -89,6 +93,10 @@ onMounted(() => {
   const startDate = toLocalDateString(now)
   const endDate = toLocalDateString(new Date(now.getFullYear(), now.getMonth() + 1, 0))
   appointmentStore.fetchAvailableSlots({ startDate, endDate })
+  if (authStore.clientProfileId != null) {
+    appointmentStore.fetchAppointments({ clientProfileId: authStore.clientProfileId })
+      .catch((e) => notifyError(e, '無法載入預約紀錄'))
+  }
 })
 </script>
 
@@ -130,11 +138,13 @@ onMounted(() => {
         <button
           v-for="t in therapists"
           :key="t.id"
-          class="bg-white rounded-app border border-orange-100 p-5 text-left hover:border-primary hover:shadow-xs transition-all"
+          class="bg-white rounded-app border p-5 text-left hover:border-primary hover:shadow-xs transition-all"
+          :class="t.id === recentId ? 'border-primary' : 'border-orange-100'"
           @click="selectTherapist(t.id)"
         >
           <p class="text-3xl mb-2">🧠</p>
           <p class="font-medium text-app-text">{{ t.name }}</p>
+          <p v-if="t.id === recentId" class="text-xs text-primary mt-1">最近預約的心理師</p>
         </button>
       </div>
     </div>

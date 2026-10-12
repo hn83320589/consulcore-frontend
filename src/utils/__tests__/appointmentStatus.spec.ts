@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { appointmentStatusLabel, appointmentStatuses, todaysAppointments } from '@/utils/appointmentStatus'
+import { appointmentStatusLabel, appointmentStatuses, recentTherapistId, todaysAppointments } from '@/utils/appointmentStatus'
 import type { Appointment } from '@/types'
 
 const apt = (id: number, date: string, startTime: string, status: Appointment['status']) =>
@@ -23,5 +23,25 @@ describe('todaysAppointments', () => {
 describe('appointmentStatus', () => {
   it('每個狀態都有中文名稱（行事曆圖例依此列出）', () => {
     expect(appointmentStatuses.map(appointmentStatusLabel)).toEqual(['已排定', '已完成', '已取消', '未出席'])
+  })
+})
+
+// 個案預約頁提示「建議維持固定心理師」，卻沒標出是哪一位
+describe('recentTherapistId', () => {
+  const a = (date: string, therapistUserId: number, status: Appointment['status'] = 'completed') =>
+    ({ date, startTime: '10:00', therapistUserId, status }) as Appointment
+
+  it('取今天以前最近一次未取消預約的心理師', () => {
+    const list = [a('2026-09-01', 2), a('2026-10-05', 3), a('2026-10-10', 4, 'cancelled'), a('2026-10-20', 5, 'scheduled')]
+
+    expect(recentTherapistId(list, '2026-10-12')).toBe(3)
+  })
+
+  it('沒有過去的預約時，取最近一筆即將到來的', () => {
+    expect(recentTherapistId([a('2026-10-28', 6, 'scheduled'), a('2026-10-14', 7, 'scheduled')], '2026-10-12')).toBe(7)
+  })
+
+  it('沒有預約時回傳 null', () => {
+    expect(recentTherapistId([], '2026-10-12')).toBeNull()
   })
 })
