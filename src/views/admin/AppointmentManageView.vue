@@ -151,16 +151,6 @@ async function handleBatchCancel() {
   }
 }
 
-// ── Calendar resources (therapists) ─────────
-const calendarResources = computed(() => {
-  const map = new Map<string, string>()
-  for (const a of appointmentStore.appointments) {
-    const id = String(a.therapistUserId)
-    if (!map.has(id)) map.set(id, a.therapistName)
-  }
-  return Array.from(map, ([id, title]) => ({ id, title }))
-})
-
 // ── Init ────────────────────────────────────
 onMounted(() => loadData())
 </script>
@@ -232,7 +222,6 @@ onMounted(() => loadData())
     <div v-if="viewMode === 'calendar'">
       <AppointmentCalendar
         :events="calendarEvents"
-        :resources="calendarResources"
         @event-click="handleEventClick"
         @date-select="handleDateSelect"
       />

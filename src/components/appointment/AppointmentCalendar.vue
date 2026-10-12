@@ -1,46 +1,32 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import FullCalendar from '@fullcalendar/vue3'
 import timeGridPlugin from '@fullcalendar/timegrid'
-import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import type { CalendarOptions, EventClickArg, DateSelectArg } from '@fullcalendar/core'
 import type { CalendarEvent } from '@/types'
 
-interface Resource {
-  id: string
-  title: string
-}
-
+// D10：原本的「心理師分欄」週曆使用付費的 resource-timegrid（未購買授權），
+// 改用免費的 timegrid；要看單一心理師用頁面上的心理師篩選
 interface Props {
   events: CalendarEvent[]
-  resources?: Resource[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  resources: () => [],
-})
+defineProps<Props>()
 
 const emit = defineEmits<{
   'event-click': [appointmentId: string]
-  'date-select': [info: { start: string; end: string; resourceId?: string }]
+  'date-select': [info: { start: string; end: string }]
 }>()
 
-const useResourceView = ref(props.resources.length > 0)
-
-watch(
-  () => props.resources,
-  (r) => { useResourceView.value = r.length > 0 },
-)
-
 const calendarOptions = ref<CalendarOptions>({
-  plugins: [timeGridPlugin, resourceTimeGridPlugin, interactionPlugin],
+  plugins: [timeGridPlugin, interactionPlugin],
   initialView: 'timeGridWeek',
   locale: 'zh-tw',
   headerToolbar: {
     left: 'prev,next today',
     center: 'title',
-    right: 'resourceTimeGridWeek,timeGridWeek,timeGridDay',
+    right: 'timeGridWeek,timeGridDay',
   },
   slotMinTime: '08:00:00',
   slotMaxTime: '21:00:00',
@@ -54,7 +40,6 @@ const calendarOptions = ref<CalendarOptions>({
     today: '今天',
     week: '週',
     day: '日',
-    resourceTimeGridWeek: '心理師週曆',
   },
   eventClick(info: EventClickArg) {
     emit('event-click', info.event.id)
@@ -63,7 +48,6 @@ const calendarOptions = ref<CalendarOptions>({
     emit('date-select', {
       start: info.startStr,
       end: info.endStr,
-      resourceId: info.resource?.id,
     })
   },
 })
@@ -76,8 +60,6 @@ const calendarOptions = ref<CalendarOptions>({
       :options="{
         ...calendarOptions,
         events: events as any[],
-        resources: resources.length > 0 ? resources : undefined,
-        initialView: useResourceView ? 'resourceTimeGridWeek' : 'timeGridWeek',
       }"
     />
   </div>

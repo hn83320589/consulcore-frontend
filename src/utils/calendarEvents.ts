@@ -10,7 +10,6 @@ export function toCalendarEvents(appointments: Appointment[]): CalendarEvent[] {
     title: `${apt.clientName} — ${apt.therapistName}`,
     start: `${apt.date}T${apt.startTime}`,
     end: `${apt.date}T${apt.endTime}`,
-    resourceId: String(apt.therapistUserId),
     backgroundColor: `var(--color-status-${apt.status})`,
     borderColor: `var(--color-status-${apt.status}-border)`,
     extendedProps: { appointment: apt },

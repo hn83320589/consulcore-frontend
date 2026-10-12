@@ -15,7 +15,6 @@ describe('toCalendarEvents', () => {
       title: '王小明 — 陳心理師',
       start: '2026-10-12T10:00',
       end: '2026-10-12T10:50',
-      resourceId: '2',
     })
   })
 
