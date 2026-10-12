@@ -18,7 +18,8 @@ export const useBillingStore = defineStore('billing', () => {
   const feeSchedules = ref<FeeSchedule[]>([])
   const packages = ref<Package[]>([])
   const discounts = ref<Discount[]>([])
-  const records = ref<BillingRecord[]>([])          // 完整付款紀錄
+  const records = ref<BillingRecord[]>([])          // 付款紀錄（目前這一頁）
+  const recordsTotal = ref<number | null>(null)     // 符合篩選的總筆數
   const pendingRecords = ref<BillingRecord[]>([])   // 待收款
   const clientPackages = ref<PackagePurchase[]>([]) // 個案套餐清單
   const monthlyRevenue = ref<MonthlyRevenue | null>(null)
@@ -87,7 +88,9 @@ export const useBillingStore = defineStore('billing', () => {
   async function fetchRecords(params?: BillingSearchParams) {
     loading.value = true
     try {
-      records.value = await billingService.getRecords(params)
+      const result = await billingService.getRecords(params)
+      records.value = result.items
+      recordsTotal.value = result.totalCount
     } finally {
       loading.value = false
     }
@@ -135,7 +138,7 @@ export const useBillingStore = defineStore('billing', () => {
 
   return {
     feeSchedules, packages, discounts,
-    records, pendingRecords, clientPackages,
+    records, recordsTotal, pendingRecords, clientPackages,
     monthlyRevenue, therapistRevenue, packageStats,
     loading,
     fetchFeeSchedules, createFeeSchedule, updateFeeSchedule, toggleFeeSchedule,
