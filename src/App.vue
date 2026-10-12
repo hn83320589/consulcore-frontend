@@ -9,8 +9,11 @@ const uiStore = useUiStore()
 
   <!-- Global Toast -->
   <Teleport to="body">
+    <!-- 報讀器：區域常駐，之後加入的訊息會被唸出 -->
     <TransitionGroup
       tag="div"
+      role="status"
+      aria-live="polite"
       class="fixed top-4 right-4 z-[9999] flex flex-col gap-2"
       enter-active-class="transition-all duration-300"
       enter-from-class="opacity-0 translate-x-4"
