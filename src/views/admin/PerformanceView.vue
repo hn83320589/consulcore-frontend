@@ -186,7 +186,7 @@ const visibilityOptions = [
 const violationColumns: TableColumn[] = [
   { key: 'therapistName', label: '心理師' },
   { key: 'severity', label: '嚴重度', width: '90px' },
-  { key: 'description', label: '描述' },
+  { key: 'description', label: '描述', wrap: true },
   { key: 'status', label: '狀態', width: '80px' },
   { key: 'actions', label: '', width: '160px' },
 ]

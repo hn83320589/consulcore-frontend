@@ -48,4 +48,14 @@ describe('AppTable', () => {
 
     expect(wrapper.find('b').text()).toBe('個案1#1')
   })
+
+  // RWD：窄螢幕時短欄位（姓名）原本被壓縮成一字一行；預設不換行，長文字欄位以 wrap 開放
+  it('內容格預設不換行，wrap 欄位可換行', () => {
+    const cols = [{ key: 'name', label: '姓名' }, { key: 'note', label: '描述', wrap: true }]
+    const wrapper = mount(AppTable, { props: { columns: cols, data: [{ id: 1, name: '王小明', note: '很長的說明' }] } })
+
+    const [name, note] = wrapper.findAll('tbody td')
+    expect(name!.classes()).toContain('whitespace-nowrap')
+    expect(note!.classes()).not.toContain('whitespace-nowrap')
+  })
 })
