@@ -613,9 +613,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["AuditLogResponseDtoListApiResponse"];
-                        "application/json": components["schemas"]["AuditLogResponseDtoListApiResponse"];
-                        "text/json": components["schemas"]["AuditLogResponseDtoListApiResponse"];
+                        "text/plain": components["schemas"]["AuditLogResponseDtoPagedResultApiResponse"];
+                        "application/json": components["schemas"]["AuditLogResponseDtoPagedResultApiResponse"];
+                        "text/json": components["schemas"]["AuditLogResponseDtoPagedResultApiResponse"];
                     };
                 };
             };
@@ -1114,9 +1114,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["PaymentRecordResponseDtoListApiResponse"];
-                        "application/json": components["schemas"]["PaymentRecordResponseDtoListApiResponse"];
-                        "text/json": components["schemas"]["PaymentRecordResponseDtoListApiResponse"];
+                        "text/plain": components["schemas"]["PaymentRecordResponseDtoPagedResultApiResponse"];
+                        "application/json": components["schemas"]["PaymentRecordResponseDtoPagedResultApiResponse"];
+                        "text/json": components["schemas"]["PaymentRecordResponseDtoPagedResultApiResponse"];
                     };
                 };
             };
@@ -2901,7 +2901,10 @@ export interface paths {
         };
         get: {
             parameters: {
-                query?: never;
+                query?: {
+                    page?: number;
+                    pageSize?: number;
+                };
                 header?: never;
                 path?: never;
                 cookie?: never;
@@ -2914,9 +2917,9 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "text/plain": components["schemas"]["NotificationLogResponseDtoListApiResponse"];
-                        "application/json": components["schemas"]["NotificationLogResponseDtoListApiResponse"];
-                        "text/json": components["schemas"]["NotificationLogResponseDtoListApiResponse"];
+                        "text/plain": components["schemas"]["NotificationLogResponseDtoPagedResultApiResponse"];
+                        "application/json": components["schemas"]["NotificationLogResponseDtoPagedResultApiResponse"];
+                        "text/json": components["schemas"]["NotificationLogResponseDtoPagedResultApiResponse"];
                     };
                 };
             };
@@ -5522,10 +5525,20 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
-        AuditLogResponseDtoListApiResponse: {
+        /** @description 伺服器分頁的一頁資料；TotalCount 為符合篩選條件的總筆數 */
+        AuditLogResponseDtoPagedResult: {
+            items: components["schemas"]["AuditLogResponseDto"][];
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+        };
+        AuditLogResponseDtoPagedResultApiResponse: {
             success: boolean;
             message: string;
-            data?: components["schemas"]["AuditLogResponseDto"][] | null;
+            data?: components["schemas"]["AuditLogResponseDtoPagedResult"];
             errors?: string[] | null;
         };
         BlockSlotDto: {
@@ -6221,10 +6234,20 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
-        NotificationLogResponseDtoListApiResponse: {
+        /** @description 伺服器分頁的一頁資料；TotalCount 為符合篩選條件的總筆數 */
+        NotificationLogResponseDtoPagedResult: {
+            items: components["schemas"]["NotificationLogResponseDto"][];
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+        };
+        NotificationLogResponseDtoPagedResultApiResponse: {
             success: boolean;
             message: string;
-            data?: components["schemas"]["NotificationLogResponseDto"][] | null;
+            data?: components["schemas"]["NotificationLogResponseDtoPagedResult"];
             errors?: string[] | null;
         };
         NotificationTemplateResponseDto: {
@@ -6351,6 +6374,22 @@ export interface components {
             success: boolean;
             message: string;
             data?: components["schemas"]["PaymentRecordResponseDto"][] | null;
+            errors?: string[] | null;
+        };
+        /** @description 伺服器分頁的一頁資料；TotalCount 為符合篩選條件的總筆數 */
+        PaymentRecordResponseDtoPagedResult: {
+            items: components["schemas"]["PaymentRecordResponseDto"][];
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+        };
+        PaymentRecordResponseDtoPagedResultApiResponse: {
+            success: boolean;
+            message: string;
+            data?: components["schemas"]["PaymentRecordResponseDtoPagedResult"];
             errors?: string[] | null;
         };
         PerformanceReviewResponseDto: {

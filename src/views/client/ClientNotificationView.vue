@@ -58,7 +58,6 @@ onMounted(load)
       :page="page"
       :page-size="DEFAULT_PAGE_SIZE"
       :total-count="store.notificationsTotal"
-      :item-count="store.notifications.length"
       :disabled="store.loading"
       @update:page="goPage"
     />

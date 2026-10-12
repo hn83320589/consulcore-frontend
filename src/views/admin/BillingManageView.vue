@@ -246,7 +246,6 @@ onMounted(async () => {
         :page="recordPage"
         :page-size="DEFAULT_PAGE_SIZE"
         :total-count="billingStore.recordsTotal"
-        :item-count="billingStore.records.length"
         :disabled="billingStore.loading"
         @update:page="goRecordPage"
       />

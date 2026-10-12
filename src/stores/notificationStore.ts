@@ -9,7 +9,7 @@ import type {
 export const useNotificationStore = defineStore('notification', () => {
   const templates = ref<NotificationTemplate[]>([])
   const notifications = ref<Notification[]>([])
-  const notificationsTotal = ref<number | null>(null)
+  const notificationsTotal = ref(0)
   const preferences = ref<NotificationPreference[]>([])
   const unreadCount = ref(0)
   const loading = ref(false)

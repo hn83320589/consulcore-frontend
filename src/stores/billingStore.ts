@@ -19,7 +19,7 @@ export const useBillingStore = defineStore('billing', () => {
   const packages = ref<Package[]>([])
   const discounts = ref<Discount[]>([])
   const records = ref<BillingRecord[]>([])          // 付款紀錄（目前這一頁）
-  const recordsTotal = ref<number | null>(null)     // 符合篩選的總筆數
+  const recordsTotal = ref(0)                       // 符合篩選的總筆數
   const pendingRecords = ref<BillingRecord[]>([])   // 待收款
   const clientPackages = ref<PackagePurchase[]>([]) // 個案套餐清單
   const monthlyRevenue = ref<MonthlyRevenue | null>(null)

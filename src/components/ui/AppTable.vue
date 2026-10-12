@@ -109,7 +109,6 @@ function goPage(page: number) {
       :page="currentPage"
       :page-size="pageSize"
       :total-count="data.length"
-      :item-count="pagedData.length"
       @update:page="goPage"
     />
   </div>

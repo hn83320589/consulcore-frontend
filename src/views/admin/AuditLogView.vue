@@ -220,7 +220,6 @@ onMounted(() => loadLogs())
       :page="page"
       :page-size="pageSize"
       :total-count="auditStore.logsTotal"
-      :item-count="auditStore.logs.length"
       :disabled="auditStore.loading"
       @update:page="goPage"
     />
