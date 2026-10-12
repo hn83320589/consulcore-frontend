@@ -8,11 +8,13 @@ vi.mock('@/services/staffService', () => ({
   default: {
     getUsers: vi.fn(),
     getRoles: vi.fn().mockResolvedValue([]),
+    updateUser: vi.fn(),
   },
 }))
 
 const { default: staffService } = await import('@/services/staffService')
 const { useAuthStore } = await import('@/stores/authStore')
+const { useStaffStore } = await import('@/stores/staffStore')
 const { default: StaffManageView } = await import('@/views/admin/StaffManageView.vue')
 
 function user(id: number, roles: string[]): UserResponse {
@@ -29,6 +31,11 @@ async function render(activeRole: RoleCode) {
   const wrapper = mount(StaffManageView, { attachTo: document.body })
   await flushPromises()
   return wrapper
+}
+
+function clickButton(text: string, nth = 0) {
+  const buttons = [...document.body.querySelectorAll('button')].filter((b) => b.textContent?.trim() === text)
+  buttons[nth]!.click()
 }
 
 function resetButtonsCount() {
@@ -50,5 +57,28 @@ describe('StaffManageView 擁有者帳號', () => {
     await render('owner')
 
     expect(resetButtonsCount()).toBe(2)
+  })
+})
+
+describe('StaffManageView 編輯沒有 Email 的帳號', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  // 個案帳號可能沒有 Email；送空字串會被後端的 Email 格式驗證擋下，null 表示不變更
+  it('Email 留空時送出 null', async () => {
+    await render('owner')
+    const noEmail = { ...user(3, ['client']), email: null }
+    vi.mocked(staffService.getUsers).mockResolvedValue([noEmail])
+    await useStaffStore().fetchUsers()
+    await flushPromises()
+    vi.mocked(staffService.updateUser).mockResolvedValue(noEmail)
+
+    clickButton('編輯')
+    await flushPromises()
+    clickButton('儲存')
+    await flushPromises()
+
+    expect(vi.mocked(staffService.updateUser).mock.calls[0]![1].email).toBeNull()
   })
 })

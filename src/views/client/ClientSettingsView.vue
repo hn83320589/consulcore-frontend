@@ -81,7 +81,7 @@ onMounted(() => notifStore.fetchPreferences())
       <div class="space-y-3 text-sm">
         <div><span class="text-app-text/50">姓名：</span>{{ authStore.user?.displayName }}</div>
         <div><span class="text-app-text/50">帳號：</span>{{ authStore.user?.username }}</div>
-        <div><span class="text-app-text/50">Email：</span>{{ authStore.user?.email }}</div>
+        <div><span class="text-app-text/50">Email：</span>{{ authStore.user?.email || '未設定' }}</div>
       </div>
     </div>
 

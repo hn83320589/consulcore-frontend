@@ -6,7 +6,8 @@ export interface User {
   id: number
   username: string
   displayName: string
-  email: string
+  /** 個案帳號可能沒有 Email */
+  email?: string | null
   phone?: string | null
   organizationId: number
   organizationName: string

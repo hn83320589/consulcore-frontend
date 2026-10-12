@@ -115,7 +115,8 @@ async function handleSaveUser() {
   try {
     if (isEdit.value && editingUser.value) {
       const payload: UpdateUserRequest = {
-        email: userForm.value.email,
+        // 個案帳號可能沒有 Email：留空送 null（不變更），空字串會被後端格式驗證擋下
+        email: userForm.value.email || null,
         displayName: userForm.value.displayName,
         phone: userForm.value.phone || null,
         roles: userForm.value.roles,

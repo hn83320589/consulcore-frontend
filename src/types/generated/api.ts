@@ -5987,7 +5987,8 @@ export interface components {
             /** Format: int32 */
             id: number;
             username: string;
-            email: string;
+            /** @description 個案帳號建立時沒有提供 Email 則為 null */
+            email?: string | null;
             displayName: string;
             phone?: string | null;
             /** Format: int32 */
@@ -6211,7 +6212,8 @@ export interface components {
             userId: number;
             username: string;
             displayName: string;
-            email: string;
+            /** @description 個案帳號建立時沒有提供 Email 則為 null */
+            email?: string | null;
             /** Format: int32 */
             organizationId: number;
             organizationName: string;
@@ -6985,7 +6987,8 @@ export interface components {
             /** Format: int32 */
             id: number;
             username: string;
-            email: string;
+            /** @description 個案帳號建立時沒有提供 Email 則為 null */
+            email?: string | null;
             displayName: string;
             phone?: string | null;
             isActive: boolean;
