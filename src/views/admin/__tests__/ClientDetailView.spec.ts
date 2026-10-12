@@ -61,3 +61,36 @@ describe('ClientDetailView 載入資料', () => {
     expect(errorHandler).not.toHaveBeenCalled()
   })
 })
+
+describe('ClientDetailView 預約紀錄', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  // 「查看」原本接到空函式，按了沒有反應
+  it('按「查看」開啟預約詳情，只供檢視（狀態變更在預約管理）', async () => {
+    const pinia = createTestingPinia({ createSpy: vi.fn, stubActions: true })
+    const auth = useAuthStore(pinia)
+    auth.activeRole = 'owner'
+    vi.mocked(auth.hasPermission).mockReturnValue(true)
+    useClientStore(pinia).currentClient = { id: 3, name: '李品妤', status: 'active', therapists: [] } as never
+    const { useAppointmentStore } = await import('@/stores/appointmentStore')
+    useAppointmentStore(pinia).appointments = [{
+      id: 21, clientProfileId: 3, clientName: '李品妤', therapistName: '陳怡君', date: '2026-10-14',
+      startTime: '14:00', endTime: '14:50', roomName: '晨曦室', status: 'scheduled',
+      sessionType: 'individual', visitType: 'follow_up', hints: [],
+    }] as never
+    mount(ClientDetailView, { global: { plugins: [pinia] }, attachTo: document.body })
+    await flushPromises()
+
+    const button = (text: string) => [...document.body.querySelectorAll('button')].find((b) => b.textContent?.trim() === text)
+    ;([...document.body.querySelectorAll('[role=tab]')].find((t) => t.textContent?.includes('預約紀錄')) as HTMLElement).click()
+    await flushPromises()
+    button('查看')!.click()
+    await flushPromises()
+
+    expect(document.body.textContent).toContain('#21')
+    expect(document.body.textContent).toContain('晨曦室')
+    expect(button('完成')).toBeUndefined()
+  })
+})

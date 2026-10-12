@@ -8,6 +8,7 @@ import { useClientStore } from '@/stores/clientStore'
 import { useLeaveGuard } from '@/composables/useLeaveGuard'
 import ConfirmModal from '@/components/ui/ConfirmModal.vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import AppSelect from '@/components/ui/AppSelect.vue'
 import SoapEditor from '@/components/session/SoapEditor.vue'
 import FreeTextEditor from '@/components/session/FreeTextEditor.vue'
 import LockStatusBar from '@/components/session/LockStatusBar.vue'
@@ -30,6 +31,13 @@ const isEdit = computed(() => noteId.value != null)
 
 // ── Form State ──────────────────────────────
 const clientProfileId = ref(route.query.clientId != null ? Number(route.query.clientId) : 0)
+// 從側欄進入時網址沒有個案，改在頁面上選（心理師只會列出自己的個案）
+const pickClient = !isEdit.value && clientProfileId.value === 0
+const clientOptions = computed(() => clientStore.clients.map((c) => ({ label: c.name, value: String(c.id) })))
+const pickedClientId = computed({
+  get: () => (clientProfileId.value ? String(clientProfileId.value) : ''),
+  set: (v: string) => { clientProfileId.value = Number(v) },
+})
 // 個案姓名不放網址（會留在瀏覽器歷史與 Referer），由 store 或後端取得
 const clientName = ref('')
 const noteType = ref<SessionNoteType>('session')
@@ -74,6 +82,7 @@ function handlePhraseInsert(content: string) {
 
 // ── Save ────────────────────────────────────
 async function handleSave(lock = false) {
+  if (!isEdit.value && !clientProfileId.value) return
   saving.value = true
   try {
     if (isEdit.value && noteId.value != null) {
@@ -125,8 +134,18 @@ function handleCancel() {
   router.back()
 }
 
+// 不阻塞片語與編輯器載入；失敗時提示，選單維持空白
+async function loadClientOptions() {
+  try {
+    await clientStore.fetchClients()
+  } catch (e) {
+    notifyError(e, '無法載入個案清單')
+  }
+}
+
 // ── Init ────────────────────────────────────
 onMounted(async () => {
+  if (pickClient) void loadClientOptions()
   await store.fetchPhrases()
   if (noteId.value == null && clientProfileId.value) {
     if (clientStore.currentClient?.id !== clientProfileId.value) {
@@ -179,6 +198,13 @@ onMounted(async () => {
         <p v-if="clientName" class="text-sm text-gray-500 mt-0.5">
           {{ clientName }}
         </p>
+        <AppSelect
+          v-if="pickClient"
+          v-model="pickedClientId"
+          class="mt-2 w-56"
+          :options="clientOptions"
+          placeholder="選擇個案"
+        />
       </div>
       <div class="flex items-center gap-2">
         <!-- Type Toggle -->
@@ -262,7 +288,7 @@ onMounted(async () => {
         <div class="flex gap-2 mt-6 pt-4 border-t border-gray-200">
           <AppButton
             :loading="saving"
-            :disabled="isLocked"
+            :disabled="isLocked || !clientProfileId"
             variant="secondary"
             @click="handleSave(false)"
           >
@@ -270,7 +296,7 @@ onMounted(async () => {
           </AppButton>
           <AppButton
             :loading="saving"
-            :disabled="isLocked"
+            :disabled="isLocked || !clientProfileId"
             @click="handleSave(true)"
           >
             完成並鎖定

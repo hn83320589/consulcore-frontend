@@ -19,6 +19,7 @@ import type {
 } from '@/types'
 import { PERMISSION_GROUPS } from '@/types'
 import { notifyError } from '@/utils/notifyError'
+import { roleLabel, rolesLabel } from '@/utils/labels'
 
 const staffStore = useStaffStore()
 const uiStore = useUiStore()
@@ -36,8 +37,11 @@ const columns: TableColumn[] = [
   { key: 'actions', label: '操作', width: '200px' },
 ]
 
+// 後台人員與個案帳號分開列；個案帳號的重設密碼、停用仍在這裡處理
+const accountKind = ref<'staff' | 'client'>('staff')
+const isClientOnly = (u: UserResponse) => u.roles.every((r) => r === 'client')
 const tableData = computed(() =>
-  staffStore.users,
+  staffStore.users.filter((u) => isClientOnly(u) === (accountKind.value === 'client')),
 )
 
 // ── User Modal ──────────────────────────────
@@ -192,7 +196,7 @@ const selectedRole = computed<RoleResponse | undefined>(() =>
 
 const permissionRoleOptions = computed(() =>
   staffStore.roles.map((r) => ({
-    label: `${r.name}${r.isSystemDefault ? '（系統預設）' : ''}`,
+    label: `${roleLabel(r.name)}${r.isSystemDefault ? '（系統預設）' : ''}`,
     value: String(r.id),
   })),
 )
@@ -261,9 +265,20 @@ onMounted(async () => {
 
     <!-- ── Users Tab ──────────────────────────── -->
     <div v-if="activeTab === 'users'">
+      <div class="mb-3">
+        <select
+          v-model="accountKind"
+          data-testid="account-kind"
+          aria-label="帳號類型"
+          class="px-3 py-1.5 border border-gray-300 rounded-app text-sm bg-white"
+        >
+          <option value="staff">後台人員</option>
+          <option value="client">個案帳號</option>
+        </select>
+      </div>
       <AppTable :columns="columns" :data="tableData" :loading="staffStore.loading">
         <template #cell-roles="{ row }">
-          {{ row.roles.join('、') }}
+          {{ rolesLabel(row.roles) }}
         </template>
 
         <template #cell-isActive="{ row }">
@@ -382,7 +397,7 @@ onMounted(async () => {
                 class="accent-primary"
                 @change="toggleFormRole(role.name)"
               />
-              <span class="text-gray-600">{{ role.name }}</span>
+              <span class="text-gray-600">{{ roleLabel(role.name) }}</span>
             </label>
           </div>
         </div>

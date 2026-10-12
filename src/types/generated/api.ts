@@ -3189,6 +3189,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/organization": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** 目前登入機構的基本資料 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OrganizationResponseDtoApiResponse"];
+                        "application/json": components["schemas"]["OrganizationResponseDtoApiResponse"];
+                        "text/json": components["schemas"]["OrganizationResponseDtoApiResponse"];
+                    };
+                };
+            };
+        };
+        /** 更新機構基本資料（名稱、電話、Email、地址） */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["UpdateOrganizationDto"];
+                    "text/json": components["schemas"]["UpdateOrganizationDto"];
+                    "application/*+json": components["schemas"]["UpdateOrganizationDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/plain": components["schemas"]["OrganizationResponseDtoApiResponse"];
+                        "application/json": components["schemas"]["OrganizationResponseDtoApiResponse"];
+                        "text/json": components["schemas"]["OrganizationResponseDtoApiResponse"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/packages": {
         parameters: {
             query?: never;
@@ -6335,6 +6401,25 @@ export interface components {
             data?: unknown;
             errors?: string[] | null;
         };
+        /** @description 機構基本資料（機構設定頁） */
+        OrganizationResponseDto: {
+            /** Format: int32 */
+            id: number;
+            name: string;
+            phone?: string | null;
+            email?: string | null;
+            address?: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        OrganizationResponseDtoApiResponse: {
+            success: boolean;
+            message: string;
+            data?: components["schemas"]["OrganizationResponseDto"];
+            errors?: string[] | null;
+        };
         PackageRemainingDto: {
             /** Format: int32 */
             clientPackageId: number;
@@ -6756,12 +6841,12 @@ export interface components {
             therapistName: string;
             /**
              * Format: double
-             * @description 預約完成率（%）
+             * @description 預約完成率（%）：已完成 ÷（已完成 + 未出席）；已排定、已取消不計
              */
             appointmentCompletionRate: number;
             /**
              * Format: double
-             * @description 未到率（%）
+             * @description 未到率（%）：未出席 ÷（已完成 + 未出席）；已排定、已取消不計
              */
             noShowRate: number;
             /**
@@ -6910,6 +6995,14 @@ export interface components {
             subject?: string | null;
             bodyTemplate?: string | null;
             isActive?: boolean | null;
+        };
+        /** @description 整筆取代：未提供的電話、Email、地址會被清空 */
+        UpdateOrganizationDto: {
+            name: string;
+            phone?: string | null;
+            /** Format: email */
+            email?: string | null;
+            address?: string | null;
         };
         UpdatePackageDto: {
             name?: string | null;

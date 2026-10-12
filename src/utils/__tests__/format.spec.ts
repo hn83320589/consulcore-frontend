@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
-  formatCurrency, formatDate, formatDateTime, formatDateWithYear, formatDayWithWeekday, formatShortDateTime,
+  formatCurrency, formatDate, formatDateTime, formatDateWithYear, formatDayWithWeekday, formatShortDateTime, maskIdNumber,
 } from '@/utils/format'
 
 // R13：原本 13 份 formatDate（8 種寫法）、3 份 formatCurrency 散在各元件；時區固定 Asia/Taipei
@@ -38,5 +38,15 @@ describe('format', () => {
   it('formatCurrency：千分位與 $', () => {
     expect(formatCurrency(1200)).toBe('$1,200')
     expect(formatCurrency(0)).toBe('$0')
+  })
+})
+
+describe('maskIdNumber', () => {
+  it('保留第一碼與末三碼', () => {
+    expect(maskIdNumber('A123456789')).toBe('A******789')
+  })
+
+  it('長度不足時全部遮蔽，不洩漏', () => {
+    expect(maskIdNumber('A12')).toBe('***')
   })
 })

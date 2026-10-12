@@ -65,10 +65,10 @@ describe('StaffManageView 編輯沒有 Email 的帳號', () => {
     document.body.innerHTML = ''
   })
 
-  // 個案帳號可能沒有 Email；送空字串會被後端的 Email 格式驗證擋下，null 表示不變更
+  // 兼具個案身份的帳號可能沒有 Email；送空字串會被後端的 Email 格式驗證擋下，null 表示不變更
   it('Email 留空時送出 null', async () => {
     await render('owner')
-    const noEmail = { ...user(3, ['client']), email: null }
+    const noEmail = { ...user(3, ['therapist', 'client']), email: null }
     vi.mocked(staffService.getUsers).mockResolvedValue([noEmail])
     await useStaffStore().fetchUsers()
     await flushPromises()
@@ -80,5 +80,32 @@ describe('StaffManageView 編輯沒有 Email 的帳號', () => {
     await flushPromises()
 
     expect(vi.mocked(staffService.updateUser).mock.calls[0]![1].email).toBeNull()
+  })
+})
+
+describe('StaffManageView 人員清單', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  // 角色原本顯示代碼 therapist；個案帳號混在「人員」清單。
+  // 個案帳號的重設密碼、停用只在這裡，所以分開顯示而不是移除
+  it('角色顯示中文，個案帳號預設不列在後台人員，切換後可管理', async () => {
+    setUpTestPinia()
+    useAuthStore().activeRole = 'owner'
+    vi.mocked(staffService.getUsers).mockResolvedValue([
+      user(1, ['owner']), user(2, ['therapist', 'client']), user(3, ['client']),
+    ])
+    const wrapper = mount(StaffManageView, { attachTo: document.body })
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('機構負責人')
+    expect(wrapper.text()).toContain('心理師、個案')
+    expect(wrapper.text()).not.toContain('使用者3')
+
+    await wrapper.get('[data-testid="account-kind"]').setValue('client')
+
+    expect(wrapper.text()).toContain('使用者3')
+    expect(wrapper.text()).not.toContain('機構負責人')
   })
 })

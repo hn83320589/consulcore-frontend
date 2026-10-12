@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import type { Appointment, AppointmentStatus, SessionType, VisitType } from '@/types'
+import type { Appointment, SessionType, VisitType } from '@/types'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import { formatDayWithWeekday } from '@/utils/format'
+import { appointmentStatusLabel, appointmentStatusVariant } from '@/utils/appointmentStatus'
 
 interface Props {
   appointment: Appointment
+  /** 只檢視（個案詳情頁）：不顯示完成、未出席、取消 */
+  readonly?: boolean
 }
 
-defineProps<Props>()
+withDefaults(defineProps<Props>(), { readonly: false })
 
 const emit = defineEmits<{
   complete: [id: number]
@@ -17,19 +20,6 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const statusLabel: Record<AppointmentStatus, string> = {
-  scheduled: '已排定',
-  completed: '已完成',
-  cancelled: '已取消',
-  no_show: '未出席',
-}
-
-const statusVariant: Record<AppointmentStatus, 'info' | 'success' | 'default' | 'danger' | 'warning'> = {
-  scheduled: 'info',
-  completed: 'default',
-  cancelled: 'danger',
-  no_show: 'warning',
-}
 
 const sessionTypeLabel: Record<SessionType, string> = {
   individual: '個別',
@@ -48,8 +38,8 @@ const visitTypeLabel: Record<VisitType, string> = {
   <div class="space-y-4">
     <!-- Status -->
     <div class="flex items-center justify-between">
-      <AppBadge :variant="statusVariant[appointment.status]">
-        {{ statusLabel[appointment.status] }}
+      <AppBadge :variant="appointmentStatusVariant(appointment.status)">
+        {{ appointmentStatusLabel(appointment.status) }}
       </AppBadge>
       <span class="text-xs text-gray-400">#{{ appointment.id }}</span>
     </div>
@@ -99,21 +89,21 @@ const visitTypeLabel: Record<VisitType, string> = {
     <!-- Actions -->
     <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
       <AppButton
-        v-if="appointment.status === 'scheduled'"
+        v-if="!readonly && appointment.status === 'scheduled'"
         size="sm"
         @click="emit('complete', appointment.id)"
       >
         完成
       </AppButton>
       <AppButton
-        v-if="appointment.status === 'scheduled'"
+        v-if="!readonly && appointment.status === 'scheduled'"
         size="sm" variant="danger"
         @click="emit('no-show', appointment.id)"
       >
         未出席
       </AppButton>
       <AppButton
-        v-if="appointment.status === 'scheduled'"
+        v-if="!readonly && appointment.status === 'scheduled'"
         size="sm" variant="danger"
         @click="emit('cancel', appointment.id)"
       >

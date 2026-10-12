@@ -41,3 +41,33 @@ describe('SessionNoteEditorView 新增紀錄', () => {
     expect(useClientStore(pinia).fetchClient).toHaveBeenCalledWith(3)
   })
 })
+
+// 側欄「晤談紀錄」直接進入新增頁、網址沒有個案：原本沒有地方選個案，送出時 clientProfileId = 0 必然失敗
+describe('SessionNoteEditorView 未指定個案', () => {
+  afterEach(() => {
+    document.body.innerHTML = ''
+  })
+
+  it('列出個案供選擇，選好之前不能存檔，存檔時帶入所選個案', async () => {
+    route.query = {}
+    const pinia = createTestingPinia({ createSpy: vi.fn })
+    const clientStore = useClientStore(pinia)
+    clientStore.clients = [{ id: 7, name: '黃思涵' }, { id: 8, name: '吳承翰' }] as ClientProfile[]
+    const { useSessionNoteStore } = await import('@/stores/sessionNoteStore')
+    const notes = useSessionNoteStore(pinia)
+    vi.mocked(notes.createNote).mockResolvedValue({ id: 99 } as never)
+
+    const wrapper = mount(SessionNoteEditorView, { global: { plugins: [pinia] } })
+    await flushPromises()
+    const saveButton = () => wrapper.findAll('button').find((b) => b.text() === '暫存')!
+
+    expect(clientStore.fetchClients).toHaveBeenCalled()
+    expect(saveButton().attributes('disabled')).toBeDefined()
+
+    await wrapper.get('select').setValue('8')
+    await saveButton().trigger('click')
+    await flushPromises()
+
+    expect(vi.mocked(notes.createNote).mock.calls[0]![0].clientProfileId).toBe(8)
+  })
+})

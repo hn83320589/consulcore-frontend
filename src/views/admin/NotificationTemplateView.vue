@@ -85,6 +85,7 @@ onMounted(() => store.fetchTemplates())
       </template>
       <template #cell-isRequired="{ row }">
         <span v-if="row.isRequired" class="text-xs text-red-500">必要</span>
+        <span v-else class="text-gray-300">—</span>
       </template>
       <template #cell-actions="{ row }">
         <AppButton size="sm" variant="ghost" @click="openEdit(row)">編輯</AppButton>

@@ -7,6 +7,7 @@ import AppPagination from '@/components/ui/AppPagination.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
 import { formatDateTime } from '@/utils/format'
+import { auditActionLabel, auditActionOptions, auditResourceLabel, auditResourceOptions } from '@/utils/labels'
 import { downloadBlob } from '@/utils/download'
 import { DEFAULT_PAGE_SIZE } from '@/utils/paging'
 
@@ -93,28 +94,6 @@ async function handleExport(format: 'csv' | 'pdf') {
   } catch (e) { notifyError(e, '匯出失敗') }
 }
 
-const actionOptions = ['create', 'update', 'delete', 'login', 'lock', 'unlock', 'status_change']
-
-// 資源型別為 snake_case（契約 7.15）；下拉列常用者，顯示用中文 label
-const resourceLabels: Record<string, string> = {
-  client_profile: '個案',
-  appointment: '預約',
-  appointment_series: '常態預約',
-  session_note: '晤談紀錄',
-  consent_record: '同意書簽署',
-  payment_record: '付款紀錄',
-  client_package: '個案套餐',
-  schedule_slot: '排班時段',
-  room: '診間',
-  user: '使用者',
-  performance_review: '考核',
-  violation_record: '違規紀錄',
-}
-const resourceOptions = Object.entries(resourceLabels).map(([value, label]) => ({ value, label }))
-function resourceLabel(v: string): string {
-  return resourceLabels[v] ?? v
-}
-
 onMounted(() => loadLogs())
 </script>
 
@@ -142,14 +121,14 @@ onMounted(() => loadLogs())
         <label class="block text-xs text-gray-500 mb-1">動作</label>
         <select v-model="filterAction" class="px-3 py-1.5 border border-gray-300 rounded-app text-sm bg-white" @change="applyFilters()">
           <option value="">全部</option>
-          <option v-for="a in actionOptions" :key="a" :value="a">{{ a }}</option>
+          <option v-for="a in auditActionOptions" :key="a.value" :value="a.value">{{ a.label }}</option>
         </select>
       </div>
       <div>
         <label class="block text-xs text-gray-500 mb-1">資源</label>
         <select v-model="filterResourceType" class="px-3 py-1.5 border border-gray-300 rounded-app text-sm bg-white" @change="applyFilters()">
           <option value="">全部</option>
-          <option v-for="r in resourceOptions" :key="r.value" :value="r.value">{{ r.label }}</option>
+          <option v-for="r in auditResourceOptions" :key="r.value" :value="r.value">{{ r.label }}</option>
         </select>
       </div>
     </div>
@@ -175,8 +154,8 @@ onMounted(() => loadLogs())
             <tr class="border-b border-gray-100 hover:bg-gray-50">
               <td class="px-4 py-3 text-xs text-gray-500">{{ formatDateTime(log.createdAt) }}</td>
               <td class="px-4 py-3">{{ log.userName ?? '—' }}</td>
-              <td class="px-4 py-3"><span class="px-1.5 py-0.5 bg-gray-100 rounded-sm text-xs">{{ log.action }}</span></td>
-              <td class="px-4 py-3 text-xs">{{ resourceLabel(log.resourceType) }}</td>
+              <td class="px-4 py-3"><span class="px-1.5 py-0.5 bg-gray-100 rounded-sm text-xs">{{ auditActionLabel(log.action) }}</span></td>
+              <td class="px-4 py-3 text-xs">{{ auditResourceLabel(log.resourceType) }}</td>
               <td class="px-4 py-3 text-gray-600 truncate max-w-[200px]">{{ log.description ?? '—' }}</td>
               <td class="px-4 py-3">
                 <button

@@ -5,6 +5,7 @@ import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppointmentCalendar from '@/components/appointment/AppointmentCalendar.vue'
+import AppointmentStatusLegend from '@/components/appointment/AppointmentStatusLegend.vue'
 import AppointmentList from '@/components/appointment/AppointmentList.vue'
 import AppointmentCard from '@/components/appointment/AppointmentCard.vue'
 import QuickBookModal from '@/components/appointment/QuickBookModal.vue'
@@ -225,6 +226,7 @@ onMounted(() => loadData())
 
     <!-- Calendar View -->
     <div v-if="viewMode === 'calendar'">
+      <AppointmentStatusLegend class="mb-3" />
       <AppointmentCalendar
         :events="calendarEvents"
         @event-click="handleEventClick"

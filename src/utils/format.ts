@@ -39,3 +39,9 @@ export function formatDateWithYear(value: DateInput): string {
 export function formatCurrency(amount: number | string | null | undefined): string {
   return `$${Number(amount ?? 0).toLocaleString()}`
 }
+
+/** 身分證字號遮蔽：保留第一碼與末三碼（A******789），長度不足時全部遮蔽 */
+export function maskIdNumber(value: string): string {
+  if (value.length <= 4) return '*'.repeat(value.length)
+  return value[0] + '*'.repeat(value.length - 4) + value.slice(-3)
+}

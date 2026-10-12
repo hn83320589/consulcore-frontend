@@ -7,6 +7,7 @@ import { useStaffStore } from '@/stores/staffStore'
 import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppModal from '@/components/ui/AppModal.vue'
+import AppInput from '@/components/ui/AppInput.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
 import AppTable from '@/components/ui/AppTable.vue'
 import AppPagination from '@/components/ui/AppPagination.vue'
@@ -210,20 +211,15 @@ onMounted(async () => {
     <div v-if="activeTab === 'records'">
       <!-- 篩選列 -->
       <div class="flex flex-wrap items-end gap-3 mb-4">
-        <div>
-          <label class="block text-xs text-gray-500 mb-1">起始日期</label>
-          <input v-model="filters.startDate" type="date" class="px-3 py-1.5 border border-gray-300 rounded-app text-sm" />
-        </div>
-        <div>
-          <label class="block text-xs text-gray-500 mb-1">結束日期</label>
-          <input v-model="filters.endDate" type="date" class="px-3 py-1.5 border border-gray-300 rounded-app text-sm" />
-        </div>
+        <!-- 欄位一律用 AppInput / AppSelect、按鈕用預設尺寸：標籤字級與高度才會一致 -->
+        <AppInput v-model="filters.startDate" label="起始日期" type="date" />
+        <AppInput v-model="filters.endDate" label="結束日期" type="date" />
         <AppSelect v-model="filters.clientProfileId" label="個案" :options="clientOptions" placeholder="全部" class="w-40" />
         <AppSelect v-model="filters.therapistUserId" label="心理師" :options="therapistOptions" placeholder="全部" class="w-40" />
         <AppSelect v-model="(filters.status as string)" label="狀態" :options="statusOptions" placeholder="全部" class="w-32" />
-        <AppButton size="sm" @click="searchRecords">查詢</AppButton>
-        <AppButton size="sm" variant="secondary" @click="resetFilters">重置</AppButton>
-        <AppButton size="sm" variant="secondary" @click="handleExport">匯出 CSV</AppButton>
+        <AppButton @click="searchRecords">查詢</AppButton>
+        <AppButton variant="secondary" @click="resetFilters">重置</AppButton>
+        <AppButton variant="secondary" @click="handleExport">匯出 CSV</AppButton>
       </div>
 
       <!-- page-size 與伺服器每頁筆數相同，表格本身不再分頁 -->

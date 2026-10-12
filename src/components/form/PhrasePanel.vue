@@ -37,8 +37,8 @@ const filteredPhrases = computed(() =>
       <h4 class="font-semibold text-gray-700 text-sm">常用片語</h4>
     </div>
 
-    <!-- Category Tabs -->
-    <div class="flex border-b border-gray-100 overflow-x-auto">
+    <!-- Category Tabs：面板很窄，改為換行讓 5 個分類都看得到（橫向捲動會出現捲軸、最後一個被截斷） -->
+    <div class="flex flex-wrap border-b border-gray-100">
       <button
         v-for="cat in categories"
         :key="cat.key"

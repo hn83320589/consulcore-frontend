@@ -3,18 +3,13 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useAuthActions } from '@/composables/useAuthActions'
 import type { RoleCode } from '@/types'
+import { roleLabel } from '@/utils/labels'
 
 const authStore = useAuthStore()
 const authActions = useAuthActions()
 const open = ref(false)
 const dropdownRef = ref<HTMLElement | null>(null)
 
-const roleLabels: Record<RoleCode, string> = {
-  owner: '機構負責人',
-  therapist: '心理師',
-  admin: '行政人員',
-  client: '個案',
-}
 
 async function handleSwitch(role: RoleCode) {
   open.value = false
@@ -37,7 +32,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
       class="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-app border border-gray-200 hover:bg-gray-50"
       @click="open = !open"
     >
-      <span>{{ authStore.activeRole ? roleLabels[authStore.activeRole] : '選擇角色' }}</span>
+      <span>{{ authStore.activeRole ? roleLabel(authStore.activeRole) : '選擇角色' }}</span>
       <span class="text-xs transition-transform" :class="open ? 'rotate-180' : ''">▼</span>
     </button>
 
@@ -58,7 +53,7 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
           :class="role === authStore.activeRole ? 'text-primary font-medium' : 'text-gray-600'"
           @click="handleSwitch(role as RoleCode)"
         >
-          <span>{{ roleLabels[role as RoleCode] }}</span>
+          <span>{{ roleLabel(role) }}</span>
         </button>
       </div>
     </Transition>

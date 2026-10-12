@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Appointment, AppointmentStatus } from '@/types'
+import type { Appointment } from '@/types'
 import AppTable from '@/components/ui/AppTable.vue'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppButton from '@/components/ui/AppButton.vue'
+import { appointmentStatusLabel, appointmentStatusVariant } from '@/utils/appointmentStatus'
 
 interface Props {
   appointments: Appointment[]
@@ -39,19 +40,6 @@ const tableData = computed(() =>
   props.appointments,
 )
 
-const statusLabel: Record<AppointmentStatus, string> = {
-  scheduled: '已排定',
-  completed: '已完成',
-  cancelled: '已取消',
-  no_show: '未出席',
-}
-
-const statusVariant: Record<AppointmentStatus, 'info' | 'success' | 'default' | 'danger' | 'warning'> = {
-  scheduled: 'info',
-  completed: 'default',
-  cancelled: 'danger',
-  no_show: 'warning',
-}
 </script>
 
 <template>
@@ -70,8 +58,8 @@ const statusVariant: Record<AppointmentStatus, 'info' | 'success' | 'default' | 
     </template>
 
     <template #cell-status="{ row }">
-      <AppBadge :variant="statusVariant[row.status]">
-        {{ statusLabel[row.status] }}
+      <AppBadge :variant="appointmentStatusVariant(row.status)">
+        {{ appointmentStatusLabel(row.status) }}
       </AppBadge>
     </template>
 
