@@ -1,24 +1,9 @@
-export type MemoCategory = 'personality' | 'trigger' | 'preference' | 'family' | 'other'
+import type { Schemas } from './schema'
 
-export interface ClientMemo {
-  id: number
-  clientProfileId: number
-  therapistUserId: number
-  therapistName: string
-  category: MemoCategory
-  content: string
-  isEditable: boolean
-  createdAt: string
-  updatedAt: string
-}
+export type MemoCategory = Schemas['ClientMemoResponseDto']['category']
 
-export interface CreateMemoRequest {
-  clientProfileId: number
-  category?: MemoCategory
-  content: string
-}
+export type ClientMemo = Schemas['ClientMemoResponseDto']
 
-export interface UpdateMemoRequest {
-  category?: MemoCategory
-  content?: string
-}
+export type CreateMemoRequest = Schemas['CreateClientMemoDto']
+
+export type UpdateMemoRequest = Schemas['UpdateClientMemoDto']
