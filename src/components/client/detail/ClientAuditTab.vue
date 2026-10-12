@@ -29,7 +29,7 @@ defineProps<Props>()
           <tr v-for="log in logs" :key="log.id" class="border-b border-gray-100">
             <td class="px-4 py-2 text-xs text-gray-500">{{ formatDateTime(log.createdAt) }}</td>
             <td class="px-4 py-2">{{ log.userName ?? '—' }}</td>
-            <td class="px-4 py-2"><span class="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{{ log.action }}</span></td>
+            <td class="px-4 py-2"><span class="px-1.5 py-0.5 bg-gray-100 rounded-sm text-xs">{{ log.action }}</span></td>
             <td class="px-4 py-2 text-gray-600">{{ log.description ?? '—' }}</td>
           </tr>
         </tbody>

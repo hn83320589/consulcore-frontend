@@ -76,7 +76,7 @@ function handleSubmit() {
         type="range"
         min="1"
         max="5"
-        class="w-full accent-[var(--color-primary)]"
+        class="w-full accent-primary"
       />
       <div class="flex justify-between text-[10px] text-gray-300">
         <span v-for="i in 5" :key="i">{{ i }}</span>

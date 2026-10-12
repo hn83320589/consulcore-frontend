@@ -175,7 +175,7 @@ onMounted(() => loadLogs())
             <tr class="border-b border-gray-100 hover:bg-gray-50">
               <td class="px-4 py-3 text-xs text-gray-500">{{ formatDateTime(log.createdAt) }}</td>
               <td class="px-4 py-3">{{ log.userName ?? '—' }}</td>
-              <td class="px-4 py-3"><span class="px-1.5 py-0.5 bg-gray-100 rounded text-xs">{{ log.action }}</span></td>
+              <td class="px-4 py-3"><span class="px-1.5 py-0.5 bg-gray-100 rounded-sm text-xs">{{ log.action }}</span></td>
               <td class="px-4 py-3 text-xs">{{ resourceLabel(log.resourceType) }}</td>
               <td class="px-4 py-3 text-gray-600 truncate max-w-[200px]">{{ log.description ?? '—' }}</td>
               <td class="px-4 py-3">

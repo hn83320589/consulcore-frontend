@@ -25,7 +25,7 @@ function isActive(path: string): boolean {
 </script>
 
 <template>
-  <header class="bg-white/80 backdrop-blur-sm border-b border-orange-100 sticky top-0 z-40">
+  <header class="bg-white/80 backdrop-blur-xs border-b border-orange-100 sticky top-0 z-40">
     <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
       <!-- Logo -->
       <span class="font-bold text-primary text-lg">ConsulCore</span>

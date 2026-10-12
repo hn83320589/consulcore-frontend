@@ -53,7 +53,7 @@ function isActive(path: string): boolean {
 
 <template>
   <aside
-    class="h-screen bg-white border-r border-gray-200 transition-all duration-200 flex flex-col flex-shrink-0"
+    class="h-screen bg-white border-r border-gray-200 transition-all duration-200 flex flex-col shrink-0"
     :class="collapsed ? 'w-16' : 'w-60'"
   >
     <!-- Logo -->
@@ -72,7 +72,7 @@ function isActive(path: string): boolean {
         :title="collapsed ? item.label : undefined"
         @click="navigate(item.path)"
       >
-        <span class="text-base flex-shrink-0">{{ item.icon }}</span>
+        <span class="text-base shrink-0">{{ item.icon }}</span>
         <span v-if="!collapsed" class="truncate">{{ item.label }}</span>
       </button>
     </nav>

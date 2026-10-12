@@ -165,7 +165,7 @@ function emitUpdate() {
         <div class="flex items-center justify-between mb-3">
           <input
             v-model="section.title"
-            class="font-semibold text-gray-800 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none px-1"
+            class="font-semibold text-gray-800 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-hidden px-1"
             @blur="emitUpdate"
           />
           <div class="flex items-center gap-1">
@@ -180,7 +180,7 @@ function emitUpdate() {
           <div
             v-for="(field, fIdx) in section.fields ?? []"
             :key="fIdx"
-            class="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100 text-sm cursor-pointer hover:bg-gray-100"
+            class="flex items-center gap-2 p-2 bg-gray-50 rounded-sm border border-gray-100 text-sm cursor-pointer hover:bg-gray-100"
             @click="startEditField(sIdx, fIdx)"
           >
             <span class="text-gray-400 text-xs w-16 truncate">{{ field.fieldType ?? 'text' }}</span>
@@ -234,7 +234,7 @@ function emitUpdate() {
             <input
               type="checkbox"
               :checked="getEditingField()!.isRequired"
-              class="accent-[var(--color-primary)]"
+              class="accent-primary"
               @change="getEditingField()!.isRequired = ($event.target as HTMLInputElement).checked; emitUpdate()"
             />
             <span class="text-sm text-gray-600">必填</span>

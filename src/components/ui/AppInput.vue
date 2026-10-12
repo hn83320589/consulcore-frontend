@@ -39,7 +39,7 @@ const errorId = `${inputId}-error`
       :disabled="disabled"
       :aria-invalid="error ? 'true' : undefined"
       :aria-describedby="error ? errorId : undefined"
-      class="w-full px-3 py-2 border rounded-app text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
+      class="w-full px-3 py-2 border rounded-app text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
       :class="error ? 'border-red-400' : 'border-gray-300'"
       @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />

@@ -280,7 +280,7 @@ onMounted(async () => {
       </div>
 
       <!-- Phrase Panel (right sidebar) -->
-      <div v-if="showPhrasePanel" class="w-64 flex-shrink-0">
+      <div v-if="showPhrasePanel" class="w-64 shrink-0">
         <PhrasePanel
           :phrases="store.phrases"
           :active-category="phraseCategory"

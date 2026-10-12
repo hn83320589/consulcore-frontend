@@ -60,7 +60,7 @@ const statusVariant: Record<AppointmentStatus, 'info' | 'success' | 'default' | 
       <input
         type="checkbox"
         :checked="selectedIds.includes(row.id)"
-        class="accent-[var(--color-primary)]"
+        class="accent-primary"
         @change="emit('select', row.id)"
       />
     </template>

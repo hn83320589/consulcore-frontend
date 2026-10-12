@@ -130,7 +130,7 @@ onMounted(() => {
         <button
           v-for="t in therapists"
           :key="t.id"
-          class="bg-white rounded-app border border-orange-100 p-5 text-left hover:border-primary hover:shadow-sm transition-all"
+          class="bg-white rounded-app border border-orange-100 p-5 text-left hover:border-primary hover:shadow-xs transition-all"
           @click="selectTherapist(t.id)"
         >
           <p class="text-3xl mb-2">🧠</p>
@@ -158,7 +158,7 @@ onMounted(() => {
             <button
               v-for="slot in dateSlots"
               :key="slot.id"
-              class="px-4 py-2 bg-white border border-orange-100 rounded-app text-sm hover:border-primary hover:shadow-sm transition-all"
+              class="px-4 py-2 bg-white border border-orange-100 rounded-app text-sm hover:border-primary hover:shadow-xs transition-all"
               @click="selectSlot(slot)"
             >
               {{ slot.startTime }} - {{ slot.endTime }}

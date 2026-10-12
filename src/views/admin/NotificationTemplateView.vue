@@ -111,7 +111,7 @@ onMounted(() => store.fetchTemplates())
             v-model="editForm.isActive"
             type="checkbox"
             :disabled="editing.isRequired"
-            class="accent-[var(--color-primary)]"
+            class="accent-primary"
           />
           <span class="text-sm text-gray-600">
             啟用

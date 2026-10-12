@@ -89,7 +89,7 @@ function handleSlotClick(slot: ScheduleSlot, isPast: boolean) {
             <template v-for="(slot, sIdx) in getSlotsForDate(cell.date)" :key="slot.id">
               <button
                 v-if="sIdx < 3"
-                class="w-full text-left px-1 py-0.5 rounded text-[10px] border truncate"
+                class="w-full text-left px-1 py-0.5 rounded-sm text-[10px] border truncate"
                 :class="[
                   statusColors[slot.status],
                   cell.isPast ? 'opacity-50 cursor-default' : 'cursor-pointer hover:opacity-80',

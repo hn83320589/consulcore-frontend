@@ -28,7 +28,7 @@ function go(page: number) {
     </span>
     <div class="flex items-center gap-1">
       <button
-        class="px-2 py-1 text-xs rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
+        class="px-2 py-1 text-xs rounded-sm border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
         :disabled="disabled || !hasPrev"
         @click="go(page - 1)"
       >
@@ -37,7 +37,7 @@ function go(page: number) {
       <template v-for="p in totalPages" :key="p">
           <button
             v-if="p === 1 || p === totalPages || (p >= page - 1 && p <= page + 1)"
-            class="px-2.5 py-1 text-xs rounded border disabled:opacity-40"
+            class="px-2.5 py-1 text-xs rounded-sm border disabled:opacity-40"
             :class="p === page ? 'bg-primary text-white border-primary' : 'border-gray-200 hover:bg-gray-50'"
             :disabled="disabled"
             @click="go(p)"
@@ -47,7 +47,7 @@ function go(page: number) {
           <span v-else-if="p === page - 2 || p === page + 2" class="text-xs text-gray-300">...</span>
       </template>
       <button
-        class="px-2 py-1 text-xs rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
+        class="px-2 py-1 text-xs rounded-sm border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
         :disabled="disabled || !hasNext"
         @click="go(page + 1)"
       >

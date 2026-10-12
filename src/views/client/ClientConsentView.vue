@@ -48,7 +48,7 @@ onMounted(() => {
       <button
         v-for="rec in consentStore.records"
         :key="rec.id"
-        class="w-full bg-white border border-orange-100 rounded-app p-5 text-left hover:shadow-sm transition-shadow"
+        class="w-full bg-white border border-orange-100 rounded-app p-5 text-left hover:shadow-xs transition-shadow"
         @click="viewingRecord = rec"
       >
         <div class="flex items-center justify-between">

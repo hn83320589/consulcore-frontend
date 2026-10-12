@@ -43,7 +43,7 @@ const statusOptions: { label: string; value: ClientStatus | '' }[] = [
         v-model="keyword"
         type="text"
         placeholder="姓名或身分證末四碼"
-        class="px-3 py-2 border border-gray-300 rounded-app text-sm w-56 focus:outline-none focus:ring-2 focus:ring-primary/30"
+        class="px-3 py-2 border border-gray-300 rounded-app text-sm w-56 focus:outline-hidden focus:ring-2 focus:ring-primary/30"
         @keyup.enter="handleSearch"
       />
     </div>

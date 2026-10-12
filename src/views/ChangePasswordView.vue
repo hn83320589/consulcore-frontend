@@ -61,7 +61,7 @@ async function handleSubmit() {
             type="password"
             required
             autocomplete="current-password"
-            class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary"
             placeholder="請輸入目前密碼"
           />
         </div>
@@ -73,7 +73,7 @@ async function handleSubmit() {
             type="password"
             required
             autocomplete="new-password"
-            class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary"
             placeholder="至少 8 個字元"
           />
         </div>
@@ -85,7 +85,7 @@ async function handleSubmit() {
             type="password"
             required
             autocomplete="new-password"
-            class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+            class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary"
             placeholder="請再次輸入新密碼"
           />
         </div>

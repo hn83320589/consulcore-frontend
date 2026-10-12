@@ -112,11 +112,11 @@ onUnmounted(deactivate)
           aria-modal="true"
           :aria-labelledby="title ? titleId : undefined"
           tabindex="-1"
-          class="relative bg-white rounded-app shadow-xl w-full max-h-[90vh] flex flex-col focus:outline-none"
+          class="relative bg-white rounded-app shadow-xl w-full max-h-[90vh] flex flex-col focus:outline-hidden"
           :class="width"
         >
           <!-- Header -->
-          <div v-if="title" class="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+          <div v-if="title" class="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0">
             <h2 :id="titleId" class="text-lg font-semibold text-gray-800">{{ title }}</h2>
             <button
               type="button"
@@ -134,7 +134,7 @@ onUnmounted(deactivate)
           </div>
 
           <!-- Footer -->
-          <div v-if="$slots.footer" class="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 flex-shrink-0">
+          <div v-if="$slots.footer" class="flex justify-end gap-2 px-6 py-4 border-t border-gray-200 shrink-0">
             <slot name="footer" />
           </div>
         </div>

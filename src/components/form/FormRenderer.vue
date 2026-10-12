@@ -197,7 +197,7 @@ function handleSubmit() {
                 :value="opt"
                 :checked="getFieldValue(field) === opt"
                 :disabled="readonly"
-                class="accent-[var(--color-primary)]"
+                class="accent-primary"
                 @change="updateField(field.id, opt)"
               />
               <span class="text-sm text-gray-600">{{ opt }}</span>
@@ -212,7 +212,7 @@ function handleSubmit() {
                 :value="opt"
                 :checked="((getFieldValue(field) as string[]) ?? []).includes(opt)"
                 :disabled="readonly"
-                class="accent-[var(--color-primary)]"
+                class="accent-primary"
                 @change="
                   const arr = [...((getFieldValue(field) as string[]) ?? [])];
                   const idx = arr.indexOf(opt);

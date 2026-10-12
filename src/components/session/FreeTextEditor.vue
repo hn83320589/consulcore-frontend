@@ -50,7 +50,7 @@ defineExpose({ insertAtCursor })
       :value="content"
       :disabled="disabled"
       rows="16"
-      class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
+      class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50 disabled:text-gray-400"
       placeholder="輸入晤談紀錄..."
       @input="emit('update:content', ($event.target as HTMLTextAreaElement).value)"
     />

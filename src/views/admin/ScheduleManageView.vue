@@ -265,16 +265,16 @@ onMounted(async () => {
       <!-- Legend -->
       <div class="flex items-center gap-4 mb-3 text-xs text-gray-500">
         <span class="flex items-center gap-1">
-          <span class="w-3 h-3 rounded bg-green-100 border border-green-200"></span> 可預約
+          <span class="w-3 h-3 rounded-sm bg-green-100 border border-green-200"></span> 可預約
         </span>
         <span class="flex items-center gap-1">
-          <span class="w-3 h-3 rounded bg-blue-100 border border-blue-200"></span> 已預約
+          <span class="w-3 h-3 rounded-sm bg-blue-100 border border-blue-200"></span> 已預約
         </span>
         <span class="flex items-center gap-1">
-          <span class="w-3 h-3 rounded bg-gray-100 border border-gray-200"></span> 已封鎖
+          <span class="w-3 h-3 rounded-sm bg-gray-100 border border-gray-200"></span> 已封鎖
         </span>
         <span class="flex items-center gap-1">
-          <span class="w-3 h-3 rounded bg-red-50 border border-red-200"></span> 已取消
+          <span class="w-3 h-3 rounded-sm bg-red-50 border border-red-200"></span> 已取消
         </span>
       </div>
 

@@ -32,7 +32,7 @@ defineEmits<{
     <select
       :value="modelValue"
       :disabled="disabled"
-      class="w-full px-3 py-2 border rounded-app text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50"
+      class="w-full px-3 py-2 border rounded-app text-sm bg-white focus:outline-hidden focus:ring-2 focus:ring-primary/30 focus:border-primary disabled:bg-gray-50"
       :class="error ? 'border-red-400' : 'border-gray-300'"
       @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
     >
