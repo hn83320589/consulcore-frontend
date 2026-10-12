@@ -21,8 +21,8 @@
 
 ### 環境需求
 
-- Node.js 20+
-- npm 10+
+- Node.js 26（版本見 `.nvmrc`，可用 `nvm use`）
+- npm 11+
 
 ### 安裝與啟動
 
@@ -34,8 +34,13 @@ npm install
 npm run dev
 # → http://localhost:5173
 
-# TypeScript 型別檢查
+# 檢查（CI 也會跑這些）
 npm run type-check
+npm run lint
+npm test
+
+# 後端 API 契約異動時：從相鄰的 consulcore-backend 同步 openapi.json 並重新產生型別
+npm run api:sync && npm run gen:api
 
 # 生產建置
 npm run build
@@ -46,44 +51,38 @@ npm run preview
 
 ### 環境變數
 
-建立 `.env.development`（已包含在專案中）：
+`.env*` 不進版控。複製 `.env.example` 為 `.env.development`：
 
 ```
 VITE_API_BASE_URL=http://localhost:5037/api
 ```
 
-生產環境建立 `.env.production`：
-
-```
-VITE_API_BASE_URL=https://your-api-domain.com/api
-```
+生產環境以 `.env.production` 或建置時的環境變數提供 `VITE_API_BASE_URL`。
+**未設定時 `npm run build` 會直接失敗**，開發伺服器則會在頁面載入時報錯。
 
 ## 專案結構
 
 ```
 src/
-├── views/                    # 頁面（26 頁）
-│   ├── admin/                #   機構後台（15 頁）
-│   ├── client/               #   個案端（6 頁）
-│   ├── LoginView.vue
-│   └── RoleSelectView.vue
-├── components/               # 元件（~50 個）
-│   ├── ui/                   #   基礎 UI（AppButton, AppTable, AppModal...）
-│   ├── layout/               #   Layout（AdminLayout, ClientLayout...）
-│   ├── form/                 #   表單（FormBuilder, FormRenderer, SignaturePad...）
-│   ├── appointment/          #   預約（Calendar, Card, QuickBookModal...）
-│   ├── schedule/             #   排班（TemplateEditor, SlotGrid...）
-│   ├── session/              #   晤談（SoapEditor, FreeTextEditor...）
-│   ├── client/               #   個案（ClientInfoCard, ConsentStatus...）
-│   ├── billing/              #   收費（PaymentStatusBadge, RevenueChart...）
-│   ├── performance/          #   考核（MetricsCard, MetricsTrend...）
-│   └── dashboard/            #   Dashboard
-├── stores/                   # Pinia Stores（13 個）
-├── services/                 # API Services（16 個）
-├── types/                    # TypeScript 型別（12 個）
-├── composables/              # Vue Composables
-├── styles/                   # CSS（variables.css + main.css）
-└── router/                   # Vue Router + 守衛
+├── views/
+│   ├── admin/                # 機構後台頁面
+│   ├── client/               # 個案端頁面
+│   └── *.vue                 # 登入、選角色、改密碼、404
+├── components/
+│   ├── ui/                   # 基礎 UI（AppButton, AppTable, AppModal, AppPagination...）
+│   ├── layout/               # Layout（AdminLayout, ClientLayout, NotificationBell...）
+│   ├── form/                 # 表單（FormBuilder, FormRenderer, SignaturePad...）
+│   ├── appointment/          # 預約（AppointmentCalendar, QuickBookModal...）
+│   ├── schedule/  session/  client/  billing/  performance/  dashboard/
+├── stores/                   # Pinia stores（只管資料，不負責換頁）
+├── services/                 # API 呼叫（httpService 統一處理 token、角色 header 與錯誤）
+├── types/
+│   ├── generated/api.ts      # 由 openapi/openapi.json 產生，勿手改
+│   └── *.ts                  # 以 Schemas['XxxDto'] 引用產生的型別
+├── composables/  utils/      # 共用邏輯（測試放在各資料夾的 __tests__/）
+├── styles/                   # CSS 變數（雙風格、語意色）
+└── router/                   # 路由與守衛（判斷規則在 navigation.ts）
+openapi/openapi.json          # 後端 API 契約的副本（npm run api:sync）
 ```
 
 ## 雙風格系統
@@ -104,7 +103,7 @@ src/
 
 ## 後端
 
-後端倉庫：`consulcore-backend`（.NET 9 Web API）
+後端倉庫：`consulcore-backend`（.NET 10 Web API）
 
 開發時需先啟動後端：
 
