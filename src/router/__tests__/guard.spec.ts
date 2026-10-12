@@ -52,8 +52,10 @@ describe('路由守衛', () => {
     expect(await navigate('/client/appointments')).toBe('/login')
   })
 
-  it('未知路徑 → 登入頁', async () => {
-    expect(await navigate('/no-such-page')).toBe('/login')
+  // Phase 6：原本導回登入頁（已登入者再被導回首頁），看不出是網址打錯；改為停在 404 頁
+  it('未知路徑 → 停在 404 頁', async () => {
+    expect(await navigate('/no-such-page')).toBe('/no-such-page')
+    expect(router.currentRoute.value.name).toBe('NotFound')
   })
 
   it('已登入且已選角色時進登入頁 → 該角色 dashboard', async () => {

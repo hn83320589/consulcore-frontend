@@ -1,6 +1,7 @@
 import axios, { AxiosHeaders, type AxiosAdapter, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import type { ApiResponse } from '@/types'
 import { markNotified } from '@/utils/notifyError'
+import { requireApiBaseUrl } from '@/utils/apiBaseUrl'
 
 type ToastType = 'error' | 'warning'
 
@@ -158,7 +159,7 @@ function readAuthFromStorage(): AuthSnapshot {
 }
 
 const httpService = createHttpService({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: requireApiBaseUrl(import.meta.env.VITE_API_BASE_URL),
   getAuth: () => (authProvider ? authProvider() : readAuthFromStorage()),
   onToast: (msg, type) => toastFn?.(msg, type),
   onSessionExpired: () => {

@@ -31,6 +31,8 @@ describe('resolveNavigation', () => {
     ['個案進後台 → 個案首頁', adminPage(), auth({ activeRole: 'client' }), '/client/dashboard'],
     ['機構角色進個案端 → 後台首頁', clientPage, auth({ activeRole: 'therapist' }), '/admin/dashboard'],
     ['有權限 → 放行', adminPage({ permission: 'client.view' }), auth(), true],
+    ['404 頁：未登入也能看到', { name: 'NotFound', meta: { public: true } }, auth({ isAuthenticated: false, activeRole: null }), true],
+    ['404 頁：已登入也停在 404，不被導回首頁', { name: 'NotFound', meta: { public: true } }, auth(), true],
   ])('%s', (_, to, state, expected) => {
     const result = resolveNavigation(to, state)
 

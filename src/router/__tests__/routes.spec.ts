@@ -28,4 +28,9 @@ describe('路由元件', () => {
     expect(modules.length).toBeGreaterThan(20)
     for (const m of modules) expect(m.default).toBeTruthy()
   })
+
+  // 原本不存在的網址一律導回登入頁，已登入的使用者會被再導回首頁，看不出是網址打錯
+  it('不存在的網址顯示 404 頁', () => {
+    expect(router.resolve('/admin/no-such-page').name).toBe('NotFound')
+  })
 })
