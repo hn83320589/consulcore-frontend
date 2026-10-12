@@ -15,3 +15,13 @@ export function toCalendarEvents(appointments: Appointment[]): CalendarEvent[] {
     extendedProps: { appointment: apt },
   }))
 }
+
+/** 與 Tailwind md 斷點相同：窄於此寬度時 7 天週檢視放不下 */
+const WEEK_VIEW_MIN_WIDTH = 768
+
+export type CalendarView = 'timeGridDay' | 'timeGridWeek'
+
+/** 依視窗寬度決定預設檢視：手機用日檢視，平板以上用週檢視 */
+export function calendarViewForWidth(width: number): CalendarView {
+  return width < WEEK_VIEW_MIN_WIDTH ? 'timeGridDay' : 'timeGridWeek'
+}
