@@ -7,9 +7,11 @@ import { appointmentStatusLabel, appointmentStatusVariant } from '@/utils/appoin
 
 interface Props {
   appointment: Appointment
+  /** 只檢視（個案詳情頁）：不顯示完成、未出席、取消 */
+  readonly?: boolean
 }
 
-defineProps<Props>()
+withDefaults(defineProps<Props>(), { readonly: false })
 
 const emit = defineEmits<{
   complete: [id: number]
@@ -87,21 +89,21 @@ const visitTypeLabel: Record<VisitType, string> = {
     <!-- Actions -->
     <div class="flex flex-wrap gap-2 pt-2 border-t border-gray-100">
       <AppButton
-        v-if="appointment.status === 'scheduled'"
+        v-if="!readonly && appointment.status === 'scheduled'"
         size="sm"
         @click="emit('complete', appointment.id)"
       >
         完成
       </AppButton>
       <AppButton
-        v-if="appointment.status === 'scheduled'"
+        v-if="!readonly && appointment.status === 'scheduled'"
         size="sm" variant="danger"
         @click="emit('no-show', appointment.id)"
       >
         未出席
       </AppButton>
       <AppButton
-        v-if="appointment.status === 'scheduled'"
+        v-if="!readonly && appointment.status === 'scheduled'"
         size="sm" variant="danger"
         @click="emit('cancel', appointment.id)"
       >

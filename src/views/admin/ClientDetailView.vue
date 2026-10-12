@@ -27,6 +27,7 @@ import ClientMemoList from '@/components/client/ClientMemoList.vue'
 import { clientDetailAccess } from '@/utils/clientDetailAccess'
 import { notifyError } from '@/utils/notifyError'
 import type { UpdateClientRequest, ConsentRecord, ClientStatus, Appointment, CreateMemoRequest, UpdateMemoRequest } from '@/types'
+import AppointmentCard from '@/components/appointment/AppointmentCard.vue'
 
 const route = useRoute()
 const authStore = useAuthStore()
@@ -180,8 +181,11 @@ const clientAppointments = computed(() =>
 
 const clientSeries = computed(() => appointmentStore.clientSeries)
 
-function handleAppointmentClick(_apt: Appointment) {
-  // 可擴展為顯示詳情 modal
+// 個案頁只供檢視預約；完成、取消等狀態變更在預約管理處理
+const viewingAppointment = ref<Appointment | null>(null)
+
+function handleAppointmentClick(apt: Appointment) {
+  viewingAppointment.value = apt
 }
 
 // ── Client Memos ────────────────────────────
@@ -408,6 +412,16 @@ onMounted(async () => {
           簽署時間：{{ new Date(viewingRecord.signedAt).toLocaleString('zh-TW') }}
         </p>
       </div>
+    </AppModal>
+
+    <!-- 預約詳情 -->
+    <AppModal :open="viewingAppointment !== null" title="預約詳情" @close="viewingAppointment = null">
+      <AppointmentCard
+        v-if="viewingAppointment"
+        :appointment="viewingAppointment"
+        readonly
+        @close="viewingAppointment = null"
+      />
     </AppModal>
   </div>
 
