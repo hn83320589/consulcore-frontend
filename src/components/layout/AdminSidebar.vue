@@ -3,11 +3,13 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useUiStore } from '@/stores/uiStore'
+import { useAuthActions } from '@/composables/useAuthActions'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const uiStore = useUiStore()
+const authActions = useAuthActions()
 
 interface Props {
   /** 手機覆蓋式選單：一律顯示完整文字，底部按鈕改為關閉選單 */
@@ -82,6 +84,13 @@ function isActive(path: string): boolean {
         <span v-if="!collapsed" class="truncate">{{ item.label }}</span>
       </button>
     </nav>
+
+    <!-- 手機：頂部空間不足、登出按鈕被隱藏，改放在選單底部 -->
+    <button
+      v-if="mobile"
+      class="h-12 flex items-center gap-3 px-4 border-t border-gray-200 text-sm text-gray-600 hover:bg-gray-50"
+      @click="authActions.logout()"
+    >登出</button>
 
     <!-- Collapse Toggle（手機：關閉選單） -->
     <button
