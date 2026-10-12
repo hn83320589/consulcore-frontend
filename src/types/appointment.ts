@@ -1,6 +1,6 @@
 import type { Schemas } from './schema'
 
-// ── Enums（對齊契約第 6 節） ─────────────────
+// ── Enums ─────────────────────────────────
 export type AppointmentStatus = Schemas['AppointmentResponseDto']['status']
 export type SessionType = Schemas['AppointmentResponseDto']['sessionType']
 export type VisitType = Schemas['AppointmentResponseDto']['visitType']

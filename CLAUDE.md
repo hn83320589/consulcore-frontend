@@ -2,8 +2,9 @@
 
 > Vue 3 SPA | Phase 1 | 最後更新 2026-08-02
 >
-> ⚠️ **前後端介接以後端契約為唯一事實來源**：`consulcore-backend/docs/frontend-integration.md`。
-> 型別 / enum / URL / verb 有疑問時以該文件與後端程式碼為準，勿憑印象猜測。
+> ⚠️ **前後端介接以後端為唯一事實來源**：
+> - 型別 / enum：由後端 `openapi.json` 產生（`openapi/openapi.json` → `src/types/generated/api.ts`），`src/types/*.ts` 以 `Schemas['XxxDto']` 引用，**不手寫欄位**
+> - 業務規則、權限、錯誤語意：`consulcore-backend/docs/frontend-integration.md`
 
 ---
 
@@ -272,7 +273,11 @@ npm run build                # 建置
 npm run type-check           # TypeScript 檢查
 npm run lint                 # Lint
 npm test                     # Vitest 單元測試（npm run test:watch 監看模式）
+npm run api:sync             # 從相鄰的 ../consulcore-backend 複製 openapi.json
+npm run gen:api              # 由 openapi/openapi.json 產生 src/types/generated/api.ts（CI 會檢查是否最新）
 ```
+
+後端契約異動時：`npm run api:sync && npm run gen:api` → 修正 type-check 指出的地方 → 與 `openapi/openapi.json` 一起 commit。
 
 ## 最新異動記錄
 
@@ -283,3 +288,4 @@ npm test                     # Vitest 單元測試（npm run test:watch 監看�
 | 2026-08-02 | Phase 5 收尾：OrgSettingView（表單建構器）、DashboardView 三角色元件、ClientDetail Tab 權限收斂、診間心理師指派、eslint 導入（flat config）。後端待補端點見 `consulcore-backend/docs/frontend-requested-endpoints.md` |
 | 2026-10-11 | 導入 Vitest（authStore、路由守衛 characterization 測試）、GitHub Actions CI（type-check / lint / test / build）、ESLint 改 flat/recommended（排版規則關閉） |
 | 2026-10-11 | 重構 Phase 2：同意書 XSS、時區、401 判斷、路由權限、初始帳密顯示、人員管理配合擁有者保護、409 訊息、個案詳情依權限載入（allSettled）、登出清除資料 store、晤談紀錄未存檔保護、排班重疊判斷、notifyError 消除重複 toast |
+| 2026-10-12 | Phase 4：API 型別改由後端 openapi.json 以 openapi-typescript 產生，CI 檢查產生結果與 spec 一致 |
