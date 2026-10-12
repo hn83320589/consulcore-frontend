@@ -17,7 +17,7 @@ withDefaults(defineProps<Props>(), {
 <template>
   <button
     :disabled="disabled || loading"
-    class="inline-flex items-center justify-center font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+    class="inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus:outline-hidden focus:ring-2 focus:ring-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
     :class="[
       // variant
       variant === 'primary' && 'bg-primary text-white hover:bg-primary-hover',

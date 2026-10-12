@@ -32,7 +32,7 @@ function isActive(path: string): boolean {
       <span class="font-bold text-primary text-lg h-12 sm:h-auto flex items-center">ConsulCore</span>
 
       <!-- Nav Links -->
-      <nav class="order-last sm:order-none w-full sm:w-auto flex items-center gap-1 overflow-x-auto pb-2 sm:pb-0">
+      <nav class="order-last sm:order-none w-full sm:w-auto flex items-center gap-1 overflow-x-auto scrollbar-none pb-2 sm:pb-0">
         <button
           v-for="item in navItems"
           :key="item.path"

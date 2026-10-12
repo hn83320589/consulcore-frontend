@@ -70,3 +70,12 @@ body {
 *::after {
   box-sizing: border-box;
 }
+
+/* 可左右滑動、但不顯示捲軸（分頁籤列、手機導覽列）：放不下的項目會露出一半，本身就提示可以滑動 */
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

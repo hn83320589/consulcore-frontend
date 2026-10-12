@@ -41,7 +41,10 @@ async function onKeydown(event: KeyboardEvent, index: number) {
 
 <template>
   <div>
-    <div role="tablist" class="flex gap-1 border-b border-gray-200 mb-6">
+    <!-- 放不下時整列左右滑動，分頁名稱不換行。
+         灰色底線用 inset 陰影畫在容器內：原本靠 -mb-px 讓分頁底線蓋住容器邊框，
+         在可捲動容器裡那 1px 會被當成溢出而出現直向捲軸 -->
+    <div role="tablist" class="flex gap-1 mb-6 overflow-x-auto overflow-y-hidden scrollbar-none shadow-[inset_0_-1px_0_var(--color-gray-200)]">
       <button
         v-for="(tab, index) in tabs"
         :id="tabId(tab.key)"
@@ -51,7 +54,7 @@ async function onKeydown(event: KeyboardEvent, index: number) {
         role="tab"
         :aria-selected="modelValue === tab.key ? 'true' : 'false'"
         :tabindex="modelValue === tab.key ? 0 : -1"
-        class="px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px"
+        class="shrink-0 whitespace-nowrap px-4 py-2 text-sm font-medium transition-colors border-b-2"
         :class="modelValue === tab.key
           ? 'text-primary border-primary'
           : 'text-gray-500 border-transparent hover:text-gray-700'"
