@@ -138,7 +138,7 @@ onMounted(() => {
         <button
           v-for="t in therapists"
           :key="t.id"
-          class="bg-white rounded-app border p-5 text-left hover:border-primary hover:shadow-xs transition-all"
+          class="bg-white rounded-app border p-5 text-left flex flex-col justify-start hover:border-primary hover:shadow-xs transition-all"
           :class="t.id === recentId ? 'border-primary' : 'border-orange-100'"
           @click="selectTherapist(t.id)"
         >
