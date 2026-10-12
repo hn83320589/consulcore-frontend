@@ -30,7 +30,6 @@ export interface CalendarEvent {
   title: string
   start: string       // ISO datetime
   end: string
-  resourceId?: string  // therapistUserId for resource view
   backgroundColor?: string
   borderColor?: string
   extendedProps: {
