@@ -96,7 +96,7 @@ onMounted(() => notifStore.fetchPreferences())
     </div>
 
     <!-- Notification Preferences -->
-    <div v-if="activeSection === 'notifications'" class="bg-white rounded-app border border-orange-100 overflow-hidden max-w-2xl">
+    <div v-if="activeSection === 'notifications'" class="bg-white rounded-app border border-orange-100 overflow-x-auto max-w-2xl">
       <table class="w-full text-sm">
         <thead>
           <tr class="bg-orange-50/50 border-b border-orange-100">

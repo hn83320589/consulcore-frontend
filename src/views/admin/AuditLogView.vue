@@ -156,7 +156,7 @@ onMounted(() => loadLogs())
 
     <!-- Table with expandable rows -->
     <div class="overflow-x-auto border border-gray-200 rounded-app">
-      <table class="w-full text-sm">
+      <table class="w-full min-w-[36rem] text-sm">
         <thead>
           <tr class="bg-gray-50 border-b border-gray-200">
             <th v-for="col in columns" :key="col.key" class="px-4 py-3 text-left font-medium text-gray-600" :style="col.width ? {width:col.width} : {}">

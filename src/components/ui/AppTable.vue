@@ -58,8 +58,9 @@ function goPage(page: number) {
 
 <template>
   <div>
+    <!-- 窄螢幕時表格維持最小寬度、整個左右滑動，避免欄位被壓縮到文字逐字換行 -->
     <div class="overflow-x-auto border border-gray-200 rounded-app">
-      <table class="w-full text-sm">
+      <table class="w-full min-w-[36rem] text-sm">
         <thead>
           <tr class="bg-gray-50 border-b border-gray-200">
             <th
