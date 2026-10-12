@@ -1,31 +1,13 @@
-export interface TherapistRoomInfo {
-  therapistUserId: number
-  therapistName: string
-  assignedAt: string
-}
+import type { Schemas } from './schema'
 
-export interface Room {
-  id: number
-  name: string
-  isActive: boolean
-  therapists: TherapistRoomInfo[]
-  createdAt: string
-  updatedAt: string
-}
+export type TherapistRoomInfo = Schemas['TherapistRoomInfoDto']
 
-export interface CreateRoomRequest {
-  name: string
-}
+export type Room = Schemas['RoomResponseDto']
 
-export interface UpdateRoomRequest {
-  name?: string
-  isActive?: boolean
-}
+export type CreateRoomRequest = Schemas['CreateRoomDto']
 
-export interface AssignTherapistToRoomRequest {
-  therapistUserId: number
-}
+export type UpdateRoomRequest = Schemas['UpdateRoomDto']
 
-export interface ActiveRoomCount {
-  activeCount: number
-}
+export type AssignTherapistToRoomRequest = Schemas['AssignTherapistToRoomDto']
+
+export type ActiveRoomCount = Schemas['RoomActiveCountDto']
