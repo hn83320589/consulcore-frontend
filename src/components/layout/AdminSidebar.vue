@@ -33,7 +33,7 @@ const allMenuItems: MenuItem[] = [
   { label: '收費管理', icon: '💰', path: '/admin/billing' },
   { label: '同意書', icon: '📋', path: '/admin/consents' },
   { label: '考核管理', icon: '📈', path: '/admin/performance' },
-  { label: '諮商室', icon: '🏠', path: '/admin/rooms' },
+  { label: '診間設定', icon: '🏠', path: '/admin/rooms' },
   { label: '人員管理', icon: '👥', path: '/admin/staff' },
   { label: '費率設定', icon: '⚙️', path: '/admin/fee-settings' },
   { label: '通知範本', icon: '🔔', path: '/admin/notifications' },
