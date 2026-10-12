@@ -179,3 +179,4 @@ export type {
   AuditSearchParams,
   AuditExportParams,
 } from './audit'
+export type { Organization, UpdateOrganizationRequest } from './organization'

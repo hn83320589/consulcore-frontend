@@ -7,6 +7,8 @@ import AppInput from '@/components/ui/AppInput.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import FormBuilder from '@/components/form/FormBuilder.vue'
 import FormRenderer from '@/components/form/FormRenderer.vue'
+import AppTabs from '@/components/ui/AppTabs.vue'
+import OrganizationProfileForm from '@/components/organization/OrganizationProfileForm.vue'
 import { notifyError } from '@/utils/notifyError'
 import type {
   FormTemplateResponse,
@@ -16,6 +18,12 @@ import type {
 
 const formStore = useFormBuilderStore()
 const uiStore = useUiStore()
+
+const tabs = [
+  { key: 'profile', label: '基本資料' },
+  { key: 'forms', label: '表單範本' },
+]
+const activeTab = ref('profile')
 
 // ── 範本列表 ─────────────────────────────────
 const selectedId = ref<number | null>(null)
@@ -140,11 +148,15 @@ onMounted(async () => {
   <div>
     <div class="mb-6">
       <h1 class="text-xl font-bold text-app-text">機構設定</h1>
-      <p class="text-sm text-gray-500 mt-1">表單範本管理（初診評估、自訂表單）</p>
+      <p class="text-sm text-gray-500 mt-1">機構基本資料與表單範本（初診評估、自訂表單）</p>
     </div>
 
+    <AppTabs v-model="activeTab" :tabs="tabs" />
+
+    <OrganizationProfileForm v-if="activeTab === 'profile'" />
+
     <!-- 窄螢幕上下堆疊（範本清單在上），lg 以上左右排 -->
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <div v-else class="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <!-- 範本列表 -->
       <div class="lg:col-span-1 space-y-2">
         <AppButton class="w-full" :loading="saving" @click="handleNew">+ 新增範本</AppButton>
