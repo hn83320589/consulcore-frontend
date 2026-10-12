@@ -9,6 +9,7 @@ import AppButton from '@/components/ui/AppButton.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppSelect from '@/components/ui/AppSelect.vue'
 import AppTable from '@/components/ui/AppTable.vue'
+import AppPagination from '@/components/ui/AppPagination.vue'
 import type { TableColumn } from '@/components/ui/AppTable.vue'
 import PaymentStatusBadge from '@/components/billing/PaymentStatusBadge.vue'
 import PackageUsageBar from '@/components/billing/PackageUsageBar.vue'
@@ -17,6 +18,7 @@ import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
 import { formatCurrency, formatDate } from '@/utils/format'
 import { downloadBlob } from '@/utils/download'
+import { DEFAULT_PAGE_SIZE } from '@/utils/paging'
 import type { BillingRecord, BillingSearchParams, PaymentMethod, PaymentStatus } from '@/types'
 
 const billingStore = useBillingStore()
@@ -76,13 +78,26 @@ function buildParams(): BillingSearchParams {
   }
 }
 
+// 伺服器分頁；確認收款 / 退費後重新載入時停留在目前這一頁
+const recordPage = ref(1)
+
 async function loadRecords() {
-  await billingStore.fetchRecords(buildParams())
+  await billingStore.fetchRecords({ ...buildParams(), page: recordPage.value, pageSize: DEFAULT_PAGE_SIZE })
+}
+
+function searchRecords() {
+  recordPage.value = 1
+  loadRecords()
+}
+
+function goRecordPage(p: number) {
+  recordPage.value = p
+  loadRecords()
 }
 
 function resetFilters() {
   filters.value = { startDate: '', endDate: '', clientProfileId: '', therapistUserId: '', status: '' }
-  loadRecords()
+  searchRecords()
 }
 
 // ── CSV 匯出 ────────────────────────────────
@@ -156,7 +171,7 @@ async function loadRevenue() {
 // ── Init ────────────────────────────────────
 onMounted(async () => {
   await Promise.all([
-    billingStore.fetchRecords(),
+    loadRecords(),
     billingStore.fetchClientPackages(),
     clientStore.fetchClients(),
     staffStore.fetchUsers(),
@@ -206,12 +221,13 @@ onMounted(async () => {
         <AppSelect v-model="filters.clientProfileId" label="個案" :options="clientOptions" placeholder="全部" class="w-40" />
         <AppSelect v-model="filters.therapistUserId" label="心理師" :options="therapistOptions" placeholder="全部" class="w-40" />
         <AppSelect v-model="(filters.status as string)" label="狀態" :options="statusOptions" placeholder="全部" class="w-32" />
-        <AppButton size="sm" @click="loadRecords">查詢</AppButton>
+        <AppButton size="sm" @click="searchRecords">查詢</AppButton>
         <AppButton size="sm" variant="secondary" @click="resetFilters">重置</AppButton>
         <AppButton size="sm" variant="secondary" @click="handleExport">匯出 CSV</AppButton>
       </div>
 
-      <AppTable :columns="recordColumns" :data="recordTableData" :loading="billingStore.loading">
+      <!-- page-size 與伺服器每頁筆數相同，表格本身不再分頁 -->
+      <AppTable :columns="recordColumns" :data="recordTableData" :loading="billingStore.loading" :page-size="DEFAULT_PAGE_SIZE">
         <template #cell-createdAt="{ value }">{{ formatDate(value as string) }}</template>
         <template #cell-paymentType="{ value }">{{ paymentTypeLabel(value) }}</template>
         <template #cell-originalAmount="{ value }">{{ formatCurrency(value as number) }}</template>
@@ -226,6 +242,14 @@ onMounted(async () => {
           </div>
         </template>
       </AppTable>
+      <AppPagination
+        :page="recordPage"
+        :page-size="DEFAULT_PAGE_SIZE"
+        :total-count="billingStore.recordsTotal"
+        :item-count="billingStore.records.length"
+        :disabled="billingStore.loading"
+        @update:page="goRecordPage"
+      />
     </div>
 
     <!-- ═══ Packages Tab（套餐總覽）═══ -->

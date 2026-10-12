@@ -3,11 +3,13 @@ import type {
   BillingRecord, BillingSearchParams, ConfirmPaymentRequest, RefundRequest,
   PackagePurchase, PurchasePackageRequest, ClientPackageStatus,
 } from '@/types'
+import { toPage, requestedPage, type Page, type PagedResponse } from '@/utils/paging'
 
 const billingService = {
   // 完整付款紀錄清單（可帶篩選）
-  getRecords(params?: BillingSearchParams): Promise<BillingRecord[]> {
-    return httpService.get<BillingRecord[]>('/billing', { params })
+  async getRecords(params?: BillingSearchParams): Promise<Page<BillingRecord>> {
+    const data = await httpService.get<BillingRecord[] | PagedResponse<BillingRecord>>('/billing', { params })
+    return toPage(data, requestedPage(params))
   },
   // 待收款清單
   getPending(): Promise<BillingRecord[]> {

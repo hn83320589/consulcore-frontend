@@ -9,6 +9,7 @@ export interface TableColumn {
 <!-- 泛型：slot 的 row 直接是資料型別 T，呼叫端不必再強制轉型 -->
 <script setup lang="ts" generic="T extends object">
 import { ref, computed, watch } from 'vue'
+import AppPagination from './AppPagination.vue'
 
 interface Props {
   columns: TableColumn[]
@@ -103,43 +104,13 @@ function goPage(page: number) {
       </table>
     </div>
 
-    <!-- Pagination -->
-    <div v-if="totalPages > 1" class="flex items-center justify-between mt-3 px-1">
-      <span class="text-xs text-gray-400">
-        共 {{ data.length }} 筆，第 {{ currentPage }}/{{ totalPages }} 頁
-      </span>
-      <div class="flex items-center gap-1">
-        <button
-          class="px-2 py-1 text-xs rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
-          :disabled="currentPage <= 1"
-          @click="goPage(currentPage - 1)"
-        >
-          ←
-        </button>
-        <template v-for="p in totalPages" :key="p">
-          <button
-            v-if="p === 1 || p === totalPages || (p >= currentPage - 1 && p <= currentPage + 1)"
-            class="px-2.5 py-1 text-xs rounded border"
-            :class="p === currentPage ? 'bg-primary text-white border-primary' : 'border-gray-200 hover:bg-gray-50'"
-            @click="goPage(p)"
-          >
-            {{ p }}
-          </button>
-          <span
-            v-else-if="p === currentPage - 2 || p === currentPage + 2"
-            class="text-xs text-gray-300"
-          >
-            ...
-          </span>
-        </template>
-        <button
-          class="px-2 py-1 text-xs rounded border border-gray-200 hover:bg-gray-50 disabled:opacity-40"
-          :disabled="currentPage >= totalPages"
-          @click="goPage(currentPage + 1)"
-        >
-          →
-        </button>
-      </div>
-    </div>
+    <!-- 前端分頁（資料一次全部載入時） -->
+    <AppPagination
+      :page="currentPage"
+      :page-size="pageSize"
+      :total-count="data.length"
+      :item-count="pagedData.length"
+      @update:page="goPage"
+    />
   </div>
 </template>

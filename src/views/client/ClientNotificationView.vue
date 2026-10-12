@@ -1,12 +1,24 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useNotificationStore } from '@/stores/notificationStore'
 import AppButton from '@/components/ui/AppButton.vue'
+import AppPagination from '@/components/ui/AppPagination.vue'
 import { formatShortDateTime } from '@/utils/format'
+import { DEFAULT_PAGE_SIZE } from '@/utils/paging'
 
 const store = useNotificationStore()
+const page = ref(1)
 
-onMounted(() => store.fetchNotifications())
+function load() {
+  return store.fetchNotifications({ page: page.value, pageSize: DEFAULT_PAGE_SIZE })
+}
+
+function goPage(p: number) {
+  page.value = p
+  load()
+}
+
+onMounted(load)
 </script>
 
 <template>
@@ -42,5 +54,13 @@ onMounted(() => store.fetchNotifications())
         <div v-if="n.status !== 'read'" class="w-2 h-2 bg-primary rounded-full absolute top-4 left-2" />
       </button>
     </div>
+    <AppPagination
+      :page="page"
+      :page-size="DEFAULT_PAGE_SIZE"
+      :total-count="store.notificationsTotal"
+      :item-count="store.notifications.length"
+      :disabled="store.loading"
+      @update:page="goPage"
+    />
   </div>
 </template>

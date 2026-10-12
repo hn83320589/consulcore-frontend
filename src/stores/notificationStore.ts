@@ -9,6 +9,7 @@ import type {
 export const useNotificationStore = defineStore('notification', () => {
   const templates = ref<NotificationTemplate[]>([])
   const notifications = ref<Notification[]>([])
+  const notificationsTotal = ref<number | null>(null)
   const preferences = ref<NotificationPreference[]>([])
   const unreadCount = ref(0)
   const loading = ref(false)
@@ -25,9 +26,13 @@ export const useNotificationStore = defineStore('notification', () => {
   }
 
   // Notifications
-  async function fetchNotifications() {
+  async function fetchNotifications(params?: { page?: number; pageSize?: number }) {
     loading.value = true
-    try { notifications.value = await notificationService.getNotifications() }
+    try {
+      const result = await notificationService.getNotifications(params)
+      notifications.value = result.items
+      notificationsTotal.value = result.totalCount
+    }
     finally { loading.value = false }
   }
   async function fetchUnreadCount() {
@@ -63,7 +68,7 @@ export const useNotificationStore = defineStore('notification', () => {
   }
 
   return {
-    templates, notifications, preferences, unreadCount, loading,
+    templates, notifications, notificationsTotal, preferences, unreadCount, loading,
     fetchTemplates, updateTemplate,
     fetchNotifications, fetchUnreadCount, markAsRead, markAllAsRead,
     fetchPreferences, updatePreference,

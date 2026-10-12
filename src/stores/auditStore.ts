@@ -5,11 +5,16 @@ import type { AuditLog, AuditSearchParams, AuditExportParams } from '@/types'
 
 export const useAuditStore = defineStore('audit', () => {
   const logs = ref<AuditLog[]>([])
+  const logsTotal = ref<number | null>(null)
   const loading = ref(false)
 
   async function fetchLogs(params?: AuditSearchParams) {
     loading.value = true
-    try { logs.value = await auditService.getLogs(params) }
+    try {
+      const result = await auditService.getLogs(params)
+      logs.value = result.items
+      logsTotal.value = result.totalCount
+    }
     finally { loading.value = false }
   }
 
@@ -17,5 +22,5 @@ export const useAuditStore = defineStore('audit', () => {
     return auditService.export(params)
   }
 
-  return { logs, loading, fetchLogs, exportLogs }
+  return { logs, logsTotal, loading, fetchLogs, exportLogs }
 })

@@ -3,10 +3,12 @@ import { ref, onMounted } from 'vue'
 import { useAuditStore } from '@/stores/auditStore'
 import { useUiStore } from '@/stores/uiStore'
 import AppButton from '@/components/ui/AppButton.vue'
+import AppPagination from '@/components/ui/AppPagination.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
 import { formatDateTime } from '@/utils/format'
 import { downloadBlob } from '@/utils/download'
+import { DEFAULT_PAGE_SIZE } from '@/utils/paging'
 
 interface AuditChange {
   field: string
@@ -33,9 +35,9 @@ const filterUserId = ref('')
 const filterAction = ref('')
 const filterResourceType = ref('')
 
-// Pagination
+// Pagination（伺服器分頁）
 const page = ref(1)
-const pageSize = ref(50)
+const pageSize = DEFAULT_PAGE_SIZE
 
 async function loadLogs() {
   await auditStore.fetchLogs({
@@ -45,7 +47,7 @@ async function loadLogs() {
     action: filterAction.value || undefined,
     resourceType: filterResourceType.value || undefined,
     page: page.value,
-    pageSize: pageSize.value,
+    pageSize,
   })
 }
 
@@ -54,15 +56,8 @@ function applyFilters() {
   loadLogs()
 }
 
-function prevPage() {
-  if (page.value > 1) {
-    page.value--
-    loadLogs()
-  }
-}
-
-function nextPage() {
-  page.value++
+function goPage(p: number) {
+  page.value = p
   loadLogs()
 }
 
@@ -221,11 +216,13 @@ onMounted(() => loadLogs())
       </table>
     </div>
 
-    <!-- Pagination -->
-    <div class="flex items-center justify-end gap-3 mt-4">
-      <AppButton size="sm" variant="secondary" :disabled="page <= 1 || auditStore.loading" @click="prevPage()">上一頁</AppButton>
-      <span class="text-sm text-gray-500">第 {{ page }} 頁</span>
-      <AppButton size="sm" variant="secondary" :disabled="auditStore.logs.length < pageSize || auditStore.loading" @click="nextPage()">下一頁</AppButton>
-    </div>
+    <AppPagination
+      :page="page"
+      :page-size="pageSize"
+      :total-count="auditStore.logsTotal"
+      :item-count="auditStore.logs.length"
+      :disabled="auditStore.loading"
+      @update:page="goPage"
+    />
   </div>
 </template>
