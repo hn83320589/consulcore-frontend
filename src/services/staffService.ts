@@ -6,6 +6,7 @@ import type {
   ResetPasswordRequest,
   RoleResponse,
   UpdateRolePermissionsRequest,
+  TherapistOption,
 } from '@/types'
 
 const staffService = {
@@ -27,6 +28,10 @@ const staffService = {
   },
   toggleUserActive(id: number): Promise<UserResponse> {
     return httpService.patch<UserResponse>(`/users/${id}/toggle-active`)
+  },
+  // 排班、預約、考核頁的心理師下拉選單（不需 staff.manage）
+  getTherapistOptions(): Promise<TherapistOption[]> {
+    return httpService.get<TherapistOption[]>('/therapists')
   },
   resetPassword(id: number, payload: ResetPasswordRequest): Promise<void> {
     return httpService.post<void>(`/users/${id}/reset-password`, payload)

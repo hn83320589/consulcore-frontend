@@ -11,11 +11,13 @@ import QuickBookModal from '@/components/appointment/QuickBookModal.vue'
 import { toLocalDateString } from '@/utils/date'
 import { notifyError } from '@/utils/notifyError'
 import { toCalendarEvents } from '@/utils/calendarEvents'
+import { useTherapistOptions } from '@/composables/useTherapistOptions'
 import type { Appointment, AppointmentStatus, CreateAppointmentRequest } from '@/types'
 
 const appointmentStore = useAppointmentStore()
 const calendarEvents = computed(() => toCalendarEvents(appointmentStore.appointments))
 const uiStore = useUiStore()
+const { options: therapistOptions } = useTherapistOptions()
 
 // ── View Toggle ─────────────────────────────
 const viewMode = ref<'calendar' | 'list'>('calendar')
@@ -186,13 +188,16 @@ onMounted(() => loadData())
     <div class="flex flex-wrap items-end gap-3 mb-4">
       <div>
         <label class="block text-xs text-gray-500 mb-1">心理師</label>
-        <input
+        <select
           v-model="filterTherapistId"
-          type="text"
-          placeholder="心理師 ID"
-          class="px-3 py-1.5 border border-gray-300 rounded-app text-sm w-40"
+          class="px-3 py-1.5 border border-gray-300 rounded-app text-sm bg-white w-40"
           @change="loadData()"
-        />
+        >
+          <option value="">全部</option>
+          <option v-for="opt in therapistOptions" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
       </div>
       <div v-if="viewMode === 'list'">
         <label class="block text-xs text-gray-500 mb-1">狀態</label>

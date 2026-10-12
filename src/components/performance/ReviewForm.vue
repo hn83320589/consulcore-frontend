@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppInput from '@/components/ui/AppInput.vue'
+import AppSelect from '@/components/ui/AppSelect.vue'
+import { useTherapistOptions } from '@/composables/useTherapistOptions'
 import type { CreatePerformanceReviewRequest } from '@/types'
 
 interface Props {
@@ -26,6 +28,8 @@ const form = ref({
   overallScore: 3,
   comment: '',
 })
+
+const { options: therapistOptions } = useTherapistOptions()
 
 const scoreLabels = ['', '需改善', '尚可', '良好', '優良', '卓越']
 
@@ -62,7 +66,7 @@ function handleSubmit() {
 
 <template>
   <form class="space-y-4" @submit.prevent="handleSubmit">
-    <AppInput v-model="form.therapistUserId" label="心理師 ID" type="number" placeholder="待接入下拉" />
+    <AppSelect v-model="form.therapistUserId" label="心理師" :options="therapistOptions" placeholder="選擇心理師" />
     <AppInput v-model="form.period" label="考核期間" placeholder="例：2026-Q1" />
 
     <!-- Score Fields -->

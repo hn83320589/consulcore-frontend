@@ -13,6 +13,7 @@ export type {
   CreateUserRequest,
   UpdateUserRequest,
   ResetPasswordRequest,
+  TherapistOption,
 } from './user'
 export type {
   RoleResponse,

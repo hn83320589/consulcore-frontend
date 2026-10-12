@@ -409,7 +409,7 @@ onMounted(async () => {
     <!-- Violation Modal -->
     <AppModal :open="showViolationModal" title="新增違規紀錄" @close="showViolationModal = false">
       <form class="space-y-3" @submit.prevent="handleCreateViolation">
-        <AppInput v-model="violationForm.therapistUserId" label="心理師 ID" type="number" />
+        <AppSelect v-model="violationForm.therapistUserId" label="心理師" :options="therapistOptions" placeholder="選擇心理師" />
         <AppInput v-model="violationForm.incidentDate" label="發生日期" type="date" />
         <AppSelect v-model="(violationForm.severity as string)" label="嚴重度" :options="severityOptions" />
         <div>

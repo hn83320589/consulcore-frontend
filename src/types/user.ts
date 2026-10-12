@@ -10,3 +10,6 @@ export type CreateUserRequest = Schemas['CreateUserDto']
 export type UpdateUserRequest = Schemas['UpdateUserDto']
 
 export type ResetPasswordRequest = Schemas['ResetPasswordDto']
+
+// GET /api/therapists：心理師下拉選單（只有 id 與姓名）
+export type TherapistOption = Schemas['TherapistOptionDto']
