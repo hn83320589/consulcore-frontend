@@ -3,6 +3,9 @@ import { ref, watch } from 'vue'
 import type { ClientProfile, UpdateClientRequest } from '@/types'
 import AppButton from '@/components/ui/AppButton.vue'
 import AppInput from '@/components/ui/AppInput.vue'
+import AppSelect from '@/components/ui/AppSelect.vue'
+import { genderLabel, genderOptions } from '@/utils/labels'
+import { maskIdNumber } from '@/utils/format'
 
 interface Props {
   client: ClientProfile
@@ -17,6 +20,8 @@ const emit = defineEmits<{
 }>()
 
 const editing = ref(false)
+// 身分證字號預設遮蔽：個案資料常在櫃檯、會談室的螢幕上打開
+const showIdNumber = ref(false)
 const form = ref<UpdateClientRequest>(toForm(props.client))
 
 watch(
@@ -64,11 +69,20 @@ interface FieldDef {
   key: keyof UpdateClientRequest
   label: string
   type?: string
+  options?: { label: string; value: string }[]
+}
+
+function displayValue(key: FieldDef['key']): string {
+  const raw = props.client[key as keyof ClientProfile] as string | null | undefined
+  if (!raw) return '—'
+  if (key === 'gender') return genderLabel(raw)
+  if (key === 'idNumber' && !showIdNumber.value) return maskIdNumber(raw)
+  return raw
 }
 
 const fields: FieldDef[] = [
   { key: 'name', label: '姓名' },
-  { key: 'gender', label: '性別' },
+  { key: 'gender', label: '性別', options: genderOptions },
   { key: 'dateOfBirth', label: '出生日期', type: 'date' },
   { key: 'idNumber', label: '身分證字號' },
   { key: 'phone', label: '電話' },
@@ -100,7 +114,16 @@ const fields: FieldDef[] = [
     <div class="grid grid-cols-2 gap-4">
       <div v-for="field in fields" :key="field.key">
         <template v-if="editing">
+          <AppSelect
+            v-if="field.options"
+            :label="field.label"
+            :options="field.options"
+            placeholder="未填"
+            :model-value="(form[field.key] as string) ?? ''"
+            @update:model-value="(form[field.key] as string | undefined) = $event || undefined"
+          />
           <AppInput
+            v-else
             :label="field.label"
             :type="field.type ?? 'text'"
             :model-value="(form[field.key] as string) ?? ''"
@@ -109,7 +132,15 @@ const fields: FieldDef[] = [
         </template>
         <template v-else>
           <p class="text-xs text-gray-500 mb-0.5">{{ field.label }}</p>
-          <p class="text-sm text-gray-800">{{ (client[field.key as keyof ClientProfile] as string) ?? '—' }}</p>
+          <p class="text-sm text-gray-800">
+            {{ displayValue(field.key) }}
+            <button
+              v-if="field.key === 'idNumber' && client.idNumber"
+              type="button"
+              class="ml-2 text-xs text-primary hover:underline"
+              @click="showIdNumber = !showIdNumber"
+            >{{ showIdNumber ? '隱藏' : '顯示' }}</button>
+          </p>
         </template>
       </div>
     </div>

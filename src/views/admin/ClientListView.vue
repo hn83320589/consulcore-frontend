@@ -9,11 +9,13 @@ import AppButton from '@/components/ui/AppButton.vue'
 import AppBadge from '@/components/ui/AppBadge.vue'
 import AppModal from '@/components/ui/AppModal.vue'
 import AppInput from '@/components/ui/AppInput.vue'
+import AppSelect from '@/components/ui/AppSelect.vue'
 import ClientSearchBar from '@/components/client/ClientSearchBar.vue'
 import InitialCredentialsModal from '@/components/client/InitialCredentialsModal.vue'
 import { notifyError } from '@/utils/notifyError'
 import { formatDate } from '@/utils/format'
 import type { ClientProfile, CreateClientRequest, ClientStatus, InitialCredentials } from '@/types'
+import { genderOptions } from '@/utils/labels'
 
 const router = useRouter()
 const clientStore = useClientStore()
@@ -176,7 +178,7 @@ onMounted(() => clientStore.fetchClients())
       <form class="space-y-4" @submit.prevent="handleCreate">
         <div class="grid grid-cols-2 gap-4">
           <AppInput v-model="createForm.name" label="姓名" placeholder="必填" />
-          <AppInput v-model="createForm.gender" label="性別" placeholder="選填" />
+          <AppSelect v-model="createForm.gender" label="性別" :options="genderOptions" placeholder="選填" />
           <AppInput v-model="createForm.dateOfBirth" label="出生日期" type="date" />
           <AppInput v-model="createForm.idNumber" label="身分證字號" placeholder="選填" />
           <AppInput v-model="createForm.phone" label="電話" placeholder="選填" />
