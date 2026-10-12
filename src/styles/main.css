@@ -22,6 +22,8 @@
   --spacing-unit: var(--spacing-unit);
 
   --text-base: var(--font-size-base);
+  /* v3 設定的 text-base 只改字級、行高沿用外層；v4 預設會帶行高 1.5，讓側欄等處每列高 1px */
+  --text-base--line-height: inherit;
 }
 
 /*
