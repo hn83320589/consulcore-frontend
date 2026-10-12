@@ -9,6 +9,12 @@ const router = useRouter()
 const authStore = useAuthStore()
 const uiStore = useUiStore()
 
+interface Props {
+  /** 手機覆蓋式選單：一律顯示完整文字，底部按鈕改為關閉選單 */
+  mobile?: boolean
+}
+const props = withDefaults(defineProps<Props>(), { mobile: false })
+
 interface MenuItem {
   label: string
   icon: string
@@ -40,7 +46,7 @@ const visibleMenuItems = computed(() =>
   }),
 )
 
-const collapsed = computed(() => uiStore.sidebarCollapsed)
+const collapsed = computed(() => !props.mobile && uiStore.sidebarCollapsed)
 
 function navigate(path: string) {
   router.push(path)
@@ -77,12 +83,13 @@ function isActive(path: string): boolean {
       </button>
     </nav>
 
-    <!-- Collapse Toggle -->
+    <!-- Collapse Toggle（手機：關閉選單） -->
     <button
       class="h-12 flex items-center justify-center border-t border-gray-200 text-gray-400 hover:text-gray-600"
-      @click="uiStore.toggleSidebar()"
+      :aria-label="mobile ? '關閉選單' : collapsed ? '展開側欄' : '收合側欄'"
+      @click="mobile ? uiStore.setMobileNav(false) : uiStore.toggleSidebar()"
     >
-      {{ collapsed ? '→' : '←' }}
+      {{ mobile ? '✕' : collapsed ? '→' : '←' }}
     </button>
   </aside>
 </template>
