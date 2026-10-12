@@ -1,9 +1,9 @@
 import httpService from './httpService'
 import type {
   NotificationTemplate, CreateNotificationTemplateRequest, UpdateNotificationTemplateRequest,
-  Notification, NotificationPreference, UpdatePreferenceRequest, UnreadCount,
+  NotificationPreference, UpdatePreferenceRequest, UnreadCount,
 } from '@/types'
-import { toPage, requestedPage, type Page, type PagedResponse } from '@/utils/paging'
+import type { Schemas } from '@/types/schema'
 
 const notificationService = {
   // Templates
@@ -21,9 +21,8 @@ const notificationService = {
   },
 
   // Notifications
-  async getNotifications(params?: { page?: number; pageSize?: number }): Promise<Page<Notification>> {
-    const data = await httpService.get<Notification[] | PagedResponse<Notification>>('/notifications', { params })
-    return toPage(data, requestedPage(params))
+  getNotifications(params?: { page?: number; pageSize?: number }): Promise<Schemas['NotificationLogResponseDtoPagedResult']> {
+    return httpService.get<Schemas['NotificationLogResponseDtoPagedResult']>('/notifications', { params })
   },
   getUnreadCount(): Promise<UnreadCount> {
     return httpService.get<UnreadCount>('/notifications/unread-count')

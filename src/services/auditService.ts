@@ -1,11 +1,10 @@
 import httpService from './httpService'
-import type { AuditLog, AuditSearchParams, AuditExportParams } from '@/types'
-import { toPage, requestedPage, type Page, type PagedResponse } from '@/utils/paging'
+import type { AuditSearchParams, AuditExportParams } from '@/types'
+import type { Schemas } from '@/types/schema'
 
 const auditService = {
-  async getLogs(params?: AuditSearchParams): Promise<Page<AuditLog>> {
-    const data = await httpService.get<AuditLog[] | PagedResponse<AuditLog>>('/audit-logs', { params })
-    return toPage(data, requestedPage(params))
+  getLogs(params?: AuditSearchParams): Promise<Schemas['AuditLogResponseDtoPagedResult']> {
+    return httpService.get<Schemas['AuditLogResponseDtoPagedResult']>('/audit-logs', { params })
   },
   export(params?: AuditExportParams): Promise<Blob> {
     return httpService.get<Blob>('/audit-logs/export', { params, responseType: 'blob' })

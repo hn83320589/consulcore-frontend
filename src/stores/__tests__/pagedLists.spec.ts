@@ -14,7 +14,7 @@ const { useAuditStore } = await import('@/stores/auditStore')
 const { useBillingStore } = await import('@/stores/billingStore')
 const { useNotificationStore } = await import('@/stores/notificationStore')
 
-const page = <T>(items: T[], totalCount: number | null) => ({ items, totalCount, page: 2, pageSize: 50 })
+const page = <T>(items: T[], totalCount: number) => ({ items, totalCount, page: 2, pageSize: 50 })
 
 describe('分頁清單的 store', () => {
   beforeEach(() => {
@@ -43,14 +43,14 @@ describe('分頁清單的 store', () => {
     expect(store.recordsTotal).toBe(51)
   })
 
-  it('通知：可指定頁碼；總筆數未知時為 null', async () => {
-    vi.mocked(notificationService.getNotifications).mockResolvedValue(page([{ id: 9 }], null) as never)
+  it('通知：可指定頁碼', async () => {
+    vi.mocked(notificationService.getNotifications).mockResolvedValue(page([{ id: 9 }], 3) as never)
     const store = useNotificationStore()
 
     await store.fetchNotifications({ page: 2, pageSize: 50 })
 
     expect(notificationService.getNotifications).toHaveBeenCalledWith({ page: 2, pageSize: 50 })
     expect(store.notifications).toEqual([{ id: 9 }])
-    expect(store.notificationsTotal).toBeNull()
+    expect(store.notificationsTotal).toBe(3)
   })
 })
