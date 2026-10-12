@@ -1,15 +1,6 @@
-export interface AuditLog {
-  id: number
-  userId: number
-  userName?: string | null
-  action: string           // "create" | "update" | "delete" | "login" | "lock" | ...
-  resourceType: string     // snake_case，如 "client_profile" | "session_note" | "appointment" | ...
-  resourceId: number
-  description?: string | null
-  changes?: string | null  // JSON 字串；view 內 JSON.parse 後做 before/after diff
-  ipAddress?: string | null
-  createdAt: string
-}
+import type { Schemas } from './schema'
+
+export type AuditLog = Schemas['AuditLogResponseDto']
 
 export interface AuditSearchParams {
   action?: string
