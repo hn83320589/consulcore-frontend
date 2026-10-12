@@ -17,6 +17,9 @@ jobs:
           cache: npm
 
       - run: npm ci
+      # 型別由 openapi/openapi.json 產生；不一致代表有人手改 generated/ 或更新 spec 後忘了重新產生
+      - name: Generated API types are up to date
+        run: npm run gen:api && git diff --exit-code src/types/generated
       - run: npm run type-check
       - run: npm run lint
       - run: npm test

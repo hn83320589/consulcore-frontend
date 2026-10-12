@@ -8,7 +8,8 @@ export default defineConfigWithVueTs(
   },
   {
     name: 'app/files-to-ignore',
-    ignores: ['dist/**', 'node_modules/**', '*.tsbuildinfo'],
+    // generated/ 由 npm run gen:api 從 openapi/openapi.json 產生，不手改
+    ignores: ['dist/**', 'node_modules/**', '*.tsbuildinfo', 'src/types/generated/**'],
   },
   pluginVue.configs['flat/recommended'],
   vueTsConfigs.recommended,
