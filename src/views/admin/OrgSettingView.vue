@@ -143,9 +143,10 @@ onMounted(async () => {
       <p class="text-sm text-gray-500 mt-1">表單範本管理（初診評估、自訂表單）</p>
     </div>
 
-    <div class="grid grid-cols-4 gap-6">
+    <!-- 窄螢幕上下堆疊（範本清單在上），lg 以上左右排 -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <!-- 範本列表 -->
-      <div class="col-span-1 space-y-2">
+      <div class="lg:col-span-1 space-y-2">
         <AppButton class="w-full" :loading="saving" @click="handleNew">+ 新增範本</AppButton>
         <button
           v-for="t in formStore.templates"
@@ -170,7 +171,7 @@ onMounted(async () => {
       </div>
 
       <!-- 編輯區 -->
-      <div class="col-span-3">
+      <div class="lg:col-span-3 min-w-0">
         <div v-if="!selected" class="text-center text-gray-400 py-16">
           請選擇左側範本，或新增一個
         </div>
@@ -179,7 +180,7 @@ onMounted(async () => {
           <!-- 系統預設：唯讀 + 複製 -->
           <div
             v-if="!isEditable"
-            class="mb-4 flex items-center justify-between bg-amber-50 border border-amber-200 rounded-app p-4"
+            class="mb-4 flex flex-wrap items-center justify-between gap-2 bg-amber-50 border border-amber-200 rounded-app p-4"
           >
             <p class="text-sm text-amber-700">系統預設範本不可直接編輯，請複製後再修改。</p>
             <AppButton size="sm" :loading="saving" @click="handleClone(selected)">複製後編輯</AppButton>
@@ -190,7 +191,7 @@ onMounted(async () => {
             <AppButton :loading="saving" @click="handleSave">儲存</AppButton>
           </div>
 
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <!-- 建構器（唯讀範本停用互動） -->
             <div :class="{ 'pointer-events-none opacity-60': !isEditable }">
               <h3 class="text-sm font-semibold text-gray-600 mb-2">結構編輯</h3>

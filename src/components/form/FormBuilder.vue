@@ -153,97 +153,100 @@ function emitUpdate() {
 </script>
 
 <template>
-  <div class="grid grid-cols-3 gap-6">
-    <!-- Left: Section List -->
-    <div class="col-span-2 space-y-4">
-      <div
-        v-for="(section, sIdx) in editSections"
-        :key="sIdx"
-        class="bg-white border border-gray-200 rounded-app p-4"
-      >
-        <!-- Section Header -->
-        <div class="flex items-center justify-between mb-3">
-          <input
-            v-model="section.title"
-            class="font-semibold text-gray-800 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-hidden px-1"
-            @blur="emitUpdate"
-          />
-          <div class="flex items-center gap-1">
-            <button class="text-xs text-gray-400 hover:text-gray-600 px-1" @click="moveSectionUp(sIdx)">↑</button>
-            <button class="text-xs text-gray-400 hover:text-gray-600 px-1" @click="moveSectionDown(sIdx)">↓</button>
-            <button class="text-xs text-red-400 hover:text-red-600 px-1" @click="removeSection(sIdx)">✕</button>
-          </div>
-        </div>
-
-        <!-- Fields -->
-        <div class="space-y-2">
-          <div
-            v-for="(field, fIdx) in section.fields ?? []"
-            :key="fIdx"
-            class="flex items-center gap-2 p-2 bg-gray-50 rounded-sm border border-gray-100 text-sm cursor-pointer hover:bg-gray-100"
-            @click="startEditField(sIdx, fIdx)"
-          >
-            <span class="text-gray-400 text-xs w-16 truncate">{{ field.fieldType ?? 'text' }}</span>
-            <span class="flex-1 truncate">{{ field.label }}</span>
-            <span v-if="field.isRequired" class="text-red-400 text-xs">必填</span>
-            <button class="text-xs text-gray-400 hover:text-gray-600" @click.stop="moveFieldUp(sIdx, fIdx)">↑</button>
-            <button class="text-xs text-gray-400 hover:text-gray-600" @click.stop="moveFieldDown(sIdx, fIdx)">↓</button>
-            <button class="text-xs text-red-400 hover:text-red-600" @click.stop="removeField(sIdx, fIdx)">✕</button>
-          </div>
-        </div>
-
-        <AppButton size="sm" variant="ghost" class="mt-2" @click="addField(sIdx)">
-          + 新增欄位
-        </AppButton>
-      </div>
-
-      <AppButton variant="secondary" @click="addSection">+ 新增區塊</AppButton>
-    </div>
-
-    <!-- Right: Field Editor -->
-    <div class="col-span-1">
-      <div v-if="getEditingField()" class="bg-white border border-gray-200 rounded-app p-4 sticky top-4">
-        <h4 class="font-semibold text-gray-700 text-sm mb-3">欄位編輯</h4>
-        <div class="space-y-3">
-          <AppInput
-            :model-value="getEditingField()!.label"
-            label="標籤"
-            @update:model-value="getEditingField()!.label = $event; emitUpdate()"
-          />
-          <AppSelect
-            :model-value="getEditingField()!.fieldType ?? 'text'"
-            label="類型"
-            :options="fieldTypeOptions"
-            @update:model-value="getEditingField()!.fieldType = $event as FieldType; emitUpdate()"
-          />
-          <AppInput
-            :model-value="getEditingField()!.placeholder ?? ''"
-            label="提示文字"
-            @update:model-value="getEditingField()!.placeholder = $event || null; emitUpdate()"
-          />
-          <div v-if="['select', 'radio', 'checkbox'].includes(getEditingField()!.fieldType ?? 'text')">
-            <label class="block text-sm font-medium text-gray-700 mb-1">選項（每行一個）</label>
-            <textarea
-              :value="optionsToText(getEditingField()!)"
-              rows="4"
-              class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm"
-              @input="setOptionsFromText(getEditingField()!, ($event.target as HTMLTextAreaElement).value)"
-            />
-          </div>
-          <label class="flex items-center gap-2">
+  <!-- 依建構器實際分到的寬度分欄（container query），不看整個螢幕：放在窄欄裡時改為上下堆疊 -->
+  <div class="@container">
+    <div class="grid grid-cols-1 @2xl:grid-cols-3 gap-6">
+      <!-- Left: Section List -->
+      <div class="@2xl:col-span-2 space-y-4">
+        <div
+          v-for="(section, sIdx) in editSections"
+          :key="sIdx"
+          class="bg-white border border-gray-200 rounded-app p-4"
+        >
+          <!-- Section Header -->
+          <div class="flex items-center justify-between mb-3">
             <input
-              type="checkbox"
-              :checked="getEditingField()!.isRequired"
-              class="accent-primary"
-              @change="getEditingField()!.isRequired = ($event.target as HTMLInputElement).checked; emitUpdate()"
+              v-model="section.title"
+              class="font-semibold text-gray-800 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-hidden px-1"
+              @blur="emitUpdate"
             />
-            <span class="text-sm text-gray-600">必填</span>
-          </label>
-          <AppButton size="sm" variant="secondary" @click="closeFieldEditor">完成</AppButton>
+            <div class="flex items-center gap-1">
+              <button class="text-xs text-gray-400 hover:text-gray-600 px-1" @click="moveSectionUp(sIdx)">↑</button>
+              <button class="text-xs text-gray-400 hover:text-gray-600 px-1" @click="moveSectionDown(sIdx)">↓</button>
+              <button class="text-xs text-red-400 hover:text-red-600 px-1" @click="removeSection(sIdx)">✕</button>
+            </div>
+          </div>
+
+          <!-- Fields -->
+          <div class="space-y-2">
+            <div
+              v-for="(field, fIdx) in section.fields ?? []"
+              :key="fIdx"
+              class="flex items-center gap-2 p-2 bg-gray-50 rounded-sm border border-gray-100 text-sm cursor-pointer hover:bg-gray-100"
+              @click="startEditField(sIdx, fIdx)"
+            >
+              <span class="text-gray-400 text-xs w-16 truncate">{{ field.fieldType ?? 'text' }}</span>
+              <span class="flex-1 truncate">{{ field.label }}</span>
+              <span v-if="field.isRequired" class="text-red-400 text-xs">必填</span>
+              <button class="text-xs text-gray-400 hover:text-gray-600" @click.stop="moveFieldUp(sIdx, fIdx)">↑</button>
+              <button class="text-xs text-gray-400 hover:text-gray-600" @click.stop="moveFieldDown(sIdx, fIdx)">↓</button>
+              <button class="text-xs text-red-400 hover:text-red-600" @click.stop="removeField(sIdx, fIdx)">✕</button>
+            </div>
+          </div>
+
+          <AppButton size="sm" variant="ghost" class="mt-2" @click="addField(sIdx)">
+            + 新增欄位
+          </AppButton>
         </div>
+
+        <AppButton variant="secondary" @click="addSection">+ 新增區塊</AppButton>
       </div>
-      <div v-else class="bg-gray-50 border border-gray-200 rounded-app p-6 text-center text-sm text-gray-400">
-        點擊欄位以編輯
+
+      <!-- Right: Field Editor -->
+      <div class="@2xl:col-span-1">
+        <div v-if="getEditingField()" class="bg-white border border-gray-200 rounded-app p-4 sticky top-4">
+          <h4 class="font-semibold text-gray-700 text-sm mb-3">欄位編輯</h4>
+          <div class="space-y-3">
+            <AppInput
+              :model-value="getEditingField()!.label"
+              label="標籤"
+              @update:model-value="getEditingField()!.label = $event; emitUpdate()"
+            />
+            <AppSelect
+              :model-value="getEditingField()!.fieldType ?? 'text'"
+              label="類型"
+              :options="fieldTypeOptions"
+              @update:model-value="getEditingField()!.fieldType = $event as FieldType; emitUpdate()"
+            />
+            <AppInput
+              :model-value="getEditingField()!.placeholder ?? ''"
+              label="提示文字"
+              @update:model-value="getEditingField()!.placeholder = $event || null; emitUpdate()"
+            />
+            <div v-if="['select', 'radio', 'checkbox'].includes(getEditingField()!.fieldType ?? 'text')">
+              <label class="block text-sm font-medium text-gray-700 mb-1">選項（每行一個）</label>
+              <textarea
+                :value="optionsToText(getEditingField()!)"
+                rows="4"
+                class="w-full px-3 py-2 border border-gray-300 rounded-app text-sm"
+                @input="setOptionsFromText(getEditingField()!, ($event.target as HTMLTextAreaElement).value)"
+              />
+            </div>
+            <label class="flex items-center gap-2">
+              <input
+                type="checkbox"
+                :checked="getEditingField()!.isRequired"
+                class="accent-primary"
+                @change="getEditingField()!.isRequired = ($event.target as HTMLInputElement).checked; emitUpdate()"
+              />
+              <span class="text-sm text-gray-600">必填</span>
+            </label>
+            <AppButton size="sm" variant="secondary" @click="closeFieldEditor">完成</AppButton>
+          </div>
+        </div>
+        <div v-else class="bg-gray-50 border border-gray-200 rounded-app p-6 text-center text-sm text-gray-400">
+          點擊欄位以編輯
+        </div>
       </div>
     </div>
   </div>
